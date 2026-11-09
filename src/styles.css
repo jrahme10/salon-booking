@@ -423,3 +423,15 @@
 .customer-birthday-editor .customer-consent{display:flex;align-items:center;gap:6px;width:auto;font-size:8px;font-weight:500}
 .customer-birthday-editor .customer-consent input{width:14px;height:14px;accent-color:#526f54}
 .customer-birthday-row{cursor:default}
+
+/* Free, browser-based customer reminder alerts */
+.customer-alert-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.customer-alert-controls>span{font-size:8px;font-weight:700;color:#8a9588}
+.customer-alert-controls button,.customer-reminder-actions a{display:inline-flex;align-items:center;gap:5px}
+.customer-reminder-state{display:inline-flex;margin-left:5px;padding:3px 6px;border-radius:20px;font-size:7px;font-weight:700;vertical-align:middle}
+.customer-reminder-state.due{background:#f8eee7;color:#a45f3c}
+.customer-reminder-state.scheduled{background:#eef2eb;color:#71806d}
+.customer-reminder-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.customer-reminder-actions a{padding:6px 8px;border:1px solid #e5eae2;border-radius:7px;color:#526c54;text-decoration:none;font-size:8px;font-weight:700}
+.customer-reminder-actions>small{font-size:8px;color:#a18b65}
+@media(max-width:680px){.customer-alert-controls{align-items:flex-end;flex-direction:column}.customer-reminder-actions{justify-content:flex-start;width:100%}}
