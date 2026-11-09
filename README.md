@@ -16,7 +16,12 @@ The preview deploys from the `production-foundation` branch. It is a frontend de
 - Provider workspace with overview, calendar, bookings, services, team, customers, analytics, finances and settings routes
 - Client-side marketplace preview
 - Typed repository interface separating UI pages from persistence
-- Local demo repository with browser persistence for appointment status changes
+- Local demo repository with browser persistence for appointment, service, employee and customer changes
+- Employee working hours, recurring weekly days off and date-specific time off
+- Service-to-employee assignments and available appointment slot calculation
+- Booking validation for past times, inactive services/staff, working hours and overlapping appointments
+- Provider service and team CRUD workflows
+- Client booking request flow with a shareable `/book/<business-slug>` page and manual salon confirmation
 - Responsive layouts for desktop and mobile
 
 ## Run locally
@@ -53,4 +58,4 @@ Planned backend foundations:
 
 ## Important status
 
-This is an active development preview, not a production service. Demo records are not shared across devices, authentication is not connected, and booking availability must be enforced server-side before real customers can book. Do not use the demo repository for real customer or payment data.
+This is an active development preview, not a production service. Demo records are not shared across devices, authentication is not connected, and the current browser-only booking guard is not a substitute for server-side transactional locking. Multiple devices can still create conflicting requests because localStorage is not shared or concurrency-safe. Authentication, tenant isolation, Supabase persistence, server-side availability validation and transactional conflict prevention are required before real customers can book. Do not use the demo repository for real customer or payment data.
