@@ -2,7 +2,6 @@ import {useMemo,useState} from "react";
 import {Award,CalendarCheck,ChartNoAxesCombined,Coins,Wallet,Users} from "lucide-react";
 import type {Appointment,Business,CommissionEntry,Employee,Payment,PayrollPayment,Service} from "../types";
 import {buildEmployeePerformanceReport,type PerformancePeriod} from "../domain/employee-performance";
-import {Heading} from "./shared";
 type Props={business:Business;employees:Employee[];appointments:Appointment[];services:Service[];payments:Payment[];commissions:CommissionEntry[];payroll:PayrollPayment[]};
 const money=(amount:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(amount);
 export function EmployeePerformance({business,employees,appointments,services,payments,commissions,payroll}:Props){
