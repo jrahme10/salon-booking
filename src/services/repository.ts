@@ -1,6 +1,7 @@
 import * as demo from "../data/mock";
 import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
-import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,Customer,Employee,Service,WeeklySchedule} from "../types";
+import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,Customer,Employee,Expense,Payment,Service,WeeklySchedule} from "../types";
+import {validateExpense,validatePayment} from "../domain/finance";
 
 export interface SalonRepository {
   getBusiness():Promise<Business>;
@@ -9,6 +10,10 @@ export interface SalonRepository {
   getEmployees():Promise<Employee[]>;
   getCustomers():Promise<Customer[]>;
   getAppointments():Promise<Appointment[]>;
+  getPayments():Promise<Payment[]>;
+  getExpenses():Promise<Expense[]>;
+  createPayment(payment:Payment):Promise<void>;
+  createExpense(expense:Expense):Promise<void>;
   updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void>;
   updateAppointment(appointment:Appointment):Promise<void>;
   getClientAppointmentRequests():Promise<ClientAppointmentRequest[]>;
@@ -23,10 +28,10 @@ export interface SalonRepository {
   updateEmployee(employee:Employee):Promise<void>;
   deleteEmployee(id:string):Promise<void>;
 }
-type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[]};
+type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[]};
 const STORAGE_KEY="salon-reservation-demo-v1";
 const copy=<T,>(value:T):T=>JSON.parse(JSON.stringify(value)) as T;
-const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[]});
+const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[],payments:[],expenses:[]});
 
 class DemoRepository implements SalonRepository {
   private state:StoredState;
@@ -36,7 +41,7 @@ class DemoRepository implements SalonRepository {
       const parsed=saved?JSON.parse(saved) as Partial<StoredState>:{};
       const defaults=seed();
       const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
-      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests};
+      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses};
     } catch { this.state=seed(); }
   }
   private persist(){
@@ -61,6 +66,25 @@ class DemoRepository implements SalonRepository {
     const allowed:Record<Appointment["status"],Appointment["status"][]>={pending:["confirmed","cancelled"],confirmed:["completed","cancelled"],completed:[],cancelled:[]};
     if(!allowed[current.status].includes(status)) throw new Error("This appointment status cannot be changed in that way.");
     this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
+  }
+
+  async getPayments(){return copy(this.state.payments);}
+  async getExpenses(){return copy(this.state.expenses);}
+  async createPayment(payment:Payment){
+    if(this.state.payments.some(row=>row.id===payment.id))throw new Error("Payment already exists.");
+    const appointment=this.state.appointments.find(row=>row.id===payment.appointmentId);
+    if(!appointment)throw new Error("Appointment was not found.");
+    const service=this.state.services.find(row=>row.id===appointment.serviceId);
+    if(!service)throw new Error("The appointment service could not be found.");
+    const reason=validatePayment(payment,appointment,service);
+    if(reason)throw new Error(reason);
+    this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===appointment.id?{...row,paidAmount:row.paidAmount+payment.amount}:row),payments:[...this.state.payments,copy(payment)]});
+  }
+  async createExpense(expense:Expense){
+    if(this.state.expenses.some(row=>row.id===expense.id))throw new Error("Expense already exists.");
+    const reason=validateExpense(expense,this.state.business.id);
+    if(reason)throw new Error(reason);
+    this.commit({...this.state,expenses:[...this.state.expenses,copy(expense)]});
   }
   async getClientAppointmentRequests(){return copy(this.state.clientRequests);}
   async createClientAppointmentRequest(request:ClientAppointmentRequest){
