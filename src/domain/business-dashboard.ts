@@ -20,7 +20,7 @@ export interface BusinessDashboardReport {
  trend:DashboardMonth[];
 }
 const timestamp=(value:string)=>{const parsed=new Date(value).getTime();return Number.isFinite(parsed)?parsed:null;};
-const inRange=(value:string,start:number,end:number)=>{const time=timestamp(value);return time!==null&&time>=start&&time<=end;};
+const inRange=(value:string,start:number,end:number)=>{const time=timestamp(value);return time!==null&&time>=start&&time<end;};
 const monthKey=(date:Date)=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`;
 const totals=(input:{appointments:Appointment[];payments:Payment[];expenses:Expense[];payroll:PayrollPayment[]},start:number,end:number):DashboardTotals=>{
  const appointments=input.appointments.filter(row=>inRange(row.startsAt,start,end));
@@ -34,7 +34,7 @@ const totals=(input:{appointments:Appointment[];payments:Payment[];expenses:Expe
 };
 export function buildBusinessDashboardReport(input:{appointments:Appointment[];payments:Payment[];expenses:Expense[];payroll:PayrollPayment[];period:DashboardPeriod;now?:Date}):BusinessDashboardReport{
  const now=input.now??new Date();
- const end=now.getTime();
+ const end=now.getTime()+1;
  const days=Number(input.period);
  const duration=days*24*60*60*1000;
  const start=end-duration;
@@ -47,9 +47,9 @@ export function buildBusinessDashboardReport(input:{appointments:Appointment[];p
   const key=monthKey(date);
   const monthStart=date.getTime();
   const nextMonth=new Date(date.getFullYear(),date.getMonth()+1,1).getTime();
-  const monthPayments=input.payments.filter(row=>inRange(row.paidAt,monthStart,nextMonth-1));
-  const monthExpenses=input.expenses.filter(row=>inRange(row.incurredAt,monthStart,nextMonth-1));
-  const monthPayroll=input.payroll.filter(row=>inRange(row.paidAt,monthStart,nextMonth-1));
+  const monthPayments=input.payments.filter(row=>inRange(row.paidAt,monthStart,nextMonth));
+  const monthExpenses=input.expenses.filter(row=>inRange(row.incurredAt,monthStart,nextMonth));
+  const monthPayroll=input.payroll.filter(row=>inRange(row.paidAt,monthStart,nextMonth));
   return {key,revenue:monthPayments.reduce((sum,row)=>sum+row.amount,0),expenses:monthExpenses.reduce((sum,row)=>sum+row.amount,0)+monthPayroll.reduce((sum,row)=>sum+row.amount,0)};
  });
  return {current,previous,revenueChange,trend};
