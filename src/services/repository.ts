@@ -190,7 +190,7 @@ function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:
   const end=new Date(startsAt.getTime()+durationMinutes*60_000-1);
   const startParts=format(startsAt),endParts=format(end);
   if(startParts.weekday!==endParts.weekday)return "The service must finish before the business closes.";
-  const hours=business.workingHours?.[days.indexOf(startParts.weekday) as keyof WeeklySchedule];
+  const hours=business.workingHours?.[startParts.weekday as keyof WeeklySchedule];
   if(!hours||!hours.enabled)return "The business is closed on the selected day.";
   const toMinutes=(value:string)=>{const [h,m]=value.split(":").map(Number);return h*60+m;};
   if(startParts.minute<toMinutes(hours.start)||endParts.minute>=toMinutes(hours.end))return "Choose a time within the business opening hours.";
