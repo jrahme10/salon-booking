@@ -87,7 +87,7 @@ class DemoRepository implements SalonRepository {
     if(event.action==="granted"&&!event.customerConfirmed)throw new Error("Record consent only after the customer has explicitly agreed.");
     if(!event.note?.trim()&&event.action==="granted"&&event.source==="other")throw new Error("Add a note describing how the customer gave consent.");
     const events=[...this.state.customerConsentEvents,copy({...event,note:event.note?.trim()||undefined})];
-    const latest=events.filter(row=>row.customerId===event.customerId).sort((a,b)=>a.capturedAt.localeCompare(b.capturedAt)).at(-1)!;
+    const latest=events.filter(row=>row.customerId===event.customerId).sort((a,b)=>a.capturedAt.localeCompare(b.capturedAt)).slice(-1)[0];
     this.commit({...this.state,customerConsentEvents:events,customers:this.state.customers.map(customer=>customer.id===event.customerId?{...customer,marketingOptIn:latest.action==="granted",marketingOptInUpdatedAt:latest.capturedAt}:customer)});
   }
   async getCustomerReminders(){return copy(this.state.customerReminders);}
