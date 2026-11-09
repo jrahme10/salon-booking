@@ -1,9 +1,10 @@
 import * as demo from "../data/mock";
 import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
-import type {Appointment,Business,ClientAppointmentRequest,Customer,Employee,Service} from "../types";
+import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,Customer,Employee,Service,WeeklySchedule} from "../types";
 
 export interface SalonRepository {
   getBusiness():Promise<Business>;
+  updateBusiness(business:Business):Promise<void>;
   getServices():Promise<Service[]>;
   getEmployees():Promise<Employee[]>;
   getCustomers():Promise<Customer[]>;
@@ -22,10 +23,10 @@ export interface SalonRepository {
   updateEmployee(employee:Employee):Promise<void>;
   deleteEmployee(id:string):Promise<void>;
 }
-type StoredState={appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[]};
+type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[]};
 const STORAGE_KEY="salon-reservation-demo-v1";
 const copy=<T,>(value:T):T=>JSON.parse(JSON.stringify(value)) as T;
-const seed=():StoredState=>({appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[]});
+const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[]});
 
 class DemoRepository implements SalonRepository {
   private state:StoredState;
@@ -35,7 +36,7 @@ class DemoRepository implements SalonRepository {
       const parsed=saved?JSON.parse(saved) as Partial<StoredState>:{};
       const defaults=seed();
       const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
-      this.state={appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests};
+      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{...defaults.business.bookingRules,...parsed.business?.bookingRules}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests};
     } catch { this.state=seed(); }
   }
   private persist(){
@@ -43,7 +44,13 @@ class DemoRepository implements SalonRepository {
     catch { throw new Error("Your browser could not save the changes. Check available storage and try again."); }
   }
   private commit(next:StoredState){const previous=this.state;this.state=next;try{this.persist();}catch(error){this.state=previous;throw error;}}
-  async getBusiness(){return copy(demo.business);}
+  async getBusiness(){return copy(this.state.business);}
+  async updateBusiness(business:Business){
+    this.assertBusiness(business);
+    const future=this.state.appointments.filter(row=>(row.status==="pending"||row.status==="confirmed")&&new Date(row.startsAt).getTime()>Date.now());
+    for(const appointment of future){const service=this.state.services.find(row=>row.id===appointment.serviceId);if(service){const reason=validateBusinessWindow(business,new Date(appointment.startsAt),service.durationMinutes);if(reason)throw new Error("These hours would affect an existing appointment ("+appointment.id+"): "+reason);}}
+    this.commit({...this.state,business:copy(business)});
+  }
   async getServices(){return copy(this.state.services);}
   async getEmployees(){return copy(this.state.employees);}
   async getCustomers(){return copy(this.state.customers);}
@@ -68,7 +75,7 @@ class DemoRepository implements SalonRepository {
       const service=this.state.services.find(row=>row.id===appointment.serviceId);
       const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
       if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
-      const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+      const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);\n      const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
       if(reason) throw new Error(reason);
     }
     this.commit({...this.state,clientRequests:[...this.state.clientRequests,copy(request)]});
@@ -89,7 +96,7 @@ class DemoRepository implements SalonRepository {
         const service=this.state.services.find(row=>row.id===appointment.serviceId);
         const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
         if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
-        const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+        const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);\n        const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments,services:this.state.services,excludeAppointmentId:appointment.id});
         if(reason) throw new Error("Cannot approve this time: "+reason);
         appointments=appointments.map(row=>row.id===appointment.id?{...row,startsAt:request.requestedStartsAt!}:row).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
       }
@@ -122,7 +129,7 @@ class DemoRepository implements SalonRepository {
     if(customer.businessId&&customer.businessId!==appointment.businessId) throw new Error("The selected customer belongs to another business.");
     if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("New appointments must be pending or confirmed.");
     if(appointment.businessId!==demo.business.id) throw new Error("Invalid business for this appointment.");
-    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services});
+    const businessReason=validateBusinessWindow(this.state.business,new Date(appointment.startsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);\n    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services});
     if(reason) throw new Error(reason);
     this.commit({...this.state,appointments:[...this.state.appointments,copy(appointment)].sort((a,b)=>a.startsAt.localeCompare(b.startsAt))});
   }
@@ -162,7 +169,7 @@ class DemoRepository implements SalonRepository {
     if(this.state.appointments.some(row=>row.employeeId===id&&row.status!=="cancelled")) throw new Error("This team member is linked to appointments. Deactivate them instead.");
     this.commit({...this.state,employees:this.state.employees.filter(row=>row.id!==id)});
   }
-  private assertService(service:Service){
+  private assertBusiness(business:Business){\n    if(business.id!==this.state.business.id||!business.name.trim()||!business.slug.trim()||!business.category.trim()||!business.city.trim()||!business.address.trim())throw new Error("Complete the required business profile fields.");\n    if(business.phone&&!/^[+0-9() .-]{6,25}$/.test(business.phone))throw new Error("Enter a valid business phone number.");\n    if(business.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(business.email))throw new Error("Enter a valid business email address.");\n    try{new Intl.DateTimeFormat("en-US",{timeZone:business.timezone??"Asia/Beirut"}).format(new Date());}catch{throw new Error("Choose a valid IANA timezone.");}\n    for(const [day,hours] of Object.entries(business.workingHours??{})){if(hours.enabled&&(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.start)||!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.end)||hours.start>=hours.end))throw new Error("Check the business hours for "+day+".");}\n    const rules=business.bookingRules as BusinessBookingRules|undefined;if(!rules||![15,30,60].includes(rules.slotIntervalMinutes)||!Number.isInteger(rules.minimumNoticeHours)||rules.minimumNoticeHours<0||rules.minimumNoticeHours>720||!Number.isInteger(rules.cancellationNoticeHours)||rules.cancellationNoticeHours<0||rules.cancellationNoticeHours>720)throw new Error("Check your booking rules.");\n  }\n  private assertService(service:Service){
     if(service.businessId!==demo.business.id||!service.name.trim()||!service.category.trim()||!Number.isInteger(service.durationMinutes)||service.durationMinutes<5||service.durationMinutes>720||!Number.isFinite(service.price)||service.price<0) throw new Error("Enter a valid service name, category, duration and non-negative price.");
   }
   private assertEmployee(employee:Employee){
@@ -172,5 +179,22 @@ class DemoRepository implements SalonRepository {
   }
 }
 
-/** UI pages depend on this contract, not on a database SDK. Supabase can replace this adapter later. */
+
+function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:number,checkNotice=false):string|null{
+  if(!Number.isFinite(startsAt.getTime()))return "Choose a valid appointment time.";
+  const timezone=business.timezone??"Asia/Beirut";
+  const rules=business.bookingRules??{allowOnlineBooking:true,minimumNoticeHours:0,cancellationNoticeHours:24,slotIntervalMinutes:30};
+  if(checkNotice&&startsAt.getTime()<Date.now()+rules.minimumNoticeHours*3_600_000-60_000)return "This appointment does not meet the business minimum booking notice.";
+  const format=(date:Date)=>{const parts=new Intl.DateTimeFormat("en-US",{timeZone:timezone,weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(date);const value=(key:string)=>parts.find(part=>part.type===key)?.value??"";return {weekday:value("weekday").toLowerCase().slice(0,3),minute:Number(value("hour"))*60+Number(value("minute"))};};
+  const days=["sun","mon","tue","wed","thu","fri","sat"];
+  const end=new Date(startsAt.getTime()+durationMinutes*60_000-1);
+  const startParts=format(startsAt),endParts=format(end);
+  if(startParts.weekday!==endParts.weekday)return "The service must finish before the business closes.";
+  const hours=business.workingHours?.[days.indexOf(startParts.weekday) as keyof WeeklySchedule];
+  if(!hours||!hours.enabled)return "The business is closed on the selected day.";
+  const toMinutes=(value:string)=>{const [h,m]=value.split(":").map(Number);return h*60+m;};
+  if(startParts.minute<toMinutes(hours.start)||endParts.minute>=toMinutes(hours.end))return "Choose a time within the business opening hours.";
+  return null;
+}
+\n/** UI pages depend on this contract, not on a database SDK. Supabase can replace this adapter later. */
 export const salonRepository:SalonRepository=new DemoRepository();
