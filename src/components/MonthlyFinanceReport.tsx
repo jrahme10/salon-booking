@@ -1,20 +1,20 @@
 import {useMemo,useState} from "react";
 import {ArrowDownLeft,ArrowUpRight,CalendarDays,Wallet} from "lucide-react";
-import type {Business,Expense,Payment} from "../types";
+import type {Business,Expense,PayrollPayment,Payment} from "../types";
 import {buildMonthlyFinanceReport,previousMonth,recentMonths} from "../domain/monthly-finance";
 
-type Props={business:Business;payments:Payment[];expenses:Expense[]};
+type Props={business:Business;payments:Payment[];expenses:Expense[];payrollPayments:PayrollPayment[]};
 const money=(value:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(value);
 const currentMonth=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;};
 const monthLabel=(month:string,style:"long"|"short"="long")=>new Date(Number(month.slice(0,4)),Number(month.slice(5,7))-1,1).toLocaleDateString(undefined,{month:style,year:"numeric"});
 const categoryNames:Record<string,string>={rent:"Rent",salary:"Salaries",supplies:"Supplies",utilities:"Utilities",maintenance:"Maintenance",marketing:"Marketing",other:"Other"};
 const methodNames:Record<string,string>={cash:"Cash",card:"Card",bank_transfer:"Bank transfer",other:"Other"};
 
-export function MonthlyFinanceReport({business,payments,expenses}:Props){
+export function MonthlyFinanceReport({business,payments,expenses,payrollPayments}:Props){
  const [month,setMonth]=useState(currentMonth());
- const report=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,month),[payments,expenses,month]);
- const previous=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,previousMonth(month)),[payments,expenses,month]);
- const trend=useMemo(()=>recentMonths(month,6).map(key=>({key,...buildMonthlyFinanceReport(payments,expenses,key)})),[payments,expenses,month]);
+ const report=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,month,payrollPayments),[payments,expenses,payrollPayments,month]);
+ const previous=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,previousMonth(month),payrollPayments),[payments,expenses,month]);
+ const trend=useMemo(()=>recentMonths(month,6).map(key=>({key,...buildMonthlyFinanceReport(payments,expenses,key,payrollPayments)})),[payments,expenses,month]);
  const maxTrend=Math.max(1,...trend.map(row=>Math.max(row.income,row.expenses)));
  const maxExpense=Math.max(1,...Object.values(report.expensesByCategory));
  const maxMethod=Math.max(1,...Object.values(report.paymentsByMethod));
