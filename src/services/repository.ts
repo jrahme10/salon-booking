@@ -70,12 +70,14 @@ class DemoRepository implements SalonRepository {
     if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("Only active appointments can be changed.");
     if(new Date(appointment.startsAt).getTime()<=Date.now()) throw new Error("Requests are only available for future appointments.");
     if(this.state.clientRequests.some(row=>row.appointmentId===request.appointmentId&&row.status==="pending")) throw new Error("There is already a request waiting for this appointment.");
-    if(request.kind==="cancellation"&&new Date(appointment.startsAt).getTime()<Date.now()+(this.state.business.bookingRules?.cancellationNoticeHours??0)*3_600_000)throw new Error("The cancellation notice period has passed. Please contact the salon directly.");\n    if(request.kind==="reschedule"){
+    if(request.kind==="cancellation"&&new Date(appointment.startsAt).getTime()<Date.now()+(this.state.business.bookingRules?.cancellationNoticeHours??0)*3_600_000)throw new Error("The cancellation notice period has passed. Please contact the salon directly.");
+    if(request.kind==="reschedule"){
       if(!request.requestedStartsAt) throw new Error("Choose a new date and time.");
       const service=this.state.services.find(row=>row.id===appointment.serviceId);
       const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
       if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
-      const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);\n      const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+      const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);
+      const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
       if(reason) throw new Error(reason);
     }
     this.commit({...this.state,clientRequests:[...this.state.clientRequests,copy(request)]});
@@ -96,7 +98,8 @@ class DemoRepository implements SalonRepository {
         const service=this.state.services.find(row=>row.id===appointment.serviceId);
         const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
         if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
-        const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);\n        const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+        const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);
+        const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments,services:this.state.services,excludeAppointmentId:appointment.id});
         if(reason) throw new Error("Cannot approve this time: "+reason);
         appointments=appointments.map(row=>row.id===appointment.id?{...row,startsAt:request.requestedStartsAt!}:row).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
       }
@@ -129,7 +132,8 @@ class DemoRepository implements SalonRepository {
     if(customer.businessId&&customer.businessId!==appointment.businessId) throw new Error("The selected customer belongs to another business.");
     if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("New appointments must be pending or confirmed.");
     if(appointment.businessId!==demo.business.id) throw new Error("Invalid business for this appointment.");
-    const businessReason=validateBusinessWindow(this.state.business,new Date(appointment.startsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);\n    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services});
+    const businessReason=validateBusinessWindow(this.state.business,new Date(appointment.startsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);
+    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services});
     if(reason) throw new Error(reason);
     this.commit({...this.state,appointments:[...this.state.appointments,copy(appointment)].sort((a,b)=>a.startsAt.localeCompare(b.startsAt))});
   }
@@ -169,7 +173,15 @@ class DemoRepository implements SalonRepository {
     if(this.state.appointments.some(row=>row.employeeId===id&&row.status!=="cancelled")) throw new Error("This team member is linked to appointments. Deactivate them instead.");
     this.commit({...this.state,employees:this.state.employees.filter(row=>row.id!==id)});
   }
-  private assertBusiness(business:Business){\n    if(business.id!==this.state.business.id||!business.name.trim()||!business.slug.trim()||!business.category.trim()||!business.city.trim()||!business.address.trim())throw new Error("Complete the required business profile fields.");\n    if(business.phone&&!/^[+0-9() .-]{6,25}$/.test(business.phone))throw new Error("Enter a valid business phone number.");\n    if(business.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(business.email))throw new Error("Enter a valid business email address.");\n    try{new Intl.DateTimeFormat("en-US",{timeZone:business.timezone??"Asia/Beirut"}).format(new Date());}catch{throw new Error("Choose a valid IANA timezone.");}\n    for(const [day,hours] of Object.entries(business.workingHours??{})){if(hours.enabled&&(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.start)||!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.end)||hours.start>=hours.end))throw new Error("Check the business hours for "+day+".");}\n    const rules=business.bookingRules as BusinessBookingRules|undefined;if(!rules||![15,30,60].includes(rules.slotIntervalMinutes)||!Number.isInteger(rules.minimumNoticeHours)||rules.minimumNoticeHours<0||rules.minimumNoticeHours>720||!Number.isInteger(rules.cancellationNoticeHours)||rules.cancellationNoticeHours<0||rules.cancellationNoticeHours>720)throw new Error("Check your booking rules.");\n  }\n  private assertService(service:Service){
+  private assertBusiness(business:Business){
+    if(business.id!==this.state.business.id||!business.name.trim()||!business.slug.trim()||!business.category.trim()||!business.city.trim()||!business.address.trim())throw new Error("Complete the required business profile fields.");
+    if(business.phone&&!/^[+0-9() .-]{6,25}$/.test(business.phone))throw new Error("Enter a valid business phone number.");
+    if(business.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(business.email))throw new Error("Enter a valid business email address.");
+    try{new Intl.DateTimeFormat("en-US",{timeZone:business.timezone??"Asia/Beirut"}).format(new Date());}catch{throw new Error("Choose a valid IANA timezone.");}
+    for(const [day,hours] of Object.entries(business.workingHours??{})){if(hours.enabled&&(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.start)||!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.end)||hours.start>=hours.end))throw new Error("Check the business hours for "+day+".");}
+    const rules=business.bookingRules as BusinessBookingRules|undefined;if(!rules||![15,30,60].includes(rules.slotIntervalMinutes)||!Number.isInteger(rules.minimumNoticeHours)||rules.minimumNoticeHours<0||rules.minimumNoticeHours>720||!Number.isInteger(rules.cancellationNoticeHours)||rules.cancellationNoticeHours<0||rules.cancellationNoticeHours>720)throw new Error("Check your booking rules.");
+  }
+  private assertService(service:Service){
     if(service.businessId!==demo.business.id||!service.name.trim()||!service.category.trim()||!Number.isInteger(service.durationMinutes)||service.durationMinutes<5||service.durationMinutes>720||!Number.isFinite(service.price)||service.price<0) throw new Error("Enter a valid service name, category, duration and non-negative price.");
   }
   private assertEmployee(employee:Employee){
@@ -196,5 +208,6 @@ function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:
   if(startParts.minute<toMinutes(hours.start)||endParts.minute>=toMinutes(hours.end))return "Choose a time within the business opening hours.";
   return null;
 }
-\n/** UI pages depend on this contract, not on a database SDK. Supabase can replace this adapter later. */
+
+/** UI pages depend on this contract, not on a database SDK. Supabase can replace this adapter later. */
 export const salonRepository:SalonRepository=new DemoRepository();
