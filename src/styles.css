@@ -37,3 +37,23 @@
 }
 .cancel-action{margin-left:5px;border-color:#eadbd8;background:#fbf1ef;color:#98635e}
 .empty{padding:22px;text-align:center;color:var(--muted);font-size:11px}
+
+/* Appointment creation dialog */
+.dialog-backdrop{position:fixed;inset:0;z-index:30;background:#1d261f77;display:grid;place-items:center;padding:18px;backdrop-filter:blur(3px)}
+.booking-dialog{width:min(100%,520px);max-height:calc(100vh - 36px);overflow:auto;background:#fff;border-radius:16px;padding:25px;box-shadow:0 24px 80px #17251c33}
+.dialog-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:20px}
+.dialog-head small{font-size:9px;letter-spacing:1.5px;color:#839080;font-weight:700}
+.dialog-head h2{font:600 25px var(--serif);margin:6px 0}
+.dialog-head p{font-size:11px;color:var(--muted);margin:0}
+.dialog-close{border:0;background:#f2f3ef;border-radius:50%;width:32px;height:32px;font-size:22px;color:#687267}
+.booking-dialog form>label,.dialog-fields label{display:block;font-size:10px;font-weight:600;color:#565d54;margin:13px 0}
+.booking-dialog select,.booking-dialog input{display:block;width:100%;height:42px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 11px;margin-top:6px;color:#343a34;font-size:11px}
+.dialog-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.booking-summary{display:grid;grid-template-columns:1fr auto;gap:4px;background:#f2f5f0;border-radius:9px;padding:13px;margin-top:16px}
+.booking-summary span{font-size:10px;color:#687568}.booking-summary b{font:600 20px var(--serif);color:var(--green)}
+.booking-summary small{grid-column:1/-1;font-size:9px;color:#879084}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.secondary{border:1px solid var(--line);background:#fff;color:#666;border-radius:8px;padding:10px 15px;font-size:10px}
+.dialog-actions .primary:disabled{opacity:.65;cursor:wait}
+.dialog-error{font-size:10px;color:#a34e47;background:#fbefed;padding:9px 11px;border-radius:7px}
+@media(max-width:520px){.booking-dialog{padding:19px}.dialog-fields{gap:8px}}
