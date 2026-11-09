@@ -119,14 +119,14 @@ This is an active development preview, not a production service. Demo records ar
 - Follow-up reminders can be created for any customer with a due date and note, then marked complete. Reminder records persist in the browser demo repository.
 - The inactive-customer campaign targets customers with no completed visit in the last 60 days and no future pending or confirmed appointment, and includes only customers whose promotional consent is explicitly recorded on their profile.
 - Campaign messages support `{name}` and `{business}` personalization tokens, are saved as a browser-local draft and previewed per eligible customer.
-- Birthday greetings and inactive-customer campaign links open prefilled WhatsApp or email messages for manual review. The app does not send messages automatically; an approved messaging provider and server-side consent/opt-out handling are required before automated delivery.
+- Birthday greetings, follow-up reminders and inactive-customer campaign links open prefilled WhatsApp or email messages for manual review. The app does not send messages automatically; an approved messaging provider and server-side consent/opt-out handling are required before automated delivery.
 - Customer birthday, marketing-consent, and reminder records remain local to the current browser until Supabase persistence and access controls are connected.
 
 
 ### Free-first customer messaging
 
 - Birthday greetings, follow-up reminders and inactive-customer campaign links use shared message-template helpers and open prefilled WhatsApp/email messages for manual review.
-- Promotional WhatsApp actions are gated by the customer's explicit marketing opt-in flag.
+- Promotional actions require the latest recorded consent event to grant permission for the specific channel. Consent records include channel, source, timestamp and optional evidence note; grant and opt-out events are retained as an append-only history. Legacy opt-in booleans without an audit event do not qualify.
 - Owners can enable browser notifications for due follow-up reminders. Permission is requested only after clicking the enable control; duplicate alerts are suppressed in browser storage.
 - Browser alerts work only while the app is open. This free-first workflow does not send messages automatically or run while the app is closed. Reliable scheduled delivery requires a backend scheduler and an approved messaging provider; WhatsApp Business Platform fees may apply.
 - Reminder and consent data remains browser-local until Supabase persistence and access controls are connected.
