@@ -1,6 +1,6 @@
 import {useEffect,useState} from "react";
 import {NavLink,Route,Routes,useLocation} from "react-router-dom";
-import {Activity,CalendarDays,CalendarRange,Check,ChevronDown,CreditCard,LayoutDashboard,MapPin,Plus,Search,Scissors,Settings,Star,Users,Wallet,Bell,Clock3,ArrowUpRight} from "lucide-react";
+import {Activity,CalendarDays,CalendarRange,ChevronDown,CreditCard,LayoutDashboard,MapPin,Plus,Search,Scissors,Settings,Star,Users,Wallet,Bell,Clock3} from "lucide-react";
 import {salonRepository} from "./services/repository";
 import type {Appointment,Business,Customer,Employee,Service} from "./types";
 type Data={business:Business;services:Service[];employees:Employee[];customers:Customer[];appointments:Appointment[]};
