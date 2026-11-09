@@ -1,31 +1,42 @@
 # Salon Reservation
 
-A salon and beauty-business platform for Lebanon, designed for international expansion. It combines a provider workspace, client discovery marketplace and independent public booking pages.
+A salon management and appointment discovery platform for Lebanon, designed to expand internationally.
 
-## Frontend foundation
-- React + TypeScript + Vite
-- React Router
-- Provider workspace: overview, calendar, bookings, services, team, customers, analytics, finances and settings
-- Client discovery preview
-- Typed domain models and replaceable repository abstraction
+## Current implementation
+
+- React + TypeScript + Vite frontend
+- Provider workspace with overview, calendar, bookings, services, team, customers, analytics, finances and settings routes
+- Client-side marketplace preview
+- Typed repository interface separating UI pages from persistence
+- Local demo repository with browser persistence for appointment status changes
+- Responsive layouts for desktop and mobile
 
 ## Run locally
+
 ```bash
 npm install
 npm run dev
-npm run build
 ```
 
-## Backend strategy
-Supabase setup is intentionally postponed. The UI uses `SalonRepository` and a demo adapter so a Supabase implementation can be introduced later without coupling pages to database calls. Never expose service-role or secret keys in browser code.
+Create a production build:
 
-## Product requirements
-- Multiple employees and future multiple business locations
-- Provider manually confirms appointment requests
-- Manual payment recording (cash, card, bank transfer, other); no online payment gateway initially
-- USD and LBP support for Lebanon
-- English and Arabic/RTL planned
-- Tenant isolation and role permissions must be enforced before production data is enabled
+```bash
+npm run build
+npm run preview
+```
 
-## Release status
-This branch is a frontend foundation, not yet a production release. Authentication, onboarding, full booking flow, shared persistence, secure availability/concurrency, role permissions, notifications, financial ledger, automated tests and deployment configuration remain to be implemented and verified.
+## Architecture direction
+
+The current repository adapter uses local demo data so the frontend can be developed before the Supabase project is available. Supabase will be introduced behind the repository contracts; UI components should not call the Supabase SDK directly.
+
+Planned backend foundations:
+- Supabase Auth for client, employee and business-owner identities
+- PostgreSQL with tenant-aware Row Level Security
+- Business locations, services, employees, schedules and appointment records
+- Server-side booking availability and conflict prevention
+- Storage policies for provider imagery
+- Realtime updates for booking status and calendar changes
+
+## Important status
+
+This is an active development branch, not a production deployment. Demo records are not shared across devices, authentication is not connected, and booking availability must be enforced server-side before real customers can book. Do not use the demo repository for real customer or payment data.
