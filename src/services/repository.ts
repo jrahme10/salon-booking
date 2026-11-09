@@ -237,6 +237,7 @@ class DemoRepository implements SalonRepository {
   private assertEmployee(employee:Employee){
     if(employee.businessId!==demo.business.id||!employee.name.trim()||!employee.role.trim()) throw new Error("Enter a team member name and role.");
     if(employee.commissionValue!==undefined&&(!Number.isFinite(employee.commissionValue)||employee.commissionValue<0||(employee.commissionType==="percentage"&&employee.commissionValue>100)))throw new Error("Enter a valid commission rate (0–100% or a non-negative fixed amount).");
+    if(employee.commissionValue!==undefined&&(!Number.isFinite(employee.commissionValue)||employee.commissionValue<0||(employee.commissionType==="percentage"&&employee.commissionValue>100)))throw new Error("Enter a valid commission rate (0–100% or a non-negative fixed amount).");
     if(employee.serviceIds?.some(id=>!this.state.services.some(service=>service.id===id))) throw new Error("Choose services that exist in this business.");
     for(const [day,hours] of Object.entries(employee.workingHours??{})){if(hours.enabled&&(!/^([01]\d|2[0-3]):[0-5]\d$/.test(hours.start)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(hours.end)||hours.start>=hours.end)) throw new Error(`Check the working hours for ${day}.`);}
   }
