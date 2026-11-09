@@ -9,6 +9,7 @@ export interface SalonRepository {
   getCustomers():Promise<Customer[]>;
   getAppointments():Promise<Appointment[]>;
   updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void>;
+  updateAppointment(appointment:Appointment):Promise<void>;
   createAppointment(appointment:Appointment):Promise<void>;
   createCustomer(customer:Customer):Promise<Customer>;
   createService(service:Service):Promise<void>;
@@ -50,6 +51,22 @@ class DemoRepository implements SalonRepository {
     const allowed:Record<Appointment["status"],Appointment["status"][]>={pending:["confirmed","cancelled"],confirmed:["completed","cancelled"],completed:[],cancelled:[]};
     if(!allowed[current.status].includes(status)) throw new Error("This appointment status cannot be changed in that way.");
     this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
+  }
+  async updateAppointment(appointment:Appointment){
+    const current=this.state.appointments.find(row=>row.id===appointment.id);
+    if(!current) throw new Error("Appointment was not found.");
+    if(current.status!=="pending"&&current.status!=="confirmed") throw new Error("Only pending or confirmed appointments can be edited.");
+    if(appointment.status!==current.status) throw new Error("Appointment status cannot be changed while editing.");
+    if(appointment.businessId!==current.businessId||appointment.businessId!==demo.business.id) throw new Error("Invalid business for this appointment.");
+    const service=this.state.services.find(row=>row.id===appointment.serviceId);
+    const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+    const customer=this.state.customers.find(row=>row.id===appointment.customerId);
+    if(!service||!employee||!customer) throw new Error("Choose an existing customer, service and team member.");
+    if(customer.businessId&&customer.businessId!==appointment.businessId) throw new Error("The selected customer belongs to another business.");
+    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+    if(reason) throw new Error(reason);
+    const updated={...current,customerId:appointment.customerId,serviceId:appointment.serviceId,employeeId:appointment.employeeId,startsAt:appointment.startsAt};
+    this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===appointment.id?updated:row).sort((a,b)=>a.startsAt.localeCompare(b.startsAt))});
   }
   async createAppointment(appointment:Appointment){
     if(this.state.appointments.some(row=>row.id===appointment.id)) throw new Error("Appointment already exists.");
