@@ -1,6 +1,6 @@
 import * as demo from "../data/mock";
 import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
-import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,CommissionEntry,Customer,CustomerReminder,CustomerReminderStatus,Employee,Expense,PayrollPayment,Payment,Service,WeeklySchedule} from "../types";
+import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,CommissionEntry,Customer,CustomerConsentEvent,CustomerReminder,CustomerReminderStatus,Employee,Expense,PayrollPayment,Payment,Service,WeeklySchedule} from "../types";
 import {validateExpense,validatePayment} from "../domain/finance";
 import {calculateCommission} from "../domain/commission";
 
@@ -11,6 +11,8 @@ export interface SalonRepository {
   getEmployees():Promise<Employee[]>;
   getCustomers():Promise<Customer[]>;
   updateCustomer(customer:Customer):Promise<void>;
+  getCustomerConsentEvents():Promise<CustomerConsentEvent[]>;
+  recordCustomerConsent(event:CustomerConsentEvent):Promise<void>;
   getCustomerReminders():Promise<CustomerReminder[]>;
   createCustomerReminder(reminder:CustomerReminder):Promise<void>;
   updateCustomerReminder(id:string,status:CustomerReminderStatus):Promise<void>;
@@ -36,10 +38,10 @@ export interface SalonRepository {
   updateEmployee(employee:Employee):Promise<void>;
   deleteEmployee(id:string):Promise<void>;
 }
-type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];customerReminders:CustomerReminder[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[];commissionEntries:CommissionEntry[];payrollPayments:PayrollPayment[]};
+type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];customerConsentEvents:CustomerConsentEvent[];customerReminders:CustomerReminder[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[];commissionEntries:CommissionEntry[];payrollPayments:PayrollPayment[]};
 const STORAGE_KEY="salon-reservation-demo-v1";
 const copy=<T,>(value:T):T=>JSON.parse(JSON.stringify(value)) as T;
-const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),customerReminders:[],clientRequests:[],payments:[],expenses:[],commissionEntries:[],payrollPayments:[]});
+const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),customerConsentEvents:[],customerReminders:[],clientRequests:[],payments:[],expenses:[],commissionEntries:[],payrollPayments:[]});
 
 class DemoRepository implements SalonRepository {
   private state:StoredState;
@@ -49,7 +51,7 @@ class DemoRepository implements SalonRepository {
       const parsed=saved?JSON.parse(saved) as Partial<StoredState>:{};
       const defaults=seed();
       const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
-      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,customerReminders:Array.isArray(parsed.customerReminders)?parsed.customerReminders:[],clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses,commissionEntries:Array.isArray(parsed.commissionEntries)?parsed.commissionEntries:[],payrollPayments:Array.isArray(parsed.payrollPayments)?parsed.payrollPayments:[]};
+      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,customerConsentEvents:Array.isArray(parsed.customerConsentEvents)?parsed.customerConsentEvents:[],customerReminders:Array.isArray(parsed.customerReminders)?parsed.customerReminders:[],clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses,commissionEntries:Array.isArray(parsed.commissionEntries)?parsed.commissionEntries:[],payrollPayments:Array.isArray(parsed.payrollPayments)?parsed.payrollPayments:[]};
     } catch { this.state=seed(); }
   }
   private persist(){
@@ -76,6 +78,17 @@ class DemoRepository implements SalonRepository {
     if(customer.birthday){const [year,month,day]=customer.birthday.split("-").map(Number);const date=new Date(year,month-1,day);if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)throw new Error("Enter a valid birthday.");}
     if(this.state.customers.some(row=>row.id!==customer.id&&row.phone.replace(/\D/g,"")===phone&&phone.length>=6))throw new Error("Another customer already uses this phone number.");
     this.commit({...this.state,customers:this.state.customers.map(row=>row.id===customer.id?{...customer,name:customer.name.trim(),phone:customer.phone.trim(),email:customer.email.trim()}:row)});
+  }
+  async getCustomerConsentEvents(){return copy(this.state.customerConsentEvents);}
+  async recordCustomerConsent(event:CustomerConsentEvent){
+    if(this.state.customerConsentEvents.some(row=>row.id===event.id))throw new Error("This consent record already exists.");
+    if(event.businessId!==this.state.business.id||!this.state.customers.some(row=>row.id===event.customerId))throw new Error("Choose a customer from this business.");
+    if(!Number.isFinite(new Date(event.capturedAt).getTime()))throw new Error("A valid consent date is required.");
+    if(event.action==="granted"&&!event.customerConfirmed)throw new Error("Record consent only after the customer has explicitly agreed.");
+    if(!event.note?.trim()&&event.action==="granted"&&event.source==="other")throw new Error("Add a note describing how the customer gave consent.");
+    const events=[...this.state.customerConsentEvents,copy({...event,note:event.note?.trim()||undefined})];
+    const latest=events.filter(row=>row.customerId===event.customerId).sort((a,b)=>a.capturedAt.localeCompare(b.capturedAt)).at(-1)!;
+    this.commit({...this.state,customerConsentEvents:events,customers:this.state.customers.map(customer=>customer.id===event.customerId?{...customer,marketingOptIn:latest.action==="granted",marketingOptInUpdatedAt:latest.capturedAt}:customer)});
   }
   async getCustomerReminders(){return copy(this.state.customerReminders);}
   async createCustomerReminder(reminder:CustomerReminder){
