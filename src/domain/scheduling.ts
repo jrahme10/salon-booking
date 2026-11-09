@@ -64,3 +64,17 @@ export function getAvailableSlots(input:{date:string;service:Service;employee:Em
   }
   return slots;
 }
+\n
+export function isWithinBusinessHours(business:import("../types").Business,startsAt:Date,durationMinutes:number,now=new Date()):boolean{
+  if(!Number.isFinite(startsAt.getTime()))return false;
+  const timezone=business.timezone??"Asia/Beirut";
+  const format=(date:Date)=>{const parts=new Intl.DateTimeFormat("en-US",{timeZone:timezone,weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(date);const value=(key:string)=>parts.find(part=>part.type===key)?.value??"";return {weekday:value("weekday").toLowerCase().slice(0,3),minute:Number(value("hour"))*60+Number(value("minute"))};};
+  const end=new Date(startsAt.getTime()+durationMinutes*60_000-1),startParts=format(startsAt),endParts=format(end);
+  if(startParts.weekday!==endParts.weekday)return false;
+  const day=business.workingHours?.[startParts.weekday as Weekday];
+  if(!day||!day.enabled||!isTime(day.start)||!isTime(day.end)||day.start>=day.end)return false;
+  if(startParts.minute<minutes(day.start)||endParts.minute>=minutes(day.end))return false;
+  const rules=business.bookingRules;
+  if(rules&&startsAt.getTime()<now.getTime()+rules.minimumNoticeHours*3_600_000-60_000)return false;
+  return true;
+}
