@@ -1,8 +1,8 @@
 import {useMemo,useState} from "react";
 import {ArrowDownLeft,ArrowUpRight,CreditCard,Plus,Wallet} from "lucide-react";
-import type {Appointment,Business,Customer,Employee,Expense,Payment,Service} from "../types";
+import type {Appointment,Business,Customer,Expense,Payment,Service} from "../types";
 
-type Props={business:Business;appointments:Appointment[];services:Service[];customers:Customer[];employees:Employee[];payments:Payment[];expenses:Expense[];onPayment:(payment:Payment)=>Promise<void>;onExpense:(expense:Expense)=>Promise<void>};
+type Props={business:Business;appointments:Appointment[];services:Service[];customers:Customer[];payments:Payment[];expenses:Expense[];onPayment:(payment:Payment)=>Promise<void>;onExpense:(expense:Expense)=>Promise<void>};
 const money=(value:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(value);
 const today=()=>new Date().toISOString().slice(0,10);
 const methods=[["cash","Cash"],["card","Card"],["bank_transfer","Bank transfer"],["other","Other"]] as const;
