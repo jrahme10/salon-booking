@@ -1,6 +1,6 @@
 import * as demo from "../data/mock";
 import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
-import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,Customer,Employee,Expense,Payment,Service,WeeklySchedule} from "../types";
+import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,CommissionEntry,Customer,Employee,Expense,PayrollPayment,Payment,Service,WeeklySchedule} from "../types";
 import {validateExpense,validatePayment} from "../domain/finance";
 
 export interface SalonRepository {
@@ -12,6 +12,9 @@ export interface SalonRepository {
   getAppointments():Promise<Appointment[]>;
   getPayments():Promise<Payment[]>;
   getExpenses():Promise<Expense[]>;
+  getCommissionEntries():Promise<CommissionEntry[]>;
+  getPayrollPayments():Promise<PayrollPayment[]>;
+  createPayrollPayment(payment:PayrollPayment):Promise<void>;
   createPayment(payment:Payment):Promise<void>;
   createExpense(expense:Expense):Promise<void>;
   updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void>;
@@ -28,10 +31,10 @@ export interface SalonRepository {
   updateEmployee(employee:Employee):Promise<void>;
   deleteEmployee(id:string):Promise<void>;
 }
-type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[]};
+type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[];commissionEntries:CommissionEntry[];payrollPayments:PayrollPayment[]};
 const STORAGE_KEY="salon-reservation-demo-v1";
 const copy=<T,>(value:T):T=>JSON.parse(JSON.stringify(value)) as T;
-const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[],payments:[],expenses:[]});
+const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[],payments:[],expenses:[],commissionEntries:[],payrollPayments:[]});
 
 class DemoRepository implements SalonRepository {
   private state:StoredState;
@@ -41,7 +44,7 @@ class DemoRepository implements SalonRepository {
       const parsed=saved?JSON.parse(saved) as Partial<StoredState>:{};
       const defaults=seed();
       const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
-      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses};
+      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses,commissionEntries:Array.isArray(parsed.commissionEntries)?parsed.commissionEntries:[],payrollPayments:Array.isArray(parsed.payrollPayments)?parsed.payrollPayments:[]};
     } catch { this.state=seed(); }
   }
   private persist(){
@@ -65,11 +68,33 @@ class DemoRepository implements SalonRepository {
     if(!current) throw new Error("Appointment was not found.");
     const allowed:Record<Appointment["status"],Appointment["status"][]>={pending:["confirmed","cancelled"],confirmed:["completed","cancelled"],completed:[],cancelled:[]};
     if(!allowed[current.status].includes(status)) throw new Error("This appointment status cannot be changed in that way.");
-    this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
+    let commissionEntries=this.state.commissionEntries;
+    if(status==="completed"){
+      const employee=this.state.employees.find(row=>row.id===current.employeeId);
+      const service=this.state.services.find(row=>row.id===current.serviceId);
+      const type=employee?.commissionType??"percentage";
+      const value=employee?.commissionValue??0;
+      if(employee&&service&&value>0&&!commissionEntries.some(row=>row.appointmentId===id)){
+        const amount=type==="percentage"?service.price*value/100:value;
+        commissionEntries=[...commissionEntries,{id:"com-"+id,businessId:current.businessId,appointmentId:id,employeeId:employee.id,serviceName:service.name,baseAmount:service.price,commissionType:type,commissionValue:value,amount:Number(amount.toFixed(2)),earnedAt:new Date().toISOString()}];
+      }
+    }
+    this.commit({...this.state,commissionEntries,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
   }
 
   async getPayments(){return copy(this.state.payments);}
   async getExpenses(){return copy(this.state.expenses);}
+  async getCommissionEntries(){return copy(this.state.commissionEntries);}
+  async getPayrollPayments(){return copy(this.state.payrollPayments);}
+  async createPayrollPayment(payment:PayrollPayment){
+    if(this.state.payrollPayments.some(row=>row.id===payment.id))throw new Error("Payroll payment already exists.");
+    if(payment.businessId!==this.state.business.id||!Number.isFinite(payment.amount)||payment.amount<=0)throw new Error("Enter a valid payroll payment.");
+    if(!this.state.employees.some(row=>row.id===payment.employeeId))throw new Error("Choose a valid team member.");
+    const earned=this.state.commissionEntries.filter(row=>row.employeeId===payment.employeeId).reduce((sum,row)=>sum+row.amount,0);
+    const paid=this.state.payrollPayments.filter(row=>row.employeeId===payment.employeeId).reduce((sum,row)=>sum+row.amount,0);
+    if(payment.amount>earned-paid+0.0001)throw new Error("This payment is higher than the employee's unpaid commission balance.");
+    this.commit({...this.state,payrollPayments:[...this.state.payrollPayments,copy(payment)]});
+  }
   async createPayment(payment:Payment){
     if(this.state.payments.some(row=>row.id===payment.id))throw new Error("Payment already exists.");
     const appointment=this.state.appointments.find(row=>row.id===payment.appointmentId);
