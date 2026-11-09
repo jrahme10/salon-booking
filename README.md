@@ -121,3 +121,12 @@ This is an active development preview, not a production service. Demo records ar
 - Campaign messages support `{name}` and `{business}` personalization tokens, are saved as a browser-local draft and previewed per eligible customer.
 - Birthday greetings and inactive-customer campaign links open prefilled WhatsApp or email messages for manual review. The app does not send messages automatically; an approved messaging provider and server-side consent/opt-out handling are required before automated delivery.
 - Customer birthday, marketing-consent, and reminder records remain local to the current browser until Supabase persistence and access controls are connected.
+
+
+### Free-first customer messaging
+
+- Birthday greetings, follow-up reminders and inactive-customer campaign links use shared message-template helpers and open prefilled WhatsApp/email messages for manual review.
+- Promotional WhatsApp actions are gated by the customer's explicit marketing opt-in flag.
+- Owners can enable browser notifications for due follow-up reminders. Permission is requested only after clicking the enable control; duplicate alerts are suppressed in browser storage.
+- Browser alerts work only while the app is open. This free-first workflow does not send messages automatically or run while the app is closed. Reliable scheduled delivery requires a backend scheduler and an approved messaging provider; WhatsApp Business Platform fees may apply.
+- Reminder and consent data remains browser-local until Supabase persistence and access controls are connected.
