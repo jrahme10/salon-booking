@@ -1,7 +1,12 @@
-import type {Business,Customer,CustomerReminder} from "../types";
+import type {Business,Customer,CustomerConsentChannel,CustomerConsentEvent,CustomerReminder} from "../types";
 
-export function isEligibleForPromotionalMessaging(customer:Customer):boolean {
-  return customer.marketingOptIn===true;
+export function getLatestCustomerConsent(customerId:string,events:CustomerConsentEvent[]):CustomerConsentEvent|undefined {
+  return events.filter(event=>event.customerId===customerId).sort((a,b)=>a.capturedAt.localeCompare(b.capturedAt)).at(-1);
+}
+
+export function isEligibleForPromotionalMessaging(customer:Customer,events:CustomerConsentEvent[],channel:CustomerConsentChannel):boolean {
+  const latest=getLatestCustomerConsent(customer.id,events);
+  return latest?.action==="granted"&&(latest.channel==="all"||latest.channel===channel)&&customer.marketingOptIn===true;
 }
 
 export function personalizeCustomerMessage(template:string,customer:Customer,business:Business):string {
