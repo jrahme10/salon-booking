@@ -62,6 +62,7 @@ class DemoRepository implements SalonRepository {
     const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
     const customer=this.state.customers.find(row=>row.id===appointment.customerId);
     if(!service||!employee||!customer) throw new Error("Choose an existing customer, service and team member.");
+    if(service.businessId!==appointment.businessId||employee.businessId!==appointment.businessId) throw new Error("The selected service and team member must belong to this business.");
     if(customer.businessId&&customer.businessId!==appointment.businessId) throw new Error("The selected customer belongs to another business.");
     const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
     if(reason) throw new Error(reason);
