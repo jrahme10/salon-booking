@@ -1,4 +1,4 @@
-import type {Appointment,Employee,Expense,PayrollPayment,Payment} from "../types";
+import type {Appointment,Expense,PayrollPayment,Payment} from "../types";
 
 export type DashboardPeriod="30"|"90";
 export interface DashboardTotals {
