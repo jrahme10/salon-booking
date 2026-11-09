@@ -70,11 +70,11 @@ class DemoRepository implements SalonRepository {
   async updateCustomer(customer:Customer){
     const current=this.state.customers.find(row=>row.id===customer.id);
     if(!current||customer.businessId&&customer.businessId!==this.state.business.id)throw new Error("Customer was not found for this business.");
-    const phone=customer.phone.replace(/\\D/g,"");
+    const phone=customer.phone.replace(/\D/g,"");
     if(!customer.name.trim()||phone.length<6)throw new Error("Enter a customer name and valid phone number.");
     if(customer.birthday&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(customer.birthday))throw new Error("Enter a valid birthday.");
     if(customer.birthday){const [year,month,day]=customer.birthday.split("-").map(Number);const date=new Date(year,month-1,day);if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)throw new Error("Enter a valid birthday.");}
-    if(this.state.customers.some(row=>row.id!==customer.id&&row.phone.replace(/\\D/g,"")===phone&&phone.length>=6))throw new Error("Another customer already uses this phone number.");
+    if(this.state.customers.some(row=>row.id!==customer.id&&row.phone.replace(/\D/g,"")===phone&&phone.length>=6))throw new Error("Another customer already uses this phone number.");
     this.commit({...this.state,customers:this.state.customers.map(row=>row.id===customer.id?{...customer,name:customer.name.trim(),phone:customer.phone.trim(),email:customer.email.trim()}:row)});
   }
   async getCustomerReminders(){return copy(this.state.customerReminders);}
