@@ -26,6 +26,7 @@ The preview deploys from the `production-foundation` branch. It is a frontend de
 - Manual payment ledger supporting full and partial appointment payments
 - Expense tracking with categories, payment methods and dates
 - Monthly finance reports with six-month income/expense trends and category/payment-method breakdowns
+- Employee performance dashboard with 30-day, 90-day and all-time filters, completed appointments, estimated service value, payments collected, commission earned and outstanding commission balances
 - Responsive layouts for desktop and mobile
 
 ## Run locally
@@ -72,3 +73,11 @@ This is an active development preview, not a production service. Demo records ar
 - Finance → Team payroll shows earned commission, payouts and outstanding balances. Payouts can be partial, but cannot exceed the unpaid commission balance.
 - Payroll payouts are stored separately from operating expenses and included as salary expenses in monthly cash-flow reports, preventing double counting.
 - This first version records commission payouts only; fixed monthly salaries, payroll tax, deductions and payslips are not included. Data is still browser-local demo data until Supabase is connected.
+
+
+### Employee performance reporting
+
+- Analytics compares each team member's completed appointments, cancellations, completion rate, unique clients served, recorded collections, commissions earned and outstanding lifetime commission balance.
+- Filters include the last 30 days, last 90 days and all time. Activity, collections, and commissions earned follow the selected period; unpaid commission is shown as a lifetime balance.
+- Service value is an estimate calculated from completed appointment counts and current service prices. It is not a historical invoice total because appointment records do not yet snapshot service prices.
+- Collected revenue is based on recorded payment ledger entries linked to the employee's appointments.
