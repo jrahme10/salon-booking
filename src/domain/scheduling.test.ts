@@ -57,6 +57,12 @@ describe("validateBooking",()=>{
   it("can exclude the appointment being revalidated",()=>{
     expect(validate({appointments:[appointment()],excludeAppointmentId:"appointment-1"})).toBeNull();
   });
+  it("allows an appointment to keep its current time when it is excluded from conflict checks",()=>{
+    expect(validate({startsAt:monday(10),appointments:[appointment()],excludeAppointmentId:"appointment-1"})).toBeNull();
+  });
+  it("rejects rescheduling into another appointment on the same employee",()=>{
+    expect(validate({startsAt:monday(10),appointments:[appointment({id:"another-appointment"})],excludeAppointmentId:"appointment-1"})).toContain("already has an appointment");
+  });
 });
 
 describe("getAvailableSlots",()=>{
