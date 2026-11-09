@@ -1,0 +1,5 @@
+import * as demo from "../data/mock";
+import type {Appointment,Business,Customer,Employee,Service} from "../types";
+export interface SalonRepository { getBusiness():Promise<Business>; getServices():Promise<Service[]>; getEmployees():Promise<Employee[]>; getCustomers():Promise<Customer[]>; getAppointments():Promise<Appointment[]>; updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void> }
+class DemoRepository implements SalonRepository { private rows=[...demo.appointments]; async getBusiness(){return demo.business} async getServices(){return [...demo.services]} async getEmployees(){return [...demo.employees]} async getCustomers(){return [...demo.customers]} async getAppointments(){return [...this.rows]} async updateAppointmentStatus(id:string,status:Appointment["status"]){this.rows=this.rows.map(a=>a.id===id?{...a,status}:a)} }
+export const salonRepository:SalonRepository=new DemoRepository();
