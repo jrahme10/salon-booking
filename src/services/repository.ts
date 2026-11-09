@@ -77,13 +77,15 @@ class DemoRepository implements SalonRepository {
     if(customer.birthday&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(customer.birthday))throw new Error("Enter a valid birthday.");
     if(customer.birthday){const [year,month,day]=customer.birthday.split("-").map(Number);const date=new Date(year,month-1,day);if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)throw new Error("Enter a valid birthday.");}
     if(this.state.customers.some(row=>row.id!==customer.id&&row.phone.replace(/\D/g,"")===phone&&phone.length>=6))throw new Error("Another customer already uses this phone number.");
-    this.commit({...this.state,customers:this.state.customers.map(row=>row.id===customer.id?{...customer,name:customer.name.trim(),phone:customer.phone.trim(),email:customer.email.trim()}:row)});
+    this.commit({...this.state,customers:this.state.customers.map(row=>row.id===customer.id?{...customer,marketingOptIn:current.marketingOptIn,marketingOptInUpdatedAt:current.marketingOptInUpdatedAt,name:customer.name.trim(),phone:customer.phone.trim(),email:customer.email.trim()}:row)});
   }
   async getCustomerConsentEvents(){return copy(this.state.customerConsentEvents);}
   async recordCustomerConsent(event:CustomerConsentEvent){
     if(this.state.customerConsentEvents.some(row=>row.id===event.id))throw new Error("This consent record already exists.");
     if(event.businessId!==this.state.business.id||!this.state.customers.some(row=>row.id===event.customerId))throw new Error("Choose a customer from this business.");
     if(!Number.isFinite(new Date(event.capturedAt).getTime()))throw new Error("A valid consent date is required.");
+    if(!["granted","revoked"].includes(event.action)||!["whatsapp","email","sms","all"].includes(event.channel)||!["in_person","whatsapp","email","phone","website","other"].includes(event.source))throw new Error("Choose a valid consent action, channel and source.");
+    if(event.note&&event.note.length>240)throw new Error("Consent notes must be 240 characters or fewer.");
     if(event.action==="granted"&&!event.customerConfirmed)throw new Error("Record consent only after the customer has explicitly agreed.");
     if(!event.note?.trim()&&event.action==="granted"&&event.source==="other")throw new Error("Add a note describing how the customer gave consent.");
     const events=[...this.state.customerConsentEvents,copy({...event,note:event.note?.trim()||undefined})];
