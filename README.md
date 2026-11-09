@@ -81,3 +81,12 @@ This is an active development preview, not a production service. Demo records ar
 - Filters include the last 30 days, last 90 days and all time. Activity, collections, and commissions earned follow the selected period; unpaid commission is shown as a lifetime balance.
 - Service value is an estimate calculated from completed appointment counts and current service prices. It is not a historical invoice total because appointment records do not yet snapshot service prices.
 - Collected revenue is based on recorded payment ledger entries linked to the employee's appointments.
+
+
+### Owner business dashboard
+
+- The owner home screen includes 30-day and 90-day reporting windows, recorded revenue compared with the immediately preceding equal-length period, net cash flow, appointment status counts and completion rate.
+- A six-month cash trend compares recorded payments with recorded expenses and payroll payouts by transaction date.
+- The dashboard highlights the top three active employees using estimated service value and separately displays recorded collections.
+- Revenue means payments recorded in the payment ledger; it is not the total value of appointments or unpaid balances. Period comparisons use payment dates for revenue and expense/payroll transaction dates for costs.
+- Appointment counts use appointment start dates. Employee service value uses current service prices and is an estimate, not a historical invoice total. All dashboard data remains browser-local demo data until Supabase and secure shared storage are connected.
