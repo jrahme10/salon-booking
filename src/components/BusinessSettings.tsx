@@ -1,6 +1,6 @@
 import {useEffect,useState} from "react";
 import type {FormEvent} from "react";
-import {Building2,CalendarClock,Clock3,Globe2,MapPin,Save,ShieldCheck} from "lucide-react";
+import {Building2,CalendarClock,Clock3,Globe2,Save,ShieldCheck} from "lucide-react";
 import type {Business,Weekday} from "../types";
 import {DEFAULT_WORKING_HOURS} from "../domain/scheduling";
 
