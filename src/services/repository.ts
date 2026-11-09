@@ -8,6 +8,7 @@ export interface SalonRepository {
   getCustomers():Promise<Customer[]>;
   getAppointments():Promise<Appointment[]>;
   updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void>;
+  createAppointment(appointment:Appointment):Promise<void>;
 }
 type StoredState={appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[]};
 const STORAGE_KEY="salon-reservation-demo-v1";
@@ -30,6 +31,11 @@ class DemoRepository implements SalonRepository {
   async getAppointments(){return copy(this.state.appointments);}
   async updateAppointmentStatus(id:string,status:Appointment["status"]){
     this.state.appointments=this.state.appointments.map(row=>row.id===id?{...row,status}:row);
+    this.persist();
+  }
+  async createAppointment(appointment:Appointment){
+    if(this.state.appointments.some(row=>row.id===appointment.id)) throw new Error("Appointment already exists.");
+    this.state.appointments=[...this.state.appointments,copy(appointment)].sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
     this.persist();
   }
 }
