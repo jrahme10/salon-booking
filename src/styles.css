@@ -169,3 +169,41 @@
 .monthly-progress i.payment-progress{background:#55785d}
 .monthly-report-note{margin:0;color:#929b8f;font-size:9px;line-height:1.6}
 @media(max-width:680px){.monthly-report-toolbar{align-items:flex-start;flex-direction:column}.monthly-report-toolbar>label{width:100%}.monthly-report-toolbar input{flex:1}.monthly-metrics{grid-template-columns:1fr;gap:9px}.monthly-metrics .metric{padding:13px;display:grid;grid-template-columns:38px 1fr;column-gap:12px;align-items:center}.monthly-metrics .metric>span{grid-row:span 3;margin:0}.monthly-metrics .metric b{font-size:21px;margin:3px 0}.monthly-trend{padding:17px 12px}.monthly-bars{gap:5px;padding:0 3px}.monthly-bar-pair{gap:3px}.monthly-bar{width:30%}.monthly-breakdowns{grid-template-columns:1fr;gap:12px}.monthly-breakdowns .panel{padding:16px}}
+
+.performance-page{display:grid;gap:18px}
+.performance-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.performance-toolbar>div{display:flex;align-items:center;gap:8px;color:#879185;font-size:9px;font-weight:700;letter-spacing:1.4px}
+.performance-live-dot{width:7px;height:7px;border-radius:50%;background:#6e9b77;box-shadow:0 0 0 4px #eaf1e9}
+.performance-toolbar select{height:38px;padding:0 32px 0 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#465447;font-size:10px}
+.performance-metrics{margin:0}
+.performance-metrics .metric b{font-size:clamp(19px,2.1vw,27px);overflow-wrap:anywhere}
+.performance-ranking,.performance-details{padding:23px}
+.performance-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+.performance-section-head>div>small{font-size:9px;font-weight:700;letter-spacing:1.5px;color:#8a9588}
+.performance-section-head h2{margin:6px 0}
+.performance-section-head p{font-size:10px;line-height:1.55;color:var(--muted);margin:0;max-width:650px}
+.performance-section-head>svg{color:var(--green);flex-shrink:0}
+.performance-rank{display:grid;grid-template-columns:30px 38px minmax(0,1fr) minmax(115px,auto);align-items:center;gap:13px;padding:17px 0;border-top:1px solid #eff1ed}
+.performance-rank-number{font:15px 'Playfair Display',serif;color:#a0aa9f}
+.performance-rank-main{min-width:0}
+.performance-rank-main>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.performance-rank-main b{font-size:11px}
+.performance-rank-main small{font-size:9px;color:var(--muted)}
+.performance-bar{height:7px;border-radius:10px;background:#f0f3ef;overflow:hidden}
+.performance-bar span{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,#9db5a0,#456b51);min-width:2px;transition:width .25s ease}
+.performance-rank>strong{text-align:right;font-size:12px;color:var(--green)}
+.performance-rank>strong small{display:block;font-size:9px;color:var(--muted);font-weight:400;margin-top:4px}
+.performance-table-wrap{overflow-x:auto}
+.performance-table-wrap table{width:100%;border-collapse:collapse;min-width:760px}
+.performance-table-wrap th{text-align:left;padding:12px 10px;background:#fafbf9;color:#929b90;font-size:9px;letter-spacing:.5px;white-space:nowrap}
+.performance-table-wrap td{padding:14px 10px;border-top:1px solid #eff1ed;font-size:10px;white-space:nowrap}
+.performance-table-wrap td>small{display:block;color:var(--muted);font-size:9px;margin-top:4px}
+.performance-person{display:flex;align-items:center;gap:9px}
+.performance-person .team-avatar{width:31px;height:31px;flex-shrink:0}
+.performance-person b,.performance-person small{display:block}
+.performance-person b{font-size:10px}
+.performance-person small{font-size:9px;color:var(--muted);margin-top:3px}
+.performance-rate{display:inline-flex;align-items:center;border-radius:20px;padding:5px 8px;background:#edf3ed;color:#4f7657;font-size:9px;font-weight:700}
+.performance-footnote{font-size:9px;line-height:1.55;color:#929b90;padding:0 3px}
+@media(max-width:900px){.performance-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.performance-toolbar{align-items:flex-start}.performance-ranking,.performance-details{padding:17px}.performance-rank{grid-template-columns:22px 34px minmax(0,1fr);gap:9px}.performance-rank>strong{grid-column:3;text-align:left;margin-top:-4px}.performance-rank-main>div:first-child{display:block}.performance-rank-main small{display:block;margin-top:4px}.performance-metrics .metric{padding:14px}.performance-metrics .metric b{font-size:20px}.performance-section-head h2{font-size:18px}}
