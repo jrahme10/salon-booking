@@ -3,14 +3,14 @@ import type {Appointment,Customer,Payment} from "../types";
 import {buildCustomerBookingHistory,buildCustomerInsights} from "./customer-insights";
 const customers:Customer[]=[{id:"c1",name:"A",phone:"1",email:"",visits:0,lastVisit:""},{id:"c2",name:"B",phone:"2",email:"",visits:0,lastVisit:""},{id:"c3",name:"C",phone:"3",email:"",visits:0,lastVisit:""}];
 const appointments:Appointment[]=[
- {id:"a1",businessId:"b",customerId:"c1",serviceId:"s",employeeId:"e",startsAt:"2026-10-01T10:00:00Z",status:"completed",paidAmount:0},
+ {id:"a1",businessId:"b",customerId:"c1",serviceId:"s",employeeId:"e",startsAt:"2026-07-01T10:00:00Z",status:"completed",paidAmount:0},
  {id:"a2",businessId:"b",customerId:"c1",serviceId:"s",employeeId:"e",startsAt:"2026-11-01T10:00:00Z",status:"completed",paidAmount:0},
  {id:"a3",businessId:"b",customerId:"c2",serviceId:"s",employeeId:"e",startsAt:"2026-11-02T10:00:00Z",status:"completed",paidAmount:0},
  {id:"a4",businessId:"b",customerId:"c3",serviceId:"s",employeeId:"e",startsAt:"2026-07-01T10:00:00Z",status:"completed",paidAmount:0},
  {id:"a5",businessId:"b",customerId:"c3",serviceId:"s",employeeId:"e",startsAt:"2026-12-01T10:00:00Z",status:"confirmed",paidAmount:0},
 ];
 const payments:Payment[]=[
- {id:"p1",businessId:"b",appointmentId:"a1",amount:20,method:"cash",paidAt:"2026-10-01T11:00:00Z"},
+ {id:"p1",businessId:"b",appointmentId:"a1",amount:20,method:"cash",paidAt:"2026-07-01T11:00:00Z"},
  {id:"p2",businessId:"b",appointmentId:"a2",amount:30,method:"cash",paidAt:"2026-11-01T11:00:00Z"},
  {id:"p3",businessId:"b",appointmentId:"a3",amount:40,method:"card",paidAt:"2026-11-02T11:00:00Z"},
  {id:"p4",businessId:"b",appointmentId:"a4",amount:10,method:"cash",paidAt:"2026-07-01T11:00:00Z"},
