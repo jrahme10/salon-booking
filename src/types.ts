@@ -6,7 +6,7 @@ export interface BusinessBookingRules { allowOnlineBooking:boolean; minimumNotic
 export interface Business { id:string; name:string; slug:string; category:string; city:string; address:string; currency:"USD"|"LBP"; phone?:string; email?:string; website?:string; description?:string; timezone?:string; workingHours?:WeeklySchedule; bookingRules?:BusinessBookingRules }
 export interface Service { id:string; businessId:string; name:string; category:string; durationMinutes:number; price:number; active:boolean }
 export interface Employee { id:string; businessId:string; name:string; role:string; initials:string; active:boolean; serviceIds?:string[]; workingHours?:WeeklySchedule; timeOff?:string[]; commissionType?:"percentage"|"fixed"; commissionValue?:number }
-export interface Customer { id:string; name:string; phone:string; email:string; visits:number; lastVisit:string; businessId?:string; birthday?:string }
+export interface Customer { id:string; name:string; phone:string; email:string; visits:number; lastVisit:string; businessId?:string; birthday?:string; marketingOptIn?:boolean; marketingOptInUpdatedAt?:string }
 export type CustomerReminderStatus = "pending" | "completed" | "cancelled";
 export interface CustomerReminder { id:string; businessId:string; customerId:string; dueAt:string; note:string; status:CustomerReminderStatus; createdAt:string }
 export interface Appointment { id:string; businessId:string; customerId:string; serviceId:string; employeeId:string; startsAt:string; status:BookingStatus; paidAmount:number; source?:"provider"|"client" }
