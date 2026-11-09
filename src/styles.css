@@ -419,3 +419,7 @@
 .customer-birthday-editor button{padding:9px 12px}
 @media(max-width:900px){.customer-retention-grid{grid-template-columns:1fr}}
 @media(max-width:680px){.customer-retention-panel,.customer-campaign-panel{padding:15px}.customer-reminder-form{grid-template-columns:1fr}.customer-reminder-form label.full{grid-column:auto}.customer-reminder-row{align-items:flex-start}.customer-campaign-actions{width:100%}.customer-birthday-editor{align-items:flex-end}}
+
+.customer-birthday-editor .customer-consent{display:flex;align-items:center;gap:6px;width:auto;font-size:8px;font-weight:500}
+.customer-birthday-editor .customer-consent input{width:14px;height:14px;accent-color:#526f54}
+.customer-birthday-row{cursor:default}
