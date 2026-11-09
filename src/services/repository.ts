@@ -2,6 +2,7 @@ import * as demo from "../data/mock";
 import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
 import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,CommissionEntry,Customer,Employee,Expense,PayrollPayment,Payment,Service,WeeklySchedule} from "../types";
 import {validateExpense,validatePayment} from "../domain/finance";
+import {calculateCommission} from "../domain/commission";
 
 export interface SalonRepository {
   getBusiness():Promise<Business>;
@@ -75,7 +76,7 @@ class DemoRepository implements SalonRepository {
       const type=employee?.commissionType??"percentage";
       const value=employee?.commissionValue??0;
       if(employee&&service&&value>0&&!commissionEntries.some(row=>row.appointmentId===id)){
-        const amount=type==="percentage"?service.price*value/100:value;
+        const amount=calculateCommission(service.price,type,value);
         commissionEntries=[...commissionEntries,{id:"com-"+id,businessId:current.businessId,appointmentId:id,employeeId:employee.id,serviceName:service.name,baseAmount:service.price,commissionType:type,commissionValue:value,amount:Number(amount.toFixed(2)),earnedAt:new Date().toISOString()}];
       }
     }
@@ -235,6 +236,7 @@ class DemoRepository implements SalonRepository {
   }
   private assertEmployee(employee:Employee){
     if(employee.businessId!==demo.business.id||!employee.name.trim()||!employee.role.trim()) throw new Error("Enter a team member name and role.");
+    if(employee.commissionValue!==undefined&&(!Number.isFinite(employee.commissionValue)||employee.commissionValue<0||(employee.commissionType==="percentage"&&employee.commissionValue>100)))throw new Error("Enter a valid commission rate (0–100% or a non-negative fixed amount).");
     if(employee.serviceIds?.some(id=>!this.state.services.some(service=>service.id===id))) throw new Error("Choose services that exist in this business.");
     for(const [day,hours] of Object.entries(employee.workingHours??{})){if(hours.enabled&&(!/^([01]\d|2[0-3]):[0-5]\d$/.test(hours.start)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(hours.end)||hours.start>=hours.end)) throw new Error(`Check the working hours for ${day}.`);}
   }
