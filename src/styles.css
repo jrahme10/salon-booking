@@ -381,3 +381,41 @@
 .customer-report-note{margin:0;color:#929b8f;font-size:8px;line-height:1.7}
 @media(max-width:900px){.customer-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.customer-insight-grid{grid-template-columns:1fr}}
 @media(max-width:680px){.customer-insights{gap:12px}.customer-period{width:100%}.customer-period button{flex:1;padding:9px 7px}.customer-kpis{gap:8px}.customer-kpis article{padding:13px 11px;gap:6px}.customer-kpis b{font-size:20px}.customer-kpis em{font-size:7px}.customer-highlight-panel,.customer-at-risk-panel,.customer-directory,.customer-history-panel{padding:15px}.customer-directory-head{align-items:stretch;flex-direction:column}.customer-search{min-width:0;height:42px}.customer-profile-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.customer-history-row{grid-template-columns:48px minmax(0,1fr) auto;gap:7px}.customer-history-row>strong{grid-column:2;justify-items:start}.customer-history-row>.status{grid-column:3;grid-row:1}.customer-history-head{align-items:flex-start}.customer-history-head h2{font-size:18px}.customer-history-head .secondary{padding:7px 9px;white-space:nowrap}.customer-table-wrap table{min-width:570px}}
+
+
+/* Customer retention, birthday and campaign workflows */
+.customer-retention-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.customer-retention-panel,.customer-campaign-panel{padding:20px;min-width:0}
+.customer-reminder-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:13px;border-radius:11px;background:#f8f9f6}
+.customer-reminder-form label,.customer-birthday-editor label{display:grid;gap:5px;font-size:8px;font-weight:700;color:#7e897c}
+.customer-reminder-form label.full{grid-column:1/-1}
+.customer-reminder-form input,.customer-reminder-form select,.customer-birthday-editor input{width:100%;min-width:0;height:35px;padding:0 9px;border:1px solid #e5eae2;border-radius:7px;background:#fff;color:#465448;font-size:9px}
+.customer-reminder-form button{justify-self:start;padding:9px 12px;font-size:9px}
+.customer-reminder-list{margin-top:10px}
+.customer-reminder-row,.customer-birthday-row,.customer-campaign-recipient{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid #eff1ed}
+.customer-reminder-row>div,.customer-birthday-row>span:nth-child(2),.customer-campaign-recipient>div:first-child{display:grid;gap:4px;min-width:0}
+.customer-reminder-row b,.customer-birthday-row b,.customer-campaign-recipient b{font-size:9px;color:#435343}
+.customer-reminder-row small,.customer-birthday-row small,.customer-campaign-recipient small{font-size:8px;color:#929b8f;line-height:1.4}
+.customer-reminder-row .tiny{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.customer-birthday-row{width:100%;border-right:0;border-bottom:0;border-left:0;background:transparent;text-align:left}
+.customer-avatar.birthday{background:#f4efe2;color:#9a7b40}
+.customer-birthday-row>span:nth-child(2){flex:1}
+.customer-birthday-row>span:last-child{font-size:8px;color:#8a9588}
+.customer-campaign-panel{display:grid;gap:12px}
+.customer-campaign-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:9px;background:#f6f8f4}
+.customer-campaign-summary b{font-size:10px;color:#405b45}
+.customer-campaign-summary span,.customer-campaign-hint,.customer-campaign-foot{font-size:8px;line-height:1.6;color:#929b8f}
+.customer-campaign-label{display:grid;gap:6px;font-size:9px;font-weight:700;color:#7e897c}
+.customer-campaign-label textarea{width:100%;resize:vertical;min-height:88px;padding:11px;border:1px solid #e5eae2;border-radius:9px;background:#fff;color:#465448;font:10px/1.6 inherit}
+.customer-campaign-hint code{padding:2px 5px;border-radius:4px;background:#f0f2ed;color:#60735d}
+.customer-campaign-recipient{flex-wrap:wrap}
+.customer-campaign-recipient>div:first-child{flex:1}
+.customer-campaign-actions{display:flex;gap:7px;flex-wrap:wrap}
+.customer-campaign-actions a{display:inline-flex;align-items:center;gap:5px;padding:7px 9px;border:1px solid #e5eae2;border-radius:7px;color:#526c54;text-decoration:none;font-size:8px;font-weight:700}
+.customer-campaign-actions a:hover{background:#f4f7f2}
+.customer-campaign-foot{padding-top:10px;border-top:1px solid #eff1ed}
+.customer-birthday-editor{display:flex;align-items:flex-end;gap:9px;margin-top:14px}
+.customer-birthday-editor label{width:min(230px,65%)}
+.customer-birthday-editor button{padding:9px 12px}
+@media(max-width:900px){.customer-retention-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.customer-retention-panel,.customer-campaign-panel{padding:15px}.customer-reminder-form{grid-template-columns:1fr}.customer-reminder-form label.full{grid-column:auto}.customer-reminder-row{align-items:flex-start}.customer-campaign-actions{width:100%}.customer-birthday-editor{align-items:flex-end}}
