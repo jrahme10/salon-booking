@@ -5,7 +5,7 @@ A salon and beauty-business platform for Lebanon, designed for international exp
 ## Frontend foundation
 - React + TypeScript + Vite
 - React Router
-- Responsive provider workspace: overview, calendar, bookings, services, team, customers, analytics, finances and settings
+- Provider workspace: overview, calendar, bookings, services, team, customers, analytics, finances and settings
 - Client discovery preview
 - Typed domain models and replaceable repository abstraction
 
