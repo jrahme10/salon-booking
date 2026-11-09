@@ -1,6 +1,6 @@
 import {useMemo,useState} from "react";
 import {ArrowUpRight,CalendarClock,Heart,History,Repeat2,Search,Users,Wallet} from "lucide-react";
-import type {Business,Customer,Employee,Payment,Service} from "../types";
+import type {Appointment,Business,Customer,Employee,Payment,Service} from "../types";
 import {buildCustomerBookingHistory,buildCustomerInsights,type CustomerInsightPeriod} from "../domain/customer-insights";
 type Props={business:Business;customers:Customer[];appointments:Appointment[];payments:Payment[];services:Service[];employees:Employee[]};
 const money=(value:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(value);
