@@ -3,7 +3,7 @@ import type {FormEvent} from "react";
 import {Link,NavLink,Route,Routes,useLocation,useParams} from "react-router-dom";
 import {Activity,CalendarDays,CalendarRange,ChevronDown,LayoutDashboard,Plus,Search,Scissors,Settings,Users,Wallet,Bell,Menu} from "lucide-react";
 import {salonRepository} from "./services/repository";
-import type {Appointment,Business,ClientAppointmentRequest,CommissionEntry,Customer,Employee,Expense,PayrollPayment,Payment,Service,CustomerReminder,CustomerReminderStatus} from "./types";
+import type {Appointment,Business,ClientAppointmentRequest,CommissionEntry,Customer,Employee,Expense,PayrollPayment,Payment,Service,CustomerReminder} from "./types";
 import {ServiceManager} from "./components/ServiceManager";
 import {TeamManager} from "./components/TeamManager";
 import {ClientBooking} from "./components/ClientBooking";
