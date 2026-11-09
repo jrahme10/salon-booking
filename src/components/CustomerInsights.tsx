@@ -2,7 +2,7 @@ import {useEffect,useMemo,useState} from "react";
 import {ArrowUpRight,Bell,CalendarClock,Check,Gift,Heart,History,MessageCircle,Repeat2,Search,Send,Users,Wallet} from "lucide-react";
 import type {Appointment,Business,Customer,CustomerConsentAction,CustomerConsentChannel,CustomerConsentEvent,CustomerConsentSource,CustomerReminder,CustomerReminderStatus,Employee,Payment,Service} from "../types";
 import {buildCustomerBookingHistory,buildCustomerInsights,type CustomerInsightPeriod} from "../domain/customer-insights";
-import {buildBirthdayMessage,buildFollowupMessage,buildWhatsAppUrl,getDueCustomerReminders,getLatestCustomerConsent,isEligibleForPromotionalMessaging,personalizeCustomerMessage} from "../domain/customer-messaging";
+import {buildBirthdayMessage,buildFollowupMessage,buildWhatsAppUrl,getDueCustomerReminders,isEligibleForPromotionalMessaging,personalizeCustomerMessage} from "../domain/customer-messaging";
 type Props={business:Business;customers:Customer[];appointments:Appointment[];payments:Payment[];services:Service[];employees:Employee[];reminders:CustomerReminder[];consentEvents:CustomerConsentEvent[];onRecordConsent:(event:CustomerConsentEvent)=>Promise<void>;onUpdateCustomer:(customer:Customer)=>Promise<void>;onCreateReminder:(reminder:CustomerReminder)=>Promise<void>;onUpdateReminder:(id:string,status:CustomerReminderStatus)=>Promise<void>};
 const money=(value:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(value);
 const dateLabel=(value:string|null)=>value?new Date(value).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):"No completed visits";
