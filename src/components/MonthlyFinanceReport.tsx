@@ -13,7 +13,7 @@ const methodNames:Record<string,string>={cash:"Cash",card:"Card",bank_transfer:"
 export function MonthlyFinanceReport({business,payments,expenses,payrollPayments}:Props){
  const [month,setMonth]=useState(currentMonth());
  const report=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,month,payrollPayments),[payments,expenses,payrollPayments,month]);
- const previous=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,previousMonth(month),payrollPayments),[payments,expenses,month]);
+ const previous=useMemo(()=>buildMonthlyFinanceReport(payments,expenses,previousMonth(month),payrollPayments),[payments,expenses,payrollPayments,month]);
  const trend=useMemo(()=>recentMonths(month,6).map(key=>({key,...buildMonthlyFinanceReport(payments,expenses,key,payrollPayments)})),[payments,expenses,month]);
  const maxTrend=Math.max(1,...trend.map(row=>Math.max(row.income,row.expenses)));
  const maxExpense=Math.max(1,...Object.values(report.expensesByCategory));
@@ -32,6 +32,6 @@ export function MonthlyFinanceReport({business,payments,expenses,payrollPayments
    <section className="panel"><div className="monthly-section-heading"><div><h3>Expenses by category</h3><p>{monthLabel(month)} breakdown</p></div></div>{Object.entries(report.expensesByCategory).sort((a,b)=>b[1]-a[1]).length?Object.entries(report.expensesByCategory).sort((a,b)=>b[1]-a[1]).map(([category,amount])=><div className="monthly-breakdown-row" key={category}><div><span>{categoryNames[category]??category}</span><b>{money(amount,business.currency)}</b></div><div className="monthly-progress"><i style={{width:`${amount/maxExpense*100}%`}}/></div></div>):<div className="finance-empty">No expenses recorded for this month.</div>}</section>
    <section className="panel"><div className="monthly-section-heading"><div><h3>Payments by method</h3><p>{monthLabel(month)} breakdown</p></div></div>{Object.entries(report.paymentsByMethod).sort((a,b)=>b[1]-a[1]).length?Object.entries(report.paymentsByMethod).sort((a,b)=>b[1]-a[1]).map(([method,amount])=><div className="monthly-breakdown-row" key={method}><div><span>{methodNames[method]??method}</span><b>{money(amount,business.currency)}</b></div><div className="monthly-progress"><i className="payment-progress" style={{width:`${amount/maxMethod*100}%`}}/></div></div>):<div className="finance-empty">No payments recorded for this month.</div>}</section>
   </div>
-  <p className="monthly-report-note">Report period: {monthLabel(month)}. Only transactions recorded in the payment and expense history are included; older appointment balances without payment records are not backfilled.</p>
+  <p className="monthly-report-note">Report period: {monthLabel(month)}. Only transactions recorded in payment, expense and payroll histories are included; older appointment balances without payment records are not backfilled.</p>
  </div>;
 }
