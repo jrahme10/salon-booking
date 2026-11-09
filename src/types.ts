@@ -7,6 +7,10 @@ export interface Business { id:string; name:string; slug:string; category:string
 export interface Service { id:string; businessId:string; name:string; category:string; durationMinutes:number; price:number; active:boolean }
 export interface Employee { id:string; businessId:string; name:string; role:string; initials:string; active:boolean; serviceIds?:string[]; workingHours?:WeeklySchedule; timeOff?:string[]; commissionType?:"percentage"|"fixed"; commissionValue?:number }
 export interface Customer { id:string; name:string; phone:string; email:string; visits:number; lastVisit:string; businessId?:string; birthday?:string; marketingOptIn?:boolean; marketingOptInUpdatedAt?:string }
+export type CustomerConsentAction = "granted" | "revoked";
+export type CustomerConsentChannel = "whatsapp" | "email" | "sms" | "all";
+export type CustomerConsentSource = "in_person" | "whatsapp" | "email" | "phone" | "website" | "other";
+export interface CustomerConsentEvent { id:string; businessId:string; customerId:string; action:CustomerConsentAction; channel:CustomerConsentChannel; source:CustomerConsentSource; note?:string; capturedAt:string; customerConfirmed:boolean }
 export type CustomerReminderStatus = "pending" | "completed" | "cancelled";
 export interface CustomerReminder { id:string; businessId:string; customerId:string; dueAt:string; note:string; status:CustomerReminderStatus; createdAt:string }
 export interface Appointment { id:string; businessId:string; customerId:string; serviceId:string; employeeId:string; startsAt:string; status:BookingStatus; paidAmount:number; source?:"provider"|"client" }
