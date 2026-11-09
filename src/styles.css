@@ -34,3 +34,43 @@
 
 .client-discover-action,.client-book-link{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:11px 16px;background:var(--green);color:#fff;font-size:10px;font-weight:700}.client-discover-action{margin-left:auto;white-space:nowrap}.client-book-link{width:100%;margin-top:10px}.client-discover-action:hover,.client-book-link:hover{background:var(--green-dark)}
 @media(max-width:680px){.client-discover-action{padding:10px 12px;font-size:9px}}
+
+/* Client booking management */
+.client-appointments-content{max-width:850px;margin:0 auto;padding:42px 22px 70px}
+.client-appointments-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}
+.client-appointments-heading small,.client-request-inbox-head small{font-size:9px;letter-spacing:1.7px;font-weight:700;color:#809180}
+.client-appointments-heading h2,.client-request-inbox-head h2{margin:6px 0;font:29px 'Playfair Display',serif;color:#304b3b}
+.client-appointments-heading p{margin:0;color:#829083;font-size:11px;line-height:1.6}
+.client-appointments-heading>span,.client-request-inbox-head>span{padding:8px 11px;border-radius:22px;background:#edf2eb;color:#5c765f;font-size:9px;font-weight:700;white-space:nowrap}
+.client-appointment-card{padding:19px;margin-bottom:13px;border:1px solid #e7ebe3;border-radius:15px;background:#fff;box-shadow:0 7px 22px #243b2d08}
+.client-appointment-top{display:flex;align-items:center;justify-content:space-between}
+.client-appointment-top>small{color:#9aa398;font-size:9px}
+.client-appointment-card h3{margin:14px 0 4px;font:21px 'Playfair Display',serif;color:#304b3b}
+.client-appointment-card>p{margin:0;color:#899387;font-size:10px}
+.client-appointment-date{display:flex;align-items:center;gap:9px;margin-top:15px;padding:12px;border-radius:10px;background:#f4f6f1;color:#526b56}
+.client-appointment-date>b{font-size:10px}
+.client-appointment-date>span{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:10px}
+.client-appointment-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.client-appointment-actions .secondary,.client-cancel-request{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid #e2e8df;border-radius:9px;background:#fff;color:#536b57;font-size:9px;font-weight:700}
+.client-cancel-request{color:#9a6962;border-color:#eee2df}
+.client-request-status{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:13px;padding:10px 12px;border-radius:9px;background:#f2f5ef;color:#5d765e;font-size:9px;font-weight:700}
+.client-request-status.declined{background:#f7efed;color:#9b6c63}
+.client-request-status small{font-weight:500}
+.client-request-pending{margin-top:11px!important;color:#7d8b7d!important;font-size:9px!important}
+.client-reschedule-panel{margin-top:14px;padding:13px;border:1px solid #e8ece5;border-radius:11px;background:#fafbf8}
+.client-reschedule-panel .client-field{max-width:300px}
+.client-reschedule-panel .client-time-slots{margin-top:8px}
+.client-reschedule-panel .client-time-slots>button{min-width:76px}
+.client-reschedule-panel .client-submit{max-width:300px}
+.client-empty{display:grid;justify-items:center;gap:9px;padding:42px 15px;border:1px dashed #dfe6dc;border-radius:14px;background:#fff;color:#7c927d;text-align:center}
+.client-empty b{font:20px 'Playfair Display',serif;color:#405a45}
+.client-empty p{margin:0;color:#899387;font-size:10px}
+.client-request-inbox{padding:20px 22px;margin:0 0 18px}
+.client-request-inbox-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.client-request-inbox-head h2{font-size:22px}
+.client-request-inbox article{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid #edf0ea}
+.client-request-inbox article>div:first-child{display:grid;gap:5px}
+.client-request-inbox article b{font-size:10px;color:#405342}
+.client-request-inbox article small{font-size:9px;color:#899387}
+.client-request-inbox article>div:last-child{display:flex;gap:7px;flex-shrink:0}
+@media(max-width:680px){.client-appointments-content{padding:28px 14px 50px}.client-appointments-heading{align-items:flex-start}.client-appointments-heading h2{font-size:25px}.client-appointment-card{padding:15px}.client-appointment-date{gap:7px}.client-appointment-date>b,.client-appointment-date>span{font-size:9px}.client-request-inbox{padding:15px}.client-request-inbox article{align-items:flex-start;flex-direction:column}.client-request-inbox article>div:last-child{width:100%;justify-content:flex-end}.client-appointment-actions{flex-direction:column}.client-appointment-actions button{justify-content:center}}
