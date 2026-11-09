@@ -198,7 +198,6 @@ function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:
   const rules=business.bookingRules??{allowOnlineBooking:true,minimumNoticeHours:0,cancellationNoticeHours:24,slotIntervalMinutes:30};
   if(checkNotice&&startsAt.getTime()<Date.now()+rules.minimumNoticeHours*3_600_000-60_000)return "This appointment does not meet the business minimum booking notice.";
   const format=(date:Date)=>{const parts=new Intl.DateTimeFormat("en-US",{timeZone:timezone,weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(date);const value=(key:string)=>parts.find(part=>part.type===key)?.value??"";return {weekday:value("weekday").toLowerCase().slice(0,3),minute:Number(value("hour"))*60+Number(value("minute"))};};
-  const days=["sun","mon","tue","wed","thu","fri","sat"];
   const end=new Date(startsAt.getTime()+durationMinutes*60_000-1);
   const startParts=format(startsAt),endParts=format(end);
   if(startParts.weekday!==endParts.weekday)return "The service must finish before the business closes.";
