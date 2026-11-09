@@ -111,3 +111,13 @@ This is an active development preview, not a production service. Demo records ar
 - Average customer spend is actual recorded payments in the selected payment-date window divided by the number of customers with recorded payments in that window.
 - Selecting a customer opens their full appointment history, service, team member, status, and recorded collections. Partial payments are summed per appointment.
 - Visit metrics use completed appointment dates; spending uses payment transaction dates. The data is local demo data until Supabase is connected.
+
+
+### Customer retention workflows
+
+- Customer profiles can store a birthday date. The dashboard surfaces birthdays coming up in the next 30 days.
+- Follow-up reminders can be created for any customer with a due date and note, then marked complete. Reminder records persist in the browser demo repository.
+- The inactive-customer campaign targets customers with no completed visit in the last 60 days and no future pending or confirmed appointment.
+- Campaign messages support `{name}` and `{business}` personalization tokens and are previewed per customer.
+- WhatsApp and email actions open prefilled messages for manual review. The app does not send messages automatically; an approved messaging provider and customer consent/opt-out handling are required before automated delivery.
+- Customer birthday and reminder records remain local to the current browser until Supabase persistence and access controls are connected.
