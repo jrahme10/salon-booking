@@ -38,14 +38,14 @@ export function buildCustomerInsights(input:{customers:Customer[];appointments:A
  const now=input.now??new Date(),start=periodStart(input.period,now),inactiveBefore=now.getTime()-(input.inactiveAfterDays??60)*86400000;
  const appointmentById=new Map(input.appointments.map(row=>[row.id,row]));
  const paymentsByAppointment=new Map<string,number>();
- for(const payment of input.payments){const appointment=appointmentById.get(payment.appointmentId);if(!appointment)continue;paymentsByAppointment.set(payment.appointmentId,(paymentsByAppointment.get(payment.appointmentId)??0)+payment.amount);}
+ const periodSpendByCustomer=new Map<string,number>();
+ for(const payment of input.payments){const appointment=appointmentById.get(payment.appointmentId);if(!appointment)continue;paymentsByAppointment.set(payment.appointmentId,(paymentsByAppointment.get(payment.appointmentId)??0)+payment.amount);const paidAt=time(payment.paidAt);if(paidAt!==null&&paidAt>=start&&paidAt<=now.getTime())periodSpendByCustomer.set(appointment.customerId,(periodSpendByCustomer.get(appointment.customerId)??0)+payment.amount);}
  const rows=input.customers.map(customer=>{
   const customerAppointments=input.appointments.filter(row=>row.customerId===customer.id);
   const completed=customerAppointments.filter(row=>row.status==="completed").sort((a,b)=>(time(a.startsAt)??0)-(time(b.startsAt)??0));
   const inPeriod=completed.filter(row=>{const value=time(row.startsAt);return value!==null&&value>=start&&value<=now.getTime();});
   const lifetimeSpend=customerAppointments.reduce((sum,row)=>sum+(paymentsByAppointment.get(row.id)??0),0);
-  const periodAppointmentIds=new Set(inPeriod.map(row=>row.id));
-  const periodSpend=input.payments.filter(payment=>periodAppointmentIds.has(payment.appointmentId)&&time(payment.paidAt)!==null&&time(payment.paidAt)!>=start&&time(payment.paidAt)!<=now.getTime()).reduce((sum,row)=>sum+row.amount,0);
+  const periodSpend=periodSpendByCustomer.get(customer.id)??0;
   const lastVisit=completed.length?completed[completed.length-1].startsAt:null;
   const firstVisit=completed[0]?.startsAt??null;
   const upcomingBookings=customerAppointments.filter(row=>(row.status==="pending"||row.status==="confirmed")&&(time(row.startsAt)??0)>now.getTime()).length;
