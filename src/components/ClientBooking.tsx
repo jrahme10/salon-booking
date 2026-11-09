@@ -3,8 +3,8 @@ import {Link} from "react-router-dom";
 import type {FormEvent} from "react";
 import {CalendarDays,CheckCircle2,Clock3,MapPin,Scissors,Star} from "lucide-react";
 import type {Appointment,Business,Employee,Service} from "../types";
-const formatMoney=(amount:number,business:Business)=>new Intl.NumberFormat("en-US",{style:"currency",currency:business.currency,maximumFractionDigits:business.currency==="LBP"?0:2}).format(amount);
 import {getAvailableSlots,isWithinBusinessHours} from "../domain/scheduling";
+const formatMoney=(amount:number,business:Business)=>new Intl.NumberFormat("en-US",{style:"currency",currency:business.currency,maximumFractionDigits:business.currency==="LBP"?0:2}).format(amount);
 
 export interface ClientBookingRequest {name:string;phone:string;email:string;serviceId:string;employeeId:string;startsAt:string}
 export function ClientBooking({business,services,employees,appointments,onSubmit,publicPage=false}:{business:Business;services:Service[];employees:Employee[];appointments:Appointment[];onSubmit:(request:ClientBookingRequest)=>Promise<void>;publicPage?:boolean}){
