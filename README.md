@@ -130,3 +130,11 @@ This is an active development preview, not a production service. Demo records ar
 - Owners can enable browser notifications for due follow-up reminders. Permission is requested only after clicking the enable control; duplicate alerts are suppressed in browser storage.
 - Browser alerts work only while the app is open. This free-first workflow does not send messages automatically or run while the app is closed. Reliable scheduled delivery requires a backend scheduler and an approved messaging provider; WhatsApp Business Platform fees may apply.
 - Reminder and consent data remains browser-local until Supabase persistence and access controls are connected.
+
+
+### Multi-salon marketplace preview
+- Added salon discovery with text search, city filtering, service-category filters, and sorting.
+- Added salon-specific profile routes at `/salon/:slug`, with business details, service menus, starting prices, staff selection, available slots, and a manual-confirmation booking request flow.
+- Added owner controls for the public booking slug and marketplace visibility in Business Settings. Active services appear in the salon profile.
+- The directory currently contains clearly labeled sample listings. Their sample ratings/review counts are not presented as customer ratings.
+- Marketplace demo data and non-primary sample requests are browser-local previews only. They are not connected to a shared provider inbox, real salon accounts, or Supabase. A production marketplace still requires server-backed business discovery, tenant-scoped data, listing moderation, verified ratings, and transactional booking storage.
