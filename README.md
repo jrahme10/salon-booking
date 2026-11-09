@@ -2,6 +2,14 @@
 
 A salon management and appointment discovery platform for Lebanon, designed to expand internationally.
 
+## Live preview
+
+Once the GitHub Pages deployment workflow has completed successfully:
+
+https://jrahme10.github.io/salon-booking/
+
+The preview deploys from the `production-foundation` branch. It is a frontend demo and is not ready for real customer bookings.
+
 ## Current implementation
 
 - React + TypeScript + Vite frontend
@@ -25,6 +33,12 @@ npm run build
 npm run preview
 ```
 
+## GitHub Pages deployment
+
+Every push to `production-foundation` runs `.github/workflows/deploy-pages.yml`, builds the Vite app, and deploys the `dist` directory to GitHub Pages. The Vite base path and router basename are configured for the repository URL. A `404.html` fallback is included for client-side routes.
+
+If the first deployment does not start, enable GitHub Pages in repository Settings → Pages and set the build and deployment source to **GitHub Actions**. Then re-run the Deploy Salon Reservation to GitHub Pages workflow from the Actions tab.
+
 ## Architecture direction
 
 The current repository adapter uses local demo data so the frontend can be developed before the Supabase project is available. Supabase will be introduced behind the repository contracts; UI components should not call the Supabase SDK directly.
@@ -39,4 +53,4 @@ Planned backend foundations:
 
 ## Important status
 
-This is an active development branch, not a production deployment. Demo records are not shared across devices, authentication is not connected, and booking availability must be enforced server-side before real customers can book. Do not use the demo repository for real customer or payment data.
+This is an active development preview, not a production service. Demo records are not shared across devices, authentication is not connected, and booking availability must be enforced server-side before real customers can book. Do not use the demo repository for real customer or payment data.
