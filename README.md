@@ -90,3 +90,12 @@ This is an active development preview, not a production service. Demo records ar
 - The dashboard highlights the top three active employees using estimated service value and separately displays recorded collections.
 - Revenue means payments recorded in the payment ledger; it is not the total value of appointments or unpaid balances. Period comparisons use payment dates for revenue and expense/payroll transaction dates for costs.
 - Appointment counts use appointment start dates. Employee service value uses current service prices and is an estimate, not a historical invoice total. All dashboard data remains browser-local demo data until Supabase and secure shared storage are connected.
+
+
+### Service performance analytics
+
+- The owner dashboard ranks active services by actual payments recorded against their appointments, using payment transaction dates for collections.
+- Booking counts, completed appointments and cancellations use appointment start dates in the selected 30-day or 90-day window.
+- The dashboard shows completion rate and current-price service value estimates alongside collected payments.
+- Services without activity remain visible with zero metrics. Inactive services are excluded.
+- Collected revenue is not the same as estimated service value; appointment and payment date windows are intentionally separate.
