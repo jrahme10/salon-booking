@@ -43,7 +43,7 @@ describe("validateBooking",()=>{
   it("rejects appointments that start before opening",()=>expect(validate({startsAt:monday(8,30)})).toContain("fit within"));
   it("rejects appointments that end after closing",()=>expect(validate({startsAt:monday(17,30)})).toContain("fit within"));
   it("rejects an overlapping appointment for the same employee",()=>{
-    expect(validate({appointments:[appointment()]})).toContain("already has an appointment");
+    expect(validate({startsAt:monday(10),appointments:[appointment()]})).toContain("already has an appointment");
   });
   it("allows appointments that touch but do not overlap",()=>{
     expect(validate({startsAt:monday(11),appointments:[appointment()]})).toBeNull();
