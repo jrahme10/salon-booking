@@ -64,7 +64,8 @@ export function getAvailableSlots(input:{date:string;service:Service;employee:Em
   }
   return slots;
 }
-\n
+
+
 export function isWithinBusinessHours(business:import("../types").Business,startsAt:Date,durationMinutes:number,now=new Date()):boolean{
   if(!Number.isFinite(startsAt.getTime()))return false;
   const timezone=business.timezone??"Asia/Beirut";
