@@ -1,26 +1,31 @@
-# Salon Booking
+# Salon Reservation
 
-A salon reservation web app for nails, hairdressing, and any custom service categories — with a fast client booking flow and a full provider dashboard.
+A salon and beauty-business platform for Lebanon, designed for international expansion. It combines a provider workspace, client discovery marketplace and independent public booking pages.
 
-## Features
+## Frontend foundation
+- React + TypeScript + Vite
+- React Router
+- Responsive provider workspace: overview, calendar, bookings, services, team, customers, analytics, finances and settings
+- Client discovery preview
+- Typed domain models and replaceable repository abstraction
 
-**Client booking flow**
-- Pick a category → service → staff (or "any available")
-- Real available time slots computed from opening hours, staff schedules, breaks, and existing bookings — no double-booking
-- Instant in-app confirmation with a booking reference; view or cancel using the reference
+## Run locally
+```bash
+npm install
+npm run dev
+npm run build
+```
 
-**Provider dashboard**
-- First-launch setup wizard: business name, categories, services (price + duration), staff, weekly opening hours with breaks and closed days
-- Manage services, categories, staff, and hours anytime
-- Today's agenda + week calendar; confirm, cancel, or complete bookings; add bookings manually
+## Backend strategy
+Supabase setup is intentionally postponed. The UI uses `SalonRepository` and a demo adapter so a Supabase implementation can be introduced later without coupling pages to database calls. Never expose service-role or secret keys in browser code.
 
-**Storage**
-Data is saved in the browser via localStorage on each device. A demo-data option and reset button are included.
+## Product requirements
+- Multiple employees and future multiple business locations
+- Provider manually confirms appointment requests
+- Manual payment recording (cash, card, bank transfer, other); no online payment gateway initially
+- USD and LBP support for Lebanon
+- English and Arabic/RTL planned
+- Tenant isolation and role permissions must be enforced before production data is enabled
 
-## Run it
-
-Open `index.html` in any modern browser, or visit the GitHub Pages URL (enable Pages in Settings → Pages, deploying from `main` / root).
-
-## Notes
-
-Bookings made on one device are not yet synced across devices — a shared backend is the next planned step. Booking confirmations are in-app only for now.
+## Release status
+This branch is a frontend foundation, not yet a production release. Authentication, onboarding, full booking flow, shared persistence, secure availability/concurrency, role permissions, notifications, financial ledger, automated tests and deployment configuration remain to be implemented and verified.
