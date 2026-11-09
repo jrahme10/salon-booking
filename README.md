@@ -63,3 +63,12 @@ Planned backend foundations:
 ## Important status
 
 This is an active development preview, not a production service. Demo records are not shared across devices, authentication is not connected, and the current browser-only booking guard is not a substitute for server-side transactional locking. Multiple devices can still create conflicting requests because localStorage is not shared or concurrency-safe. Authentication, tenant isolation, Supabase persistence, server-side availability validation and transactional conflict prevention are required before real customers can book. Do not use the demo repository for real customer or payment data.
+
+
+### Employee commissions and payroll
+
+- Team members can have a percentage commission or a fixed amount per completed appointment; zero disables commission.
+- Commissions are generated once when an appointment moves to completed. Each earning snapshots the service name, service price, commission type and rate so later changes do not rewrite historical earnings.
+- Finance → Team payroll shows earned commission, payouts and outstanding balances. Payouts can be partial, but cannot exceed the unpaid commission balance.
+- Payroll payouts are stored separately from operating expenses and included as salary expenses in monthly cash-flow reports, preventing double counting.
+- This first version records commission payouts only; fixed monthly salaries, payroll tax, deductions and payslips are not included. Data is still browser-local demo data until Supabase is connected.
