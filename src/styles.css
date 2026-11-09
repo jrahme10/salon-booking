@@ -74,3 +74,38 @@
 .client-request-inbox article small{font-size:9px;color:#899387}
 .client-request-inbox article>div:last-child{display:flex;gap:7px;flex-shrink:0}
 @media(max-width:680px){.client-appointments-content{padding:28px 14px 50px}.client-appointments-heading{align-items:flex-start}.client-appointments-heading h2{font-size:25px}.client-appointment-card{padding:15px}.client-appointment-date{gap:7px}.client-appointment-date>b,.client-appointment-date>span{font-size:9px}.client-request-inbox{padding:15px}.client-request-inbox article{align-items:flex-start;flex-direction:column}.client-request-inbox article>div:last-child{width:100%;justify-content:flex-end}.client-appointment-actions{flex-direction:column}.client-appointment-actions button{justify-content:center}}
+
+/* Business settings */
+.business-settings .heading{align-items:center}
+.settings-section{padding:23px 25px;margin-bottom:17px}
+.settings-section-title{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+.settings-section-title>span{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#edf2eb;color:#4b6a50}
+.settings-section-title h2{margin:0 0 4px;font:21px 'Playfair Display',serif;color:#304b3b}
+.settings-section-title p{margin:0;font-size:10px;color:#879184}
+.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px 20px}
+.settings-grid>label{display:grid;gap:7px;color:#596457;font-size:10px;font-weight:700}
+.settings-grid input,.settings-grid select,.settings-grid textarea{width:100%;min-width:0;border:1px solid #e4e9e1;border-radius:9px;background:#fff;padding:11px 12px;color:#303a31;font:11px 'DM Sans',sans-serif;outline:none}
+.settings-grid input:focus,.settings-grid select:focus,.settings-grid textarea:focus{border-color:#78947a;box-shadow:0 0 0 3px #eaf0e8}
+.settings-grid input:disabled{background:#f5f6f3;color:#a0a69c}
+.settings-grid textarea{resize:vertical}
+.settings-wide{grid-column:1/-1}
+.field-hint{font-size:9px;font-weight:400;color:#929b8f}
+.business-hours-list{display:grid}
+.business-hours-row{display:grid;grid-template-columns:minmax(90px,1fr) 100px minmax(105px,130px) 20px minmax(105px,130px);align-items:center;gap:12px;padding:11px 0;border-top:1px solid #eff1ec}
+.business-hours-row>b{font-size:11px;color:#4b574b}
+.business-hours-row>input{min-width:0;border:1px solid #e5e9e2;border-radius:8px;background:#fff;padding:8px 9px;color:#4a554a;font:10px 'DM Sans',sans-serif}
+.business-hours-row>input:disabled{background:#f5f6f3;color:#adb4a9}
+.hours-separator{text-align:center;color:#a0a79d;font-size:9px}
+.switch-control{display:flex;align-items:center;gap:7px;font-size:9px;color:#728071;cursor:pointer}
+.switch-control input{accent-color:#42674d;width:14px;height:14px;margin:0}
+.switch-control span{white-space:nowrap}
+.business-hours-row.closed{opacity:.72}
+.settings-toggle{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px;border:1px solid #e8ece5;border-radius:11px;background:#fafbf9}
+.settings-toggle>div{display:grid;gap:4px}
+.settings-toggle b{font-size:10px;color:#455546}
+.settings-toggle small{font-size:9px;color:#899287}
+.settings-policy{display:flex;align-items:center;gap:7px;margin:17px 0 0!important;color:#718272!important;font-size:9px!important}
+.settings-success{padding:11px 14px;border-radius:9px;background:#edf4ec;color:#47694b;font-size:10px}
+.settings-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:0 2px 15px}
+.settings-bottom>small{color:#929b8f;font-size:9px}
+@media(max-width:700px){.content{padding:24px 15px 45px}.business-settings .heading{align-items:flex-start}.business-settings .heading .primary{padding:10px 12px;font-size:10px}.settings-section{padding:18px 15px}.settings-grid{grid-template-columns:1fr;gap:14px}.settings-wide,.settings-toggle{grid-column:auto}.business-hours-row{grid-template-columns:minmax(75px,1fr) 86px minmax(82px,1fr) 12px minmax(82px,1fr);gap:6px}.business-hours-row>b{font-size:9px}.business-hours-row>input{padding:7px 4px;font-size:9px}.switch-control{gap:4px}.switch-control span{font-size:8px}.settings-bottom{align-items:flex-start;flex-direction:column}.settings-bottom .primary{width:100%}}
