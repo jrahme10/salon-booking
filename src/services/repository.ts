@@ -1,6 +1,6 @@
 import * as demo from "../data/mock";
 import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
-import type {Appointment,Business,Customer,Employee,Service} from "../types";
+import type {Appointment,Business,ClientAppointmentRequest,Customer,Employee,Service} from "../types";
 
 export interface SalonRepository {
   getBusiness():Promise<Business>;
@@ -10,6 +10,9 @@ export interface SalonRepository {
   getAppointments():Promise<Appointment[]>;
   updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void>;
   updateAppointment(appointment:Appointment):Promise<void>;
+  getClientAppointmentRequests():Promise<ClientAppointmentRequest[]>;
+  createClientAppointmentRequest(request:ClientAppointmentRequest):Promise<void>;
+  updateClientAppointmentRequest(id:string,status:ClientAppointmentRequest["status"]):Promise<void>;
   createAppointment(appointment:Appointment):Promise<void>;
   createCustomer(customer:Customer):Promise<Customer>;
   createService(service:Service):Promise<void>;
@@ -19,10 +22,10 @@ export interface SalonRepository {
   updateEmployee(employee:Employee):Promise<void>;
   deleteEmployee(id:string):Promise<void>;
 }
-type StoredState={appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[]};
+type StoredState={appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];clientRequests:ClientAppointmentRequest[]};
 const STORAGE_KEY="salon-reservation-demo-v1";
 const copy=<T,>(value:T):T=>JSON.parse(JSON.stringify(value)) as T;
-const seed=():StoredState=>({appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers)});
+const seed=():StoredState=>({appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),clientRequests:[]});
 
 class DemoRepository implements SalonRepository {
   private state:StoredState;
@@ -32,7 +35,7 @@ class DemoRepository implements SalonRepository {
       const parsed=saved?JSON.parse(saved) as Partial<StoredState>:{};
       const defaults=seed();
       const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
-      this.state={appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers};
+      this.state={appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests};
     } catch { this.state=seed(); }
   }
   private persist(){
@@ -51,6 +54,47 @@ class DemoRepository implements SalonRepository {
     const allowed:Record<Appointment["status"],Appointment["status"][]>={pending:["confirmed","cancelled"],confirmed:["completed","cancelled"],completed:[],cancelled:[]};
     if(!allowed[current.status].includes(status)) throw new Error("This appointment status cannot be changed in that way.");
     this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
+  }
+  async getClientAppointmentRequests(){return copy(this.state.clientRequests);}
+  async createClientAppointmentRequest(request:ClientAppointmentRequest){
+    if(request.businessId!==demo.business.id) throw new Error("Invalid business for this request.");
+    const appointment=this.state.appointments.find(row=>row.id===request.appointmentId);
+    if(!appointment||appointment.businessId!==request.businessId||appointment.customerId!==request.customerId) throw new Error("This appointment could not be found for this client.");
+    if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("Only active appointments can be changed.");
+    if(new Date(appointment.startsAt).getTime()<=Date.now()) throw new Error("Requests are only available for future appointments.");
+    if(this.state.clientRequests.some(row=>row.appointmentId===request.appointmentId&&row.status==="pending")) throw new Error("There is already a request waiting for this appointment.");
+    if(request.kind==="reschedule"){
+      if(!request.requestedStartsAt) throw new Error("Choose a new date and time.");
+      const service=this.state.services.find(row=>row.id===appointment.serviceId);
+      const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+      if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
+      const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+      if(reason) throw new Error(reason);
+    }
+    this.commit({...this.state,clientRequests:[...this.state.clientRequests,copy(request)]});
+  }
+  async updateClientAppointmentRequest(id:string,status:ClientAppointmentRequest["status"]){
+    const request=this.state.clientRequests.find(row=>row.id===id);
+    if(!request) throw new Error("Client request was not found.");
+    if(request.status!=="pending") throw new Error("This request has already been reviewed.");
+    let appointments=this.state.appointments;
+    if(status==="approved"){
+      const appointment=appointments.find(row=>row.id===request.appointmentId);
+      if(!appointment||appointment.customerId!==request.customerId||appointment.businessId!==request.businessId) throw new Error("The linked appointment could not be found.");
+      if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("This appointment is no longer active.");
+      if(request.kind==="cancellation"){
+        appointments=appointments.map(row=>row.id===appointment.id?{...row,status:"cancelled" as const}:row);
+      }else{
+        if(!request.requestedStartsAt) throw new Error("The requested date and time is missing.");
+        const service=this.state.services.find(row=>row.id===appointment.serviceId);
+        const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+        if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
+        const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+        if(reason) throw new Error("Cannot approve this time: "+reason);
+        appointments=appointments.map(row=>row.id===appointment.id?{...row,startsAt:request.requestedStartsAt!}:row).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
+      }
+    }
+    this.commit({...this.state,appointments,clientRequests:this.state.clientRequests.map(row=>row.id===id?{...row,status}:row)});
   }
   async updateAppointment(appointment:Appointment){
     const current=this.state.appointments.find(row=>row.id===appointment.id);
