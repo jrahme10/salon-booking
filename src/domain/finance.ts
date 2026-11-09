@@ -1,13 +1,12 @@
 import type {Appointment,Expense,Payment,Service} from "../types";
 
-export function validatePayment(payment:Payment,appointment:Appointment,service:Service,existing:Payment[]):string|null{
+export function validatePayment(payment:Payment,appointment:Appointment,service:Service):string|null{
   if(!payment.id.trim()||!payment.businessId.trim()||payment.businessId!==appointment.businessId)return "Payment business does not match the appointment.";
   if(payment.appointmentId!==appointment.id)return "Payment must belong to the selected appointment.";
   if(!Number.isFinite(payment.amount)||payment.amount<=0)return "Enter a payment amount greater than zero.";
   if(!["cash","card","bank_transfer","other"].includes(payment.method))return "Choose a valid payment method.";
   if(!Number.isFinite(new Date(payment.paidAt).getTime()))return "Choose a valid payment date.";
-  const alreadyRecorded=existing.filter(row=>row.appointmentId===appointment.id).reduce((sum,row)=>sum+row.amount,0);
-  const remaining=Math.max(0,service.price-appointment.paidAmount-alreadyRecorded);
+  const remaining=Math.max(0,service.price-appointment.paidAmount);
   if(payment.amount>remaining+0.000001)return "Payment exceeds the remaining appointment balance.";
   return null;
 }
