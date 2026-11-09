@@ -70,7 +70,7 @@ class DemoRepository implements SalonRepository {
     if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("Only active appointments can be changed.");
     if(new Date(appointment.startsAt).getTime()<=Date.now()) throw new Error("Requests are only available for future appointments.");
     if(this.state.clientRequests.some(row=>row.appointmentId===request.appointmentId&&row.status==="pending")) throw new Error("There is already a request waiting for this appointment.");
-    if(request.kind==="reschedule"){
+    if(request.kind==="cancellation"&&new Date(appointment.startsAt).getTime()<Date.now()+(this.state.business.bookingRules?.cancellationNoticeHours??0)*3_600_000)throw new Error("The cancellation notice period has passed. Please contact the salon directly.");\n    if(request.kind==="reschedule"){
       if(!request.requestedStartsAt) throw new Error("Choose a new date and time.");
       const service=this.state.services.find(row=>row.id===appointment.serviceId);
       const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
