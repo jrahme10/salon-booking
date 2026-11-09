@@ -7,3 +7,16 @@ export interface Service { id:string; businessId:string; name:string; category:s
 export interface Employee { id:string; businessId:string; name:string; role:string; initials:string; active:boolean; serviceIds?:string[]; workingHours?:WeeklySchedule; timeOff?:string[] }
 export interface Customer { id:string; name:string; phone:string; email:string; visits:number; lastVisit:string; businessId?:string }
 export interface Appointment { id:string; businessId:string; customerId:string; serviceId:string; employeeId:string; startsAt:string; status:BookingStatus; paidAmount:number; source?:"provider"|"client" }
+
+export type ClientRequestKind = "cancellation" | "reschedule";
+export type ClientRequestStatus = "pending" | "approved" | "declined";
+export interface ClientAppointmentRequest {
+  id:string;
+  businessId:string;
+  appointmentId:string;
+  customerId:string;
+  kind:ClientRequestKind;
+  status:ClientRequestStatus;
+  requestedStartsAt?:string;
+  createdAt:string;
+}
