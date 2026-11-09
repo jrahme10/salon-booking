@@ -22,6 +22,10 @@ The preview deploys from the `production-foundation` branch. It is a frontend de
 - Booking validation for past times, inactive services/staff, working hours and overlapping appointments
 - Provider service and team CRUD workflows
 - Client booking request flow with a shareable `/book/<business-slug>` page and manual salon confirmation
+- Business settings for profile, currency, opening hours, timezone and booking rules
+- Manual payment ledger supporting full and partial appointment payments
+- Expense tracking with categories, payment methods and dates
+- Monthly finance reports with six-month income/expense trends and category/payment-method breakdowns
 - Responsive layouts for desktop and mobile
 
 ## Run locally
@@ -46,7 +50,7 @@ If the first deployment does not start, enable GitHub Pages in repository Settin
 
 ## Architecture direction
 
-The current repository adapter uses local demo data so the frontend can be developed before the Supabase project is available. Supabase will be introduced behind the repository contracts; UI components should not call the Supabase SDK directly.
+The current repository adapter uses local demo data so the frontend can be developed before the Supabase project is available. Payment and expense records, including monthly report inputs, are also stored locally in the browser; do not use this demo for real financial records. Supabase will be introduced behind the repository contracts; UI components should not call the Supabase SDK directly.
 
 Planned backend foundations:
 - Supabase Auth for client, employee and business-owner identities
