@@ -1,6 +1,6 @@
 import {useMemo,useState} from "react";
 import {Link} from "react-router-dom";
-import {CalendarDays,CheckCircle2,Clock3,RotateCcw,XCircle} from "lucide-react";
+import {CalendarDays,Clock3,RotateCcw,XCircle} from "lucide-react";
 import type {Appointment,Business,ClientAppointmentRequest,Customer,Employee,Service} from "../types";
 import {getAvailableSlots} from "../domain/scheduling";
 
