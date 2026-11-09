@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salon Booking</title>
+<style>
+:root{--ivory:#FAF7F2;--blush:#F6E3DD;--rose:#C98A8E;--plum:#3D2C3A;--charcoal:#2B2630;--gold:#B98E6A}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--ivory);color:var(--charcoal);line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:24px}
+header{background:linear-gradient(135deg,var(--plum),#5a3d52);color:#fff;padding:28px 0;text-align:center}
+header h1{font-weight:300;letter-spacing:2px}
+header p{opacity:.8;font-size:.9em}
+.btn{display:inline-block;padding:12px 26px;border:none;border-radius:50px;cursor:pointer;font-size:.95em;transition:.2s;background:var(--rose);color:#fff}
+.btn:hover{background:#b27b7f;transform:translateY(-1px)}
+.btn.ghost{background:transparent;border:2px solid var(--rose);color:var(--rose)}
+.btn.sm{padding:6px 14px;font-size:.8em}
+.card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 2px 18px rgba(61,44,58,.07);margin-bottom:20px}
+h2{color:var(--plum);font-weight:500;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.step{display:none}
+.step.active{display:block}
+.progress{display:flex;gap:6px;margin-bottom:28px}
+.progress span{flex:1;height:4px;background:var(--blush);border-radius:2px}
+.progress span.on{background:var(--rose)}
+label{display:block;font-size:.85em;color:var(--plum);margin:12px 0 5px;font-weight:500}
+input,select,textarea{width:100%;padding:11px 14px;border:1.5px solid var(--blush);border-radius:10px;font-size:.95em;background:#fff}
+input:focus,select:focus{outline:none;border-color:var(--rose)}
+.opt{border:2px solid var(--blush);border-radius:14px;padding:16px;cursor:pointer;background:#fff;transition:.2s}
+.opt:hover,.opt.sel{border-color:var(--rose);background:var(--blush)}
+.opt .n{font-weight:600;color:var(--plum)}
+.opt .p{font-size:.9em;color:var(--rose);margin-top:4px}
+.slot{padding:9px 0;text-align:center;border:1.5px solid var(--blush);border-radius:9px;cursor:pointer;background:#fff;font-size:.9em}
+.slot:hover,.slot.sel{border-color:var(--rose);background:var(--rose);color:#fff}
+.slot.off{opacity:.3;pointer-events:none}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px}
+.tag{display:inline-block;background:var(--blush);color:var(--plum);padding:3px 12px;border-radius:20px;font-size:.78em;margin:3px 3px 3px 0}
+table{width:100%;border-collapse:collapse;font-size:.9em}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--blush)}
+th{color:var(--plum)}
+.status{padding:3px 10px;border-radius:12px;font-size:.75em}
+.status.pending{background:#FFF3D6;color:#9a6d00}
+.status.confirmed{background:#DFF2E3;color:#1d6b3c}
+.status.completed{background:var(--blush);color:var(--plum)}
+.status.cancelled{background:#F8D7DA;color:#8C2F39}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:9px 20px;border-radius:30px;cursor:pointer;background:#fff;border:1.5px solid var(--blush);font-size:.9em}
+.tab.active{background:var(--plum);color:#fff;border-color:var(--plum)}
+.mode{display:flex;justify-content:center;gap:12px;margin-bottom:24px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hidden{display:none!important}
+.msg{padding:10px 16px;border-radius:10px;background:#DFF2E3;color:#1d6b3c;margin-bottom:14px}
+@media(max-width:600px){.wrap{padding:14px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="bizName">Salon Booking</h1>
+  <p id="bizTag">Reserve your moment of beauty</p>
+</header>
+<div class="wrap">
+
+<!-- MODE SWITCH -->
+<div class="mode">
+  <button class="btn ghost" id="btnClient">Client</button>
+  <button class="btn ghost" id="btnProvider">Provider</button>
+</div>
+
+<!-- ============ CLIENT ============ -->
+<div id="clientView">
+  <div class="card" id="startCard">
+    <h2>Book an appointment</h2>
+    <div class="row">
+      <button class="btn" id="btnStartBooking">New booking</button>
+      <button class="btn ghost" id="btnFindBooking">Find / cancel a booking</button>
+    </div>
+  </div>
+
+  <div id="bookingFlow" class="hidden">
+    <div class="progress"><span class="on" id="p1"></span><span id="p2"></span><span id="p3"></span><span id="p4"></span><span id="p5"></span></div>
+
+    <!-- step 1: category -->
+    <div class="card step active" id="s1">
+      <h2>1 · Choose a category</h2>
+      <div class="grid" id="catGrid"></div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="backToStart1">Back</button></div>
+    </div>
+
+    <!-- step 2: service -->
+    <div class="card step" id="s2">
+      <h2>2 · Choose a service</h2>
+      <div class="grid" id="svcGrid"></div>
+      <div class="row" style="margin-top:16px"><button class="btn ghost" data-back="1">Back</button></div>
+    </div>
+
+    <!-- step 3: staff -->
+    <div class="card step" id="s3">
+      <h2>3 · Choose your stylist</h2>
+      <div class="grid" id="staffGrid"></div>
+      <div class="row" style="margin-top:16px"><button class="btn ghost" data-back="2">Back</button></div>
+    </div>
+
+    <!-- step 4: date & time -->
+    <div class="card step" id="s4">
+      <h2>4 · Pick a date & time</h2>
+      <label>Date</label>
+      <input type="date" id="pickDate">
+      <div class="slots" id="slotGrid"></div>
+      <p class="hidden" id="noSlots" style="margin-top:12px;color:var(--rose)">No available times on this date. Please choose another date.</p>
+      <div class="row" style="margin-top:16px">
+        <button class="btn hidden" id="btnToDetails">Continue</button>
+        <button class="btn ghost" data-back="3">Back</button>
+      </div>
+    </div>
+
+    <!-- step 5: details -->
+    <div class="card step" id="s5">
+      <h2>5 · Your details</h2>
+      <p id="summary" style="margin-bottom:10px;color:var(--plum)"></p>
+      <label>Your name</label><input id="cName" placeholder="Name">
+      <label>Phone</label><input id="cPhone" placeholder="Phone number">
+      <div class="row" style="margin-top:18px">
+        <button class="btn" id="btnConfirm">Confirm booking</button>
+        <button class="btn ghost" data-back="4">Back</button>
+      </div>
+    </div>
+
+    <!-- confirmation -->
+    <div class="card hidden" id="doneCard">
+      <h2>Booking received</h2>
+      <div class="msg" id="doneMsg"></div>
+      <button class="btn" id="btnDoneOk">Done</button>
+    </div>
+
+    <!-- find booking -->
+    <div class="card hidden" id="findCard">
+      <h2>Find your booking</h2>
+      <p style="font-size:.9em;margin-bottom:10px">Enter the booking reference shown when you booked.</p>
+      <input id="refInput" placeholder="e.g. SB-1234">
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="btnLookup">Find</button>
+        <button class="btn ghost" id="btnFindBack">Back</button>
+      </div>
+      <div id="lookupResult" style="margin-top:16px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PROVIDER ============ -->
+<div id="providerView" class="hidden">
+  <div class="tabs">
+    <div class="tab active" data-tab="agenda">Agenda</div>
+    <div class="tab" data-tab="bookings">Bookings</div>
+    <div class="tab" data-tab="services">Services</div>
+    <div class="tab" data-tab="staffTab">Staff</div>
+    <div class="tab" data-tab="hours">Hours</div>
+    <div class="tab" data-tab="settings">Settings</div>
+  </div>
+
+  <!-- agenda -->
+  <div class="card tabPane" id="pane-agenda">
+    <h2>Today's agenda</h2>
+    <div class="row" style="margin-bottom:16px"><button class="btn sm" id="btnAddBooking">+ Add booking</button></div>
+    <div id="agendaList"></div>
+  </div>
+
+  <!-- bookings -->
+  <div class="card tabPane hidden" id="pane-bookings">
+    <h2>All bookings</h2>
+    <div id="bookingsTable"></div>
+  </div>
+
+  <!-- services -->
+  <div class="card tabPane hidden" id="pane-services">
+    <h2>Services & categories</h2>
+    <div class="row" style="margin-bottom:16px">
+      <button class="btn sm" id="btnAddSvc">+ Add service</button>
+      <button class="btn ghost sm" id="btnAddCat">+ Add category</button>
+    </div>
+    <div id="svcList"></div>
+  </div>
+
+  <!-- staff -->
+  <div class="card tabPane hidden" id="pane-staffTab">
+    <h2>Staff</h2>
+    <div class="row" style="margin-bottom:16px"><button class="btn sm" id="btnAddStaff">+ Add staff</button></div>
+    <div id="staffList"></div>
+  </div>
+
+  <!-- hours -->
+  <div class="card tabPane hidden" id="pane-hours">
+    <h2>Opening hours</h2>
+    <p style="font-size:.85em;color:#777;margin-bottom:12px">Breaks are entered in 24h format, e.g. 13:00-14:00, separated by commas.</p>
+    <div id="hoursList"></div>
+    <div class="row" style="margin-top:16px"><button class="btn sm" id="btnSaveHours">Save hours</button></div>
+  </div>
+
+  <!-- settings -->
+  <div class="card tabPane hidden" id="pane-settings">
+    <h2>Settings</h2>
+    <label>Business name</label><input id="setBizName">
+    <div class="row" style="margin-top:16px">
+      <button class="btn sm" id="btnSaveSettings">Save</button>
+      <button class="btn ghost sm" id="btnDemo">Load demo data</button>
+      <button class="btn ghost sm" id="btnReset" style="border-color:#c66;color:#c66">Reset everything</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- modal -->
+<div id="modal" class="hidden" style="position:fixed;inset:0;background:rgba(61,44,58,.45);display:flex;align-items:center;justify-content:center;z-index:50">
+  <div class="card" style="max-width:460px;width:92%;margin:0" id="modalBody"></div>
+</div>
+
+<script>
+// ---------- data layer ----------
+const KEY='salonBookingData';
+const DEF={businessName:'Salon Booking',tagline:'Reserve your moment of beauty',categories:['Nails','Hair'],services:[],staff:[],hours:{0:{open:false},1:{open:true,from:'09:00',to:'18:00',breaks:''},2:{open:true,from:'09:00',to:'18:00',breaks:''},3:{open:true,from:'09:00',to:'18:00',breaks:''},4:{open:true,from:'09:00',to:'18:00',breaks:''},5:{open:true,from:'09:00',to:'19:00',breaks:''},6:{open:true,from:'10:00',to:'16:00',breaks:''}},bookings:[],setupDone:false};
+let D=load();
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):JSON.parse(JSON.stringify(DEF))}catch(e){return JSON.parse(JSON.stringify(DEF))}}
+function save(){localStorage.setItem(KEY,JSON.stringify(D))}
+function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function uid(){return Math.random().toString(36).slice(2,9)}
+
+// ---------- helpers ----------
+function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m}
+function toTime(m){m=Math.max(0,m);const h=Math.floor(m/60),mm=m%60;return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0')}
+function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parseBreaks(b){if(!b)return[];return b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>{const[a,z]=x.split('-');if(a&&z)return{s:toMin(a.trim()),e:toMin(z.trim())}}).filter(Boolean)}
+function staffBusy(staffId,date){return D.bookings.filter(b=>b.staffId===staffId&&b.date===date&&b.status!=='cancelled')}
+
+// compute available slots for a service on a date for a staff member
+function slotsFor(svc,dateStr,staffId){
+  const d=new Date(dateStr+'T00:00:00');const h=D.hours[d.getDay()];
+  if(!h||!h.open)return[];
+  const open=toMin(h.from),close=toMin(h.to),dur=svc.duration||60;
+  const brks=parseBreaks(h.breaks);
+  const busy=staffBusy(staffId,dateStr).map(b=>({s:toMin(b.time),e:toMin(b.time)+svc.duration}));
+  const out=[];let t=open;
+  while(t+dur<=close){
+    let ok=true;
+    for(const b of busy){if(t<b.e&&t+dur>b.s){ok=false;break}}
+    if(ok){for(const br of brks){if(t<br.e&&t+dur>br.s){ok=false;break}}}
+    if(ok)out.push(toTime(t));
+    t+=30;
+  }
+  return out;
+}
+function anySlots(svc,dateStr){
+  const cands=D.staff.filter(s=>!svc.categories||svc.categories.includes(svcCatName(svc)));
+  const list=cands.length?cands:D.staff;
+  let out={};
+  for(const st of list){const sl=slotsFor(svc,dateStr,st.id);if(sl.length)out[st.id]=sl}
+  return out;
+}
+function svcCatName(svc){const c=D.categories.find(c=>c===svc.category||c.id===svc.category);return c&&typeof c==='object'?c.name:c}
+
+// ---------- modal ----------
+let modalCb=null;
+function modal(html,cb){document.getElementById('modalBody').innerHTML=html;document.getElementById('modal').classList.remove('hidden');modalCb=cb}
+function closeModal(){document.getElementById('modal').classList.add('hidden');modalCb=null}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+
+// ---------- mode switching ----------
+const clientView=document.getElementById('clientView'),providerView=document.getElementById('providerView');
+function showClient(){clientView.classList.remove('hidden');providerView.classList.add('hidden');document.getElementById('btnClient').style.background='var(--rose)';document.getElementById('btnProvider').style.background='';resetFlow()}
+function showProvider(){providerView.classList.remove('hidden');clientView.classList.add('hidden');document.getElementById('btnProvider').style.background='var(--rose)';document.getElementById('btnClient').style.background='';renderProvider()}
+document.getElementById('btnClient').onclick=showClient;
+document.getElementById('btnProvider').onclick=showProvider;
+
+// ---------- client booking flow ----------
+let bk={cat:null,svc:null,staff:null,date:null,time:null};
+function resetFlow(){bk={cat:null,svc:null,staff:null,date:null,time:null};document.getElementById('bookingFlow').classList.add('hidden');document.getElementById('startCard').classList.remove('hidden');document.getElementById('doneCard').classList.add('hidden');document.getElementById('findCard').classList.add('hidden')}
+document.getElementById('btnStartBooking').onclick=function(){
+  if(!D.categories.length||!D.services.length){modal('<h2>Not ready yet</h2><p>The salon hasn\'t added services yet. (Provider: add services in the Provider view, or load demo data in Settings.)</p><button class="btn" onclick="closeModal()">OK</button>');return}
+  if(!D.staff.length){modal('<h2>Not ready yet</h2><p>The salon hasn\'t added staff yet. (Provider: add staff in the Provider view, or load demo data in Settings.)</p><button class="btn" onclick="closeModal()">OK</button>');return}
+  document.getElementById('startCard').classList.add('hidden');
+  document.getElementById('bookingFlow').classList.remove('hidden');
+  go(1);renderCats();
+};
+document.getElementById('btnFindBooking').onclick=function(){document.getElementById('startCard').classList.add('hidden');document.getElementById('findCard').classList.remove('hidden')};
+document.getElementById('btnFindBack').onclick=resetFlow;
+
+function go(n){
+  for(let i=1;i<=5;i++){document.getElementById('s'+i).classList.toggle('active',i===n);document.getElementById('p'+i).classList.toggle('on',i<=n)}
+}
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>go(+b.dataset.back));
+document.getElementById('backToStart1').onclick=resetFlow;
+
+function renderCats(){
+  const g=document.getElementById('catGrid');g.innerHTML='';
+  D.categories.forEach(c=>{
+    const name=typeof c==='object'?c.name:c;const id=typeof c==='object'?c.id:c;
+    const count=D.services.filter(s=>s.category===name||s.category===id).length;
+    const d=document.createElement('div');d.className='opt'+(bk.cat===id?' sel':'');
+    d.innerHTML='<div class="n">'+esc(name)+'</div><div class="p">'+count+' service'+(count===1?'':'s')+'</div>';
+    d.onclick=()=>{bk.cat=id;bk.svc=null;bk.staff=null;renderCats();setTimeout(()=>go(2),200)};
+    g.appendChild(d);
+  });
+}
+function renderSvcs(){
+  const g=document.getElementById('svcGrid');g.innerHTML='';
+  const list=D.services.filter(s=>{const n=svcCatName(s);const cn=typeof bk.cat==='object'?'':String(bk.cat);return s.category===bk.cat||n===bk.cat||s.category===cn});
+  if(!list.length){g.innerHTML='<p>No services in this category yet.</p>';return}
+  list.forEach(s=>{
+    const d=document.createElement('div');d.className='opt'+(bk.svc&&bk.svc.id===s.id?' sel':'');
+    d.innerHTML='<div class="n">'+esc(s.name)+'</div><div class="p">'+esc(s.duration)+' min · '+esc(s.price)+'</div>'+(s.desc?'<div style="font-size:.8em;color:#777;margin-top:4px">'+esc(s.desc)+'</div>':'');
+    d.onclick=()=>{bk.svc=s;bk.staff=null;renderSvcs();setTimeout(()=>go(3),200)};
+    g.appendChild(d);
+  });
+}
+function renderStaff(){
+  const g=document.getElementById('staffGrid');g.innerHTML='';
+  const any=document.createElement('div');any.className='opt'+(bk.staff==='any'?' sel':'');
+  any.innerHTML='<div class="n">Any available</div><div class="p">First free stylist</div>';
+  any.onclick=()=>{bk.staff='any';renderStaff();setTimeout(()=>go(4),200)};
+  g.appendChild(any);
+  D.staff.forEach(st=>{
+    const d=document.createElement('div');d.className='opt'+(bk.staff===st.id?' sel':'');
+    d.innerHTML='<div class="n">'+esc(st.name)+'</div>';
+    d.onclick=()=>{bk.staff=st.id;renderStaff();setTimeout(()=>go(4),200)};
+    g.appendChild(d);
+  });
+}
+// hook step transitions to render content
+const origGo=go;
+// observe when steps become active
+new MutationObserver(()=>{}).observe(document.body,{childList:true,subtree:true});
+
+const pickDate=document.getElementById('pickDate');
+pickDate.min=dstr(new Date());
+let dateInit=false;
+function renderSlots(){
+  const g=document.getElementById('slotGrid');g.innerHTML='';
+  const noSlots=document.getElementById('noSlots');
+  document.getElementById('btnToDetails').classList.add('hidden');
+  if(!pickDate.value||!bk.svc){g.innerHTML='';return}
+  bk.date=pickDate.value;bk.time=null;
+  let all=[];
+  if(bk.staff==='any'){
+    const m=anySlots(bk.svc,pickDate.value);
+    const set=new Set();Object.values(m).forEach(a=>a.forEach(t=>set.add(t)));
+    all=[...set].sort();
+  }else{
+    all=slotsFor(bk.svc,pickDate.value,bk.staff);
+  }
+  noSlots.classList.toggle('hidden',all.length>0);
+  all.forEach(t=>{
+    const d=document.createElement('div');d.className='slot'+(bk.time===t?' sel':'');d.textContent=t;
+    d.onclick=()=>{bk.time=t;renderSlots();document.getElementById('btnToDetails').classList.remove('hidden')};
+    g.appendChild(d);
+  });
+}
+pickDate.onchange=renderSlots;
+document.getElementById('btnToDetails').onclick=function(){
+  document.getElementById('summary').innerHTML='<span class="tag">'+esc(svcCatName(bk.svc))+'</span><span class="tag">'+esc(bk.svc.name)+' · '+esc(bk.svc.duration)+' min · '+esc(bk.svc.price)+'</span><span class="tag">'+esc(bk.staff==='any'?'Any available':D.staff.find(s=>s.id===bk.staff).name)+'</span><span class="tag">'+esc(bk.date)+' at '+esc(bk.time)+'</span>';
+  go(5);
+};
+document.getElementById('btnConfirm').onclick=function(){
+  const name=document.getElementById('cName').value.trim(),phone=document.getElementById('cPhone').value.trim();
+  if(!name||!phone){modal('<h2>Missing details</h2><p>Please enter your name and phone number.</p><button class="btn" onclick="closeModal()">OK</button>');return}
+  let staffId=bk.staff;
+  if(staffId==='any'){
+    const m=anySlots(bk.svc,bk.date);
+    for(const sid of Object.keys(m)){if(m[sid].includes(bk.time)){staffId=sid;break}}
+  }
+  const ref='SB-'+String(Math.floor(1000+Math.random()*9000));
+  D.bookings.push({id:uid(),ref,name,phone,date:bk.date,time:bk.time,serviceId:bk.svc.id,staffId,status:'pending',created:new Date().toISOString()});
+  save();
+  document.getElementById('bookingFlow').classList.add('hidden');
+  document.getElementById('doneCard').classList.remove('hidden');
+  document.getElementById('doneMsg').innerHTML='Thank you, <b>'+esc(name)+'</b>! Your booking request for <b>'+esc(bk.svc.name)+'</b> on <b>'+esc(bk.date)+'</b> at <b>'+esc(bk.time)+'</b> was received.<br><br>Reference: <b>'+ref+'</b><br><small>Save this reference to view or cancel your booking.</small>';
+};
+document.getElementById('btnDoneOk').onclick=resetFlow;
+
+// find booking
+document.getElementById('btnLookup').onclick=function(){
+  const ref=document.getElementById('refInput').value.trim().toUpperCase();
+  const b=D.bookings.find(x=>x.ref===ref);
+  const out=document.getElementById('lookupResult');
+  if(!b){out.innerHTML='<p style="color:#c66">No booking found with that reference.</p>';return}
+  const svc=D.services.find(s=>s.id===b.serviceId);const st=D.staff.find(s=>s.id===b.staffId);
+  out.innerHTML='<div class="opt"><div class="n">'+esc(svc?svc.name:'Service')+'</div><div class="p">'+esc(b.date)+' at '+esc(b.time)+'</div><p style="font-size:.85em;margin-top:6px">With '+esc(st?st.name:'any stylist')+' · status: <span class="status '+b.status+'">'+b.status+'</span></p></div>'+
+  (b.status!=='cancelled'?'<div class="row" style="margin-top:10px"><button class="btn sm" id="btnCancelMine" style="background:#c66">Cancel booking</button></div>':'');
+  const c=document.getElementById('btnCancelMine');
+  if(c)c.onclick=function(){b.status='cancelled';save();document.getElementById('btnLookup').click()};
+};
+
+// ---------- provider ----------
+function renderProvider(){
+  document.getElementById('bizName').textContent=D.businessName||'Salon Booking';
+  document.getElementById('bizTag').textContent=D.tagline||'';
+  renderAgenda();renderBookings();renderSvcsList();renderStaffList();renderHours();renderSettings();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+  document.querySelectorAll('.tabPane').forEach(p=>p.classList.toggle('hidden',p.id!=='pane-'+t.dataset.tab));
+});
+
+function renderAgenda(){
+  const list=document.getElementById('agendaList');const today=dstr(new Date());
+  const items=D.bookings.filter(b=>b.date===today&&b.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
+  list.innerHTML=items.length?'':'<p style="color:#777">No bookings today.</p>';
+  items.forEach(b=>{list.appendChild(bookingRow(b))});
+}
+function bookingRow(b){
+  const svc=D.services.find(s=>s.id===b.serviceId);const st=D.staff.find(s=>s.id===b.staffId);
+  const div=document.createElement('div');div.className='opt';div.style.marginBottom='10px';
+  div.innerHTML='<div class="n">'+esc(b.time)+' · '+esc(svc?svc.name:'—')+' · '+esc(b.name)+' <span class="status '+b.status+'">'+b.status+'</span></div><div class="p">'+esc(st?st.name:'any')+' · '+esc(b.phone)+' · ref '+esc(b.ref)+'</div>';
+  const acts=document.createElement('div');acts.className='row';acts.style.marginTop='8px';
+  if(b.status==='pending'){const c=mkBtn('Confirm','sm',()=>{b.status='confirmed';save();renderProvider()});acts.appendChild(c)}
+  if(b.status==='confirmed'){const c=mkBtn('Completed','sm',()=>{b.status='completed';save();renderProvider()});acts.appendChild(c);
+    const x=mkBtn('Cancel','sm',()=>{b.status='cancelled';save();renderProvider()});x.style.background='#c66';acts.appendChild(x)}
+  div.appendChild(acts);return div;
+}
+function renderBookings(){
+  const el=document.getElementById('bookingsTable');
+  const rows=D.bookings.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(b=>{
+    const svc=D.services.find(s=>s.id===b.serviceId);const st=D.staff.find(s=>s.id===b.staffId);
+    return '<tr><td>'+esc(b.ref)+'</td><td>'+esc(b.name)+'</td><td>'+esc(b.phone)+'</td><td>'+esc(b.date)+' '+esc(b.time)+'</td><td>'+esc(svc?svc.name:'—')+'</td><td>'+esc(st?st.name:'—')+'</td><td><span class="status '+b.status+'">'+b.status+'</span></td></tr>';
+  });
+  el.innerHTML=rows.length?'<table><tr><th>Ref</th><th>Client</th><th>Phone</th><th>When</th><th>Service</th><th>Staff</th><th>Status</th></tr>'+rows.join('')+'</table>':'<p style="color:#777">No bookings yet.</p>';
+}
+function mkBtn(label,cls,fn){const b=document.createElement('button');b.className='btn '+(cls||'');b.textContent=label;b.onclick=fn;return b}
+
+// services & categories
+function renderSvcsList(){
+  const el=document.getElementById('svcList');
+  let html='<div style="margin-bottom:14px"><b style="color:var(--plum)">Categories:</b> ';
+  html+=D.categories.map(c=>esc(typeof c==='object'?c.name:c)).join(' · ');
+  html+='</div>';
+  html+=D.services.length?'<table><tr><th>Service</th><th>Category</th><th>Duration</th><th>Price</th><th></th></tr>':'<p style="color:#777">No services yet.</p>';
+  D.services.forEach((s,i)=>{
+    html+='<tr><td>'+esc(s.name)+'</td><td>'+esc(svcCatName(s)||s.category)+'</td><td>'+esc(s.duration)+' min</td><td>'+esc(s.price)+'</td><td><button class="btn ghost sm" data-editsvc="'+s.id+'">Edit</button> <button class="btn ghost sm" data-delsvc="'+s.id+'" style="color:#c66;border-color:#c66">Remove</button></td></tr>';
+  });
+  if(D.services.length)html+='</table>';
+  el.innerHTML=html;
+  el.querySelectorAll('[data-editsvc]').forEach(b=>b.onclick=()=>svcForm(D.services.find(s=>s.id===b.dataset.editsvc)));
+  el.querySelectorAll('[data-delsvc]').forEach(b=>b.onclick=()=>{
+    const s=D.services.find(x=>x.id===b.dataset.delsvc);
+    const used=D.bookings.filter(x=>x.serviceId===s.id&&x.status!=='cancelled').length;
+    if(used&&!confirm('This service has '+used+' active booking(s). Remove anyway?'))return;
+    D.services=D.services.filter(x=>x.id!==s.id);save();renderSvcsList();
+  });
+}
+function svcForm(s){
+  const isNew=!s;
+  const catOpts=D.categories.map(c=>{const n=typeof c==='object'?c.name:c;return '<option '+(s&&s.category===n?'selected':'')+'>'+esc(n)+'</option>'}).join('');
+  modal('<h2>'+(isNew?'Add service':'Edit service')+'</h2>'+
+  '<label>Name</label><input id="mSvcName" value="'+esc(s?s.name:'')+'">'+
+  '<label>Category</label><select id="mSvcCat">'+catOpts+'</select>'+
+  '<label>Duration (minutes)</label><input id="mSvcDur" type="number" min="15" step="15" value="'+(s?s.duration:60)+'">'+
+  '<label>Price</label><input id="mSvcPrice" value="'+esc(s?s.price:'')+'" placeholder="e.g. 25">'+
+  '<label>Description (optional)</label><input id="mSvcDesc" value="'+esc(s?s.desc||'':'')+'">'+
+  '<div class="row" style="margin-top:18px"><button class="btn" id="mSvcSave">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+  document.getElementById('mSvcSave').onclick=function(){
+    const name=document.getElementById('mSvcName').value.trim();
+    const dur=parseInt(document.getElementById('mSvcDur').value,10);
+    const price=document.getElementById('mSvcPrice').value.trim();
+    if(!name||!dur||!price){alert('Please fill name, duration and price.');return}
+    const cat=document.getElementById('mSvcCat').value;
+    if(isNew)D.services.push({id:uid(),name,category:cat,duration:dur,price,desc:document.getElementById('mSvcDesc').value.trim()});
+    else Object.assign(s,{name,category:cat,duration:dur,price,desc:document.getElementById('mSvcDesc').value.trim()});
+    save();closeModal();renderSvcsList();
+  };
+}
+document.getElementById('btnAddSvc').onclick=()=>svcForm(null);
+document.getElementById('btnAddCat').onclick=function(){
+  modal('<h2>Add category</h2><label>Category name</label><input id="mCatName" placeholder="e.g. Brows"><div class="row" style="margin-top:18px"><button class="btn" id="mCatSave">Add</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+  document.getElementById('mCatSave').onclick=function(){
+    const n=document.getElementById('mCatName').value.trim();
+    if(!n){alert('Please enter a name.');return}
+    if(D.categories.some(c=>(typeof c==='object'?c.name:c).toLowerCase()===n.toLowerCase())){alert('That category already exists.');return}
+    D.categories.push(n);save();closeModal();renderSvcsList();
+  };
+};
+
+// staff
+function renderStaffList(){
+  const el=document.getElementById('staffList');
+  el.innerHTML=D.staff.length?'':'<p style="color:#777">No staff yet.</p>';
+  D.staff.forEach(s=>{
+    const d=document.createElement('div');d.className='opt';d.style.marginBottom='10px';
+    d.innerHTML='<div class="n">'+esc(s.name)+'</div>';
+    const row=document.createElement('div');row.className='row';row.style.marginTop='8px';
+    const e=mkBtn('Edit','sm',()=>staffForm(s));const x=mkBtn('Remove','sm',()=>{
+      const used=D.bookings.filter(b=>b.staffId===s.id&&b.status!=='cancelled').length;
+      if(used&&!confirm(s.name+' has '+used+' active booking(s). Remove anyway?'))return;
+      D.staff=D.staff.filter(y=>y.id!==s.id);save();renderStaffList();
+    });x.style.background='#c66';
+    row.appendChild(e);row.appendChild(x);d.appendChild(row);el.appendChild(d);
+  });
+}
+function staffForm(s){
+  const isNew=!s;
+  modal('<h2>'+(isNew?'Add staff':'Edit staff')+'</h2><label>Name</label><input id="mStName" value="'+esc(s?s.name:'')+'"><div class="row" style="margin-top:18px"><button class="btn" id="mStSave">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+  document.getElementById('mStSave').onclick=function(){
+    const n=document.getElementById('mStName').value.trim();
+    if(!n){alert('Please enter a name.');return}
+    if(isNew){if(D.staff.some(x=>x.name.toLowerCase()===n.toLowerCase())){alert('That staff member already exists.');return}D.staff.push({id:uid(),name:n})}
+    else s.name=n;
+    save();closeModal();renderStaffList();
+  };
+}
+document.getElementById('btnAddStaff').onclick=()=>staffForm(null);
+
+// hours
+function renderHours(){
+  const el=document.getElementById('hoursList');let html='';
+  for(let i=0;i<7;i++){
+    const h=D.hours[i]||{open:false};
+    html+='<div class="row" style="margin-bottom:10px;border-bottom:1px solid var(--blush);padding-bottom:8px"><label style="margin:0;min-width:110px"><input type="checkbox" data-hopen="'+i+'" '+(h.open?'checked':'')+'> '+DAYS[i]+'</label>'+
+    '<input type="time" data-hfrom="'+i+'" value="'+(h.from||'09:00')+'" style="width:auto" '+(h.open?'':'disabled')+'> – '+
+    '<input type="time" data-hto="'+i+'" value="'+(h.to||'18:00')+'" style="width:auto" '+(h.open?'':'disabled')+'> '+
+    '<input placeholder="Breaks (13:00-14:00)" data-hbrk="'+i+'" value="'+esc(h.breaks||'')+'" style="flex:1;min-width:140px" '+(h.open?'':'disabled')+'></div>';
+  }
+  el.innerHTML=html;
+  el.querySelectorAll('[data-hopen]').forEach(c=>c.onchange=function(){
+    const i=this.dataset.hopen;D.hours[i]=D.hours[i]||{};D.hours[i].open=this.checked;
+    el.querySelectorAll('input[data-hfrom="'+i+'"],input[data-hto="'+i+'"],input[data-hbrk="'+i+'"]').forEach(x=>x.disabled=!this.checked);
+    save();renderHours();
+  });
+}
+document.getElementById('btnSaveHours').onclick=function(){
+  for(let i=0;i<7;i++){
+    D.hours[i]=D.hours[i]||{open:false};
+    D.hours[i].open=el2('[data-hopen="'+i+'"]').checked;
+    D.hours[i].from=el2('[data-hfrom="'+i+'"]').value||'09:00';
+    D.hours[i].to=el2('[data-hto="'+i+'"]').value||'18:00';
+    D.hours[i].breaks=el2('[data-hbrk="'+i+'"]').value.trim();
+  }
+  save();modal('<h2>Saved</h2><p>Opening hours updated.</p><button class="btn" onclick="closeModal()">OK</button>');
+};
+function el2(sel){return document.querySelector(sel)}
+
+// settings
+function renderSettings(){document.getElementById('setBizName').value=D.businessName||''}
+document.getElementById('btnSaveSettings').onclick=function(){
+  D.businessName=document.getElementById('setBizName').value.trim()||'Salon Booking';
+  save();renderProvider();modal('<h2>Saved</h2><p>Settings updated.</p><button class="btn" onclick="closeModal()">OK</button>');
+};
+document.getElementById('btnDemo').onclick=function(){
+  if(!confirm('Load demo data? This replaces current data.'))return;
+  D=JSON.parse(JSON.stringify(DEF));D.categories=['Nails','Hair','Brows'];
+  D.services=[
+    {id:uid(),name:'Manicure',category:'Nails',duration:45,price:'$25',desc:'Classic nail care'},
+    {id:uid(),name:'Gel polish',category:'Nails',duration:60,price:'$35',desc:''},
+    {id:uid(),name:'Haircut',category:'Hair',duration:45,price:'$30',desc:''},
+    {id:uid(),name:'Blow-dry',category:'Hair',duration:40,price:'$20',desc:''},
+    {id:uid(),name:'Brow shaping',category:'Brows',duration:20,price:'$15',desc:''}
+  ];
+  D.staff=[{id:uid(),name:'Stylist One'},{id:uid(),name:'Stylist Two'}];
+  D.bookings=[];save();renderProvider();modal('<h2>Demo data loaded</h2><p>Explore the app, then use Reset everything to start clean.</p><button class="btn" onclick="closeModal()">OK</button>');
+};
+document.getElementById('btnReset').onclick=function(){
+  if(!confirm('Delete ALL data (services, staff, bookings)? This cannot be undone.'))return;
+  localStorage.removeItem(KEY);D=load();save();renderProvider();modal('<h2>Reset done</h2><p>Everything was cleared.</p><button class="btn" onclick="closeModal()">OK</button>');
+};
+
+// add booking manually (provider)
+document.getElementById('btnAddBooking').onclick=function(){
+  if(!D.services.length||!D.staff.length){modal('<h2>Add services & staff first</h2><p>Add at least one service and one staff member before creating a booking.</p><button class="btn" onclick="closeModal()">OK</button>');return}
+  const svcOpts=D.services.map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join('');
+  const stOpts=D.staff.map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join('');
+  modal('<h2>Add booking</h2>'+
+  '<label>Client name</label><input id="mBkName">'+
+  '<label>Phone</label><input id="mBkPhone">'+
+  '<label>Service</label><select id="mBkSvc">'+svcOpts+'</select>'+
+  '<label>Staff</label><select id="mBkStaff">'+stOpts+'</select>'+
+  '<label>Date</label><input type="date" id="mBkDate" value="'+dstr(new Date())+'">'+
+  '<label>Time</label><input type="time" id="mBkTime" value="10:00">'+
+  '<div class="row" style="margin-top:18px"><button class="btn" id="mBkSave">Add</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+  document.getElementById('mBkSave').onclick=function(){
+    const name=document.getElementById('mBkName').value.trim();
+    const phone=document.getElementById('mBkPhone').value.trim();
+    const date=document.getElementById('mBkDate').value;
+    const time=document.getElementById('mBkTime').value;
+    if(!name||!phone||!date||!time){alert('Please fill all fields.');return}
+    const svc=D.services.find(s=>s.id===document.getElementById('mBkSvc').value);
+    const busy=staffBusy(document.getElementById('mBkStaff').value,date).some(b=>time>=b.time&&time<b.time+'z');
+    const clash=D.bookings.some(b=>b.staffId===document.getElementById('mBkStaff').value&&b.date===date&&b.status!=='cancelled'&&time===b.time);
+    if(clash){alert('That staff member already has a booking at that time.');return}
+    D.bookings.push({id:uid(),ref:'SB-'+Math.floor(1000+Math.random()*9000),name,phone,date,time,serviceId:svc.id,staffId:document.getElementById('mBkStaff').value,status:'confirmed',created:new Date().toISOString()});
+    save();closeModal();renderProvider();
+  };
+};
+
+// init
+document.title=D.businessName||'Salon Booking';
+showClient();
+</script>
+</body>
+</html>
