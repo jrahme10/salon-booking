@@ -99,3 +99,15 @@ This is an active development preview, not a production service. Demo records ar
 - The dashboard shows completion rate and current-price service value estimates alongside collected payments.
 - Services without activity remain visible with zero metrics. Inactive services are excluded.
 - Collected revenue is not the same as estimated service value; appointment and payment date windows are intentionally separate.
+
+
+### Customer relationship insights
+
+- Customer insights provides 30-day, 90-day and all-time reporting.
+- Most loyal customers are ranked by completed lifetime visits, with actual lifetime collections used as a tie-breaker.
+- Lapsed customers have no completed visit in the last 60 days and no future pending or confirmed appointment.
+- Repeat-visit rate measures customers with at least two completed visits in the selected period divided by customers with at least one completed visit in that period.
+- New versus returning classification compares the customer's first completed visit with the selected period; all-time reporting treats one-visit customers as new and multi-visit customers as returning.
+- Average customer spend is actual recorded payments in the selected payment-date window divided by the number of customers with recorded payments in that window.
+- Selecting a customer opens their full appointment history, service, team member, status, and recorded collections. Partial payments are summed per appointment.
+- Visit metrics use completed appointment dates; spending uses payment transaction dates. The data is local demo data until Supabase is connected.
