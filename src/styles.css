@@ -109,3 +109,27 @@
 .settings-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:0 2px 15px}
 .settings-bottom>small{color:#929b8f;font-size:9px}
 @media(max-width:700px){.content{padding:24px 15px 45px}.business-settings .heading{align-items:flex-start}.business-settings .heading .primary{padding:10px 12px;font-size:10px}.settings-section{padding:18px 15px}.settings-grid{grid-template-columns:1fr;gap:14px}.settings-wide,.settings-toggle{grid-column:auto}.business-hours-row{grid-template-columns:minmax(75px,1fr) 86px minmax(82px,1fr) 12px minmax(82px,1fr);gap:6px}.business-hours-row>b{font-size:9px}.business-hours-row>input{padding:7px 4px;font-size:9px}.switch-control{gap:4px}.switch-control span{font-size:8px}.settings-bottom{align-items:flex-start;flex-direction:column}.settings-bottom .primary{width:100%}}
+
+
+/* Payments and expenses */
+.finance-page .heading{align-items:center}
+.finance-tabs{display:flex;gap:8px;margin:24px 0 13px;border-bottom:1px solid #e8ece5}
+.finance-tabs button{padding:12px 16px;border:0;border-bottom:2px solid transparent;background:transparent;color:#899387;font-size:11px;font-weight:700}
+.finance-tabs button.active{border-bottom-color:#49694e;color:#405b45}
+.finance-list{padding:22px 24px}
+.finance-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.finance-list-head h2{margin:0 0 5px;font:22px 'Playfair Display',serif;color:#304b3b}
+.finance-list-head p{margin:0;color:#879184;font-size:10px}
+.finance-list article{display:flex;align-items:center;gap:13px;padding:14px 0;border-top:1px solid #edf0ea}
+.finance-row-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:#edf2eb;color:#4b6a50;flex-shrink:0}
+.finance-row-icon.expense{background:#f6eeeb;color:#a16e62}
+.finance-list article>div{display:grid;gap:5px;min-width:0;flex:1}
+.finance-list article b{color:#435343;font-size:11px}
+.finance-list article small{color:#929b8f;font-size:9px;text-transform:capitalize}
+.finance-list article strong{color:#405b45;font-size:12px;white-space:nowrap}
+.finance-list article strong.expense-value{color:#9a6b60}
+.finance-empty{padding:34px 12px;text-align:center;color:#899387;font-size:10px;line-height:1.6}
+.finance-dialog{max-height:min(88dvh,760px);overflow:auto}
+.finance-balance{display:flex;justify-content:space-between;gap:10px;padding:12px;border-radius:9px;background:#f1f5ef;color:#718071;font-size:10px}
+.finance-balance b{color:#47674c}
+@media(max-width:680px){.finance-page .heading{align-items:flex-start;flex-direction:column}.finance-page .heading .primary{width:100%;justify-content:center}.finance-list{padding:16px}.finance-list-head{align-items:flex-start}.finance-list article{gap:9px}.finance-list article strong{font-size:10px}.finance-tabs button{padding:11px 12px}}
