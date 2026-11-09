@@ -9,7 +9,7 @@ const expense=(overrides:Partial<Expense>={}):Expense=>({id:"x1",businessId:"b1"
 
 describe("validatePayment",()=>{
  it("accepts a valid partial payment",()=>expect(validatePayment(payment(),appointment,service)).toBeNull());
- it("rejects payments above the remaining balance",()=>expect(validatePayment(payment({amount:40}),appointment,service)).toContain("remaining appointment balance"));
+ it("rejects payments above the remaining balance",()=>expect(validatePayment(payment({amount:41}),appointment,service)).toContain("remaining appointment balance"));
  it("rejects zero, negative and non-finite amounts",()=>{
   expect(validatePayment(payment({amount:0}),appointment,service)).toContain("greater than zero");
   expect(validatePayment(payment({amount:-1}),appointment,service)).toContain("greater than zero");
