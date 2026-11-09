@@ -1,6 +1,6 @@
 import {describe,expect,it} from "vitest";
-import type {Appointment,Employee,Service,WeeklySchedule} from "../types";
-import {DEFAULT_WORKING_HOURS,getAvailableSlots,validateBooking} from "./scheduling";
+import type {Appointment,Business,Employee,Service,WeeklySchedule} from "../types";
+import {DEFAULT_WORKING_HOURS,getAvailableSlots,isWithinBusinessHours,validateBooking} from "./scheduling";
 
 const businessId="business-1";
 const service:Service={id:"service-1",businessId,name:"Cut",category:"Hair",durationMinutes:60,price:30,active:true};
@@ -96,5 +96,20 @@ describe("getAvailableSlots",()=>{
     expect(slots({stepMinutes:0})).toEqual([]);
     expect(slots({stepMinutes:15.5})).toEqual([]);
     expect(slots({service:{...service,durationMinutes:0}})).toEqual([]);
+  });
+});
+
+describe("isWithinBusinessHours",()=>{
+  const salon:Business={id:businessId,name:"Studio",slug:"studio",category:"Salon",city:"Beirut",address:"Beirut",currency:"USD",timezone:"Asia/Beirut",workingHours:DEFAULT_WORKING_HOURS,bookingRules:{allowOnlineBooking:true,minimumNoticeHours:0,cancellationNoticeHours:24,slotIntervalMinutes:30}};
+  it("allows appointments that fit the business opening hours in its timezone",()=>{
+    expect(isWithinBusinessHours(salon,new Date("2025-01-06T07:00:00.000Z"),60,new Date("2025-01-06T05:00:00.000Z"))).toBe(true);
+  });
+  it("rejects appointments outside opening hours or on a closed day",()=>{
+    expect(isWithinBusinessHours(salon,new Date("2025-01-06T16:30:00.000Z"),60,new Date("2025-01-06T05:00:00.000Z"))).toBe(false);
+    expect(isWithinBusinessHours(salon,new Date("2025-01-05T07:00:00.000Z"),60,new Date("2025-01-05T05:00:00.000Z"))).toBe(false);
+  });
+  it("enforces the minimum booking notice",()=>{
+    const withNotice={...salon,bookingRules:{...salon.bookingRules!,minimumNoticeHours:3}};
+    expect(isWithinBusinessHours(withNotice,new Date("2025-01-06T07:00:00.000Z"),60,new Date("2025-01-06T06:00:00.000Z"))).toBe(false);
   });
 });
