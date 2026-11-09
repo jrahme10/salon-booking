@@ -21,3 +21,8 @@ export interface ClientAppointmentRequest {
   requestedStartsAt?:string;
   createdAt:string;
 }
+
+export type PaymentMethod = "cash" | "card" | "bank_transfer" | "other";
+export interface Payment { id:string; businessId:string; appointmentId:string; amount:number; method:PaymentMethod; paidAt:string; note?:string }
+export type ExpenseCategory = "rent" | "salary" | "supplies" | "utilities" | "maintenance" | "marketing" | "other";
+export interface Expense { id:string; businessId:string; amount:number; category:ExpenseCategory; description:string; incurredAt:string; paymentMethod:PaymentMethod }
