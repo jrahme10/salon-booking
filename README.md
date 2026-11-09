@@ -117,7 +117,7 @@ This is an active development preview, not a production service. Demo records ar
 
 - Customer profiles can store a birthday date. The dashboard surfaces birthdays coming up in the next 30 days.
 - Follow-up reminders can be created for any customer with a due date and note, then marked complete. Reminder records persist in the browser demo repository.
-- The inactive-customer campaign targets customers with no completed visit in the last 60 days and no future pending or confirmed appointment.
-- Campaign messages support `{name}` and `{business}` personalization tokens and are previewed per customer.
-- WhatsApp and email actions open prefilled messages for manual review. The app does not send messages automatically; an approved messaging provider and customer consent/opt-out handling are required before automated delivery.
-- Customer birthday and reminder records remain local to the current browser until Supabase persistence and access controls are connected.
+- The inactive-customer campaign targets customers with no completed visit in the last 60 days and no future pending or confirmed appointment, and includes only customers whose promotional consent is explicitly recorded on their profile.
+- Campaign messages support `{name}` and `{business}` personalization tokens, are saved as a browser-local draft and previewed per eligible customer.
+- Birthday greetings and inactive-customer campaign links open prefilled WhatsApp or email messages for manual review. The app does not send messages automatically; an approved messaging provider and server-side consent/opt-out handling are required before automated delivery.
+- Customer birthday, marketing-consent, and reminder records remain local to the current browser until Supabase persistence and access controls are connected.
