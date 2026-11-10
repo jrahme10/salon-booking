@@ -531,7 +531,7 @@
 
 
 /* Provider calendar — interactive scheduling workspace */
-.calendar-page{display:grid;gap:19px;color:#2d392f}
+.calendar-page{display:grid;gap:19px;color:#2d392f;font-family:'DM Sans',sans-serif}
 .calendar-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
 .calendar-eyebrow{display:flex;align-items:center;gap:8px;color:#8a9588;font-size:8px;font-weight:800;letter-spacing:1.45px}
 .calendar-eyebrow>span:not(.calendar-live-dot){color:#c2c9be}
