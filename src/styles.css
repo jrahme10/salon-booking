@@ -624,3 +624,26 @@
  .calendar-week-grid{min-width:820px;grid-template-rows:58px repeat(13,64px)}.calendar-week-grid.single-day{min-width:310px;grid-template-rows:58px repeat(13,64px)}.calendar-hour-label{height:64px;font-size:7px}.calendar-day-column{background:repeating-linear-gradient(to bottom,transparent 0,transparent 63px,#edf0eb 63px,#edf0eb 64px)}.calendar-hour-cell{height:64px}.calendar-event{left:3px;right:3px;padding:5px}.calendar-event>b{font-size:7px}.calendar-month-cell{min-height:82px;padding:5px 3px}.calendar-month-date{width:22px;height:22px;font-size:8px}.calendar-month-event{padding:3px 3px;font-size:6px}.calendar-month-event b{font-size:6px}.calendar-month-weekday{padding:10px 2px;font-size:6px}.calendar-legend{gap:10px;padding:11px 13px}.calendar-legend>small{width:100%;margin:0}
 }
 @media(prefers-reduced-motion:no-preference){.calendar-arrows button,.calendar-today,.calendar-view-switch button,.calendar-status-filters button,.calendar-empty button{transition:background .16s ease,color .16s ease,border-color .16s ease}}
+
+
+/* Calendar month view and compact team controls */
+.schedule-toolbar-actions{display:flex;align-items:center;gap:10px}
+.schedule-team-filter{display:flex;align-items:center;gap:7px;color:#899486;font-size:9px;font-weight:700}
+.schedule-team-filter select{max-width:145px;padding:7px 9px;border:1px solid #e7ebe4;border-radius:8px;background:#fff;color:#596958;font-size:9px}
+.schedule-month-board{overflow:hidden;border:1px solid #e7ebe4;border-radius:13px;background:#fff;box-shadow:0 4px 18px #344b3707}
+.schedule-month-weekdays,.schedule-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.schedule-month-weekdays span{padding:12px 5px;border-bottom:1px solid #e9ede6;background:#fbfcfa;text-align:center;color:#929c90;font-size:8px;font-weight:800;letter-spacing:.8px}
+.schedule-month-cell{min-width:0;min-height:112px;padding:7px 6px;border-right:1px solid #edf0ea;border-bottom:1px solid #edf0ea;background:#fff}
+.schedule-month-cell:nth-child(7n){border-right:0}
+.schedule-month-cell.outside{background:#fafbf9}
+.schedule-month-cell.is-today{background:#fbfdf9}
+.schedule-month-date{width:25px;height:25px;margin-bottom:5px;border:0;border-radius:50%;background:transparent;color:#6d7b6d;font-size:9px;font-weight:800;cursor:pointer}
+.schedule-month-cell.is-today .schedule-month-date{background:#405b45;color:#fff}
+.schedule-month-event{display:block;width:100%;margin:3px 0;padding:4px 5px;overflow:hidden;border:0;border-left:3px solid #c6a36b;border-radius:5px;background:#fbf7ef;color:#7d6949;text-align:left;text-overflow:ellipsis;white-space:nowrap;font-size:7px;cursor:pointer}
+.schedule-month-event b{font-size:7px}
+.schedule-month-event.confirmed{border-left-color:#7c9a78;background:#f0f5ee;color:#4f704d}
+.schedule-month-event.completed{border-left-color:#9aa7a0;background:#f2f5f3;color:#6c7c73}
+.schedule-month-event.cancelled{border-left-color:#c58b7c;background:#faf3f1;color:#a87568}
+.schedule-month-more{padding:3px 5px;border:0;background:transparent;color:#607d5e;font-size:7px;font-weight:800;cursor:pointer}
+@media(max-width:760px){.schedule-toolbar-actions{width:100%;justify-content:space-between}.schedule-team-filter{flex:1;min-width:0}.schedule-team-filter select{max-width:none;flex:1;min-width:0}.schedule-month-cell{min-height:88px;padding:5px 3px}.schedule-month-weekdays span{font-size:7px;padding:10px 2px}.schedule-month-date{width:22px;height:22px}.schedule-month-event{padding:4px 3px;font-size:6px}.schedule-month-event b{font-size:6px}}
+@media(max-width:480px){.schedule-toolbar-actions{gap:6px}.schedule-team-filter{font-size:8px}.schedule-team-filter select{font-size:8px;padding:6px 5px}.schedule-month-cell{min-height:75px}.schedule-month-event{margin:2px 0;padding:3px 2px}.schedule-month-more{font-size:6px}}
