@@ -1,7 +1,7 @@
 import {Fragment,useEffect,useState} from "react";
 import type {FormEvent} from "react";
 import {Link,NavLink,Route,Routes,useLocation,useParams} from "react-router-dom";
-import {Activity,CalendarDays,CalendarRange,ChevronDown,ChevronLeft,ChevronRight,Clock3,LayoutDashboard,Plus,Search,Scissors,Settings,Users,Wallet,Bell,Menu,Pencil,Check,X,CircleCheck} from "lucide-react";
+import {Activity,CalendarDays,CalendarRange,ChevronDown,LayoutDashboard,Plus,Search,Scissors,Settings,Users,Wallet,Bell,Menu,Pencil,Check,X,CircleCheck} from "lucide-react";
 import {salonRepository} from "./services/repository";
 import type {Appointment,Business,ClientAppointmentRequest,CommissionEntry,Customer,CustomerConsentEvent,Employee,Expense,PayrollPayment,Payment,Service,CustomerReminder} from "./types";
 import {ServiceManager} from "./components/ServiceManager";
