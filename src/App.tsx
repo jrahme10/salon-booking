@@ -68,7 +68,7 @@ function Calendar({data,onNew}:{data:Data;onNew:()=>void}){
  const dayLabel=days.length===1?anchor.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}):start.toLocaleDateString("en-US",{month:"short",day:"numeric"})+" – "+end.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
  const sameDay=(a:Date,b:Date)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
  const appointments=data.appointments.filter(a=>{const d=new Date(a.startsAt);return d>=start&&d<=end&&(selectedStatus==="all"||a.status===selectedStatus);}).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
- const hours=Array.from({length:13},(_,i)=>i+7),today=new Date();
+ const hours=Array.from({length:16},(_,i)=>i+7),today=new Date();
  const move=(direction:number)=>setAnchor(current=>{const d=new Date(current);d.setDate(d.getDate()+direction*(view==="week"?7:1));return d;});
  const todayCount=data.appointments.filter(a=>sameDay(new Date(a.startsAt),today)).length;
  const pending=data.appointments.filter(a=>a.status==="pending").length,confirmed=data.appointments.filter(a=>a.status==="confirmed").length;
