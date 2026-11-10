@@ -474,7 +474,7 @@
 .schedule-page{display:grid;gap:18px;color:#344235}
 .schedule-topline{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:5px 0 2px}
 .schedule-eyebrow{font-size:9px;font-weight:800;letter-spacing:1.7px;color:#89947f}
-.schedule-topline h1{margin:7px 0 4px;font:32px/1.15 'Playfair Display',Georgia,serif;color:#344b39}
+.schedule-topline h1{margin:7px 0 4px;font:32px/1.15 'Outfit',sans-serif;color:#344b39}
 .schedule-topline p{margin:0;color:#899286;font-size:11px}
 .schedule-add{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border:0;border-radius:10px;background:#405b45;color:#fff;font-size:10px;font-weight:800;cursor:pointer;box-shadow:0 6px 14px #405b4520}
 .schedule-add:hover{background:#344d39}
@@ -482,7 +482,7 @@
 .schedule-stats article{display:grid;grid-template-columns:1fr auto;gap:7px 12px;padding:15px 17px;border:1px solid #e9ece5;border-radius:13px;background:linear-gradient(145deg,#fff,#fbfcf9)}
 .schedule-stats article>span{display:flex;align-items:center;gap:7px;color:#7e897c;font-size:9px;font-weight:700}
 .schedule-stats article>span svg{color:#81927c}
-.schedule-stats article>b{grid-column:2;grid-row:1/3;align-self:center;font:26px 'Playfair Display',Georgia,serif;color:#405b45}
+.schedule-stats article>b{grid-column:2;grid-row:1/3;align-self:center;font:26px 'Outfit',sans-serif;color:#405b45}
 .schedule-stats article>small{color:#a0a89c;font-size:8px}
 .schedule-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 15px;border:1px solid #e8ece5;border-radius:13px;background:#fff}
 .schedule-date-controls{display:flex;align-items:center;gap:7px;min-width:0}
