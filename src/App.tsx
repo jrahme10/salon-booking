@@ -59,51 +59,32 @@ function BookingDialog({data,onClose,onCreate,appointment}:{data:Data;onClose:()
 }
 
 function Calendar({data,onNew}:{data:Data;onNew:()=>void}){
- const [cursor,setCursor]=useState(()=>{const d=new Date();d.setHours(0,0,0,0);return d;});
- const [view,setView]=useState<"day"|"week"|"month">("week");
- const [employeeId,setEmployeeId]=useState("all");
- const [statusFilter,setStatusFilter]=useState("all");
- const today=new Date();today.setHours(0,0,0,0);
- const dayKey=(d:Date)=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
- const startOfWeek=(d:Date)=>{const x=new Date(d);x.setDate(x.getDate()-((x.getDay()+6)%7));x.setHours(0,0,0,0);return x;};
- const visibleStart=view==="month"?startOfWeek(new Date(cursor.getFullYear(),cursor.getMonth(),1)):view==="week"?startOfWeek(cursor):new Date(cursor);
- const visibleDays=Array.from({length:view==="day"?1:view==="week"?7:42},(_,i)=>{const d=new Date(visibleStart);d.setDate(d.getDate()+i);return d;});
- const visibleEnd=new Date(visibleDays[visibleDays.length-1]);visibleEnd.setDate(visibleEnd.getDate()+1);
- const filtered=data.appointments.filter(a=>{const d=new Date(a.startsAt);return d>=visibleStart&&d<visibleEnd&&(employeeId==="all"||a.employeeId===employeeId)&&(statusFilter==="all"||a.status===statusFilter);});
- const count=(status:string)=>filtered.filter(a=>status==="all"||a.status===status).length;
- const title=view==="month"?cursor.toLocaleDateString("en-US",{month:"long",year:"numeric"}):view==="day"?cursor.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}):visibleDays[0].toLocaleDateString("en-US",{month:"short",day:"numeric"})+" – "+visibleDays[6].toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
- const move=(direction:number)=>{const next=new Date(cursor);if(view==="month")next.setMonth(next.getMonth()+direction);else next.setDate(next.getDate()+direction*(view==="week"?7:1));setCursor(next);};
- const appointmentsFor=(day:Date)=>filtered.filter(a=>dayKey(new Date(a.startsAt))===dayKey(day)).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
- const hours=Array.from({length:13},(_,i)=>i+8);
- const statusLabel=(status:Appointment["status"])=>status.charAt(0).toUpperCase()+status.slice(1);
- return <div className="calendar-page">
-  <div className="calendar-page-head"><div><div className="calendar-eyebrow"><span className="calendar-live-dot"/>{data.business.name} <span> / </span> SCHEDULE</div><h1>Calendar</h1><p>Your team's day, beautifully in sync.</p></div><button className="primary calendar-add" onClick={onNew}><Plus size={16}/> New appointment</button></div>
-  <section className="calendar-summary">
-   <div><span className="calendar-summary-icon"><CalendarDays size={17}/></span><small>APPOINTMENTS</small><b>{count("all")}</b><em>in this view</em></div>
-   <div><span className="calendar-summary-icon pending"><Clock3 size={17}/></span><small>AWAITING</small><b>{count("pending")}</b><em>need confirmation</em></div>
-   <div><span className="calendar-summary-icon confirmed"><CircleCheck size={17}/></span><small>CONFIRMED</small><b>{count("confirmed")}</b><em>ready to go</em></div>
-   <div><span className="calendar-summary-icon completed"><Check size={17}/></span><small>COMPLETED</small><b>{count("completed")}</b><em>finished visits</em></div>
-  </section>
-  <section className="calendar-workspace">
-   <div className="calendar-toolbar"><div className="calendar-date-controls"><div className="calendar-arrows"><button aria-label="Previous period" onClick={()=>move(-1)}><ChevronLeft size={17}/></button><button aria-label="Next period" onClick={()=>move(1)}><ChevronRight size={17}/></button></div><h2>{title}</h2><button className="calendar-today" onClick={()=>setCursor(new Date())}>Today</button></div>
-    <div className="calendar-toolbar-right"><label className="calendar-team-filter"><Users size={15}/><select aria-label="Filter by team member" value={employeeId} onChange={e=>setEmployeeId(e.target.value)}><option value="all">All team</option>{data.employees.filter(e=>e.active).map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select><ChevronDown size={13}/></label><div className="calendar-view-switch" role="group" aria-label="Calendar view">{(["day","week","month"] as const).map(v=><button key={v} className={view===v?"active":""} aria-pressed={view===v} onClick={()=>setView(v)}>{v.charAt(0).toUpperCase()+v.slice(1)}</button>)}</div></div>
-   </div>
-   <div className="calendar-status-filters" aria-label="Filter appointment status">{[["all","All"],["pending","Pending"],["confirmed","Confirmed"],["completed","Completed"],["cancelled","Cancelled"]].map(([value,label])=><button key={value} className={statusFilter===value?"active":""} onClick={()=>setStatusFilter(value)}>{label}</button>)}</div>
-   {view==="month"?<div className="calendar-month-grid">
-    {["MON","TUE","WED","THU","FRI","SAT","SUN"].map(d=><div className="calendar-month-weekday" key={d}>{d}</div>)}
-    {visibleDays.map(day=>{const rows=appointmentsFor(day);const inMonth=day.getMonth()===cursor.getMonth();return <div key={dayKey(day)} className={"calendar-month-cell"+(!inMonth?" outside":"")+(dayKey(day)===dayKey(today)?" today":"")}><button className="calendar-month-date" onClick={()=>{setCursor(day);setView("day");}}>{day.getDate()}</button>{rows.slice(0,3).map(a=>{const c=data.customers.find(x=>x.id===a.customerId);const s=data.services.find(x=>x.id===a.serviceId);return <div key={a.id} className={"calendar-month-event "+a.status}><b>{new Date(a.startsAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</b> {c?.name??"Client"}<small>{s?.name??"Appointment"}</small></div>;})}{rows.length>3&&<button className="calendar-more" onClick={()=>{setCursor(day);setView("day");}}>+{rows.length-3} more</button>}</div>;})}
-   </div>:<div className="calendar-grid-scroll"><div className={"calendar-week-grid "+(view==="day"?"single-day":"")} style={{"--calendar-columns":String(visibleDays.length)} as React.CSSProperties}>
-    <div className="calendar-grid-head calendar-time-head">GMT</div>{visibleDays.map(day=><div key={dayKey(day)} className={"calendar-grid-head "+(dayKey(day)===dayKey(today)?"today":"")}><small>{day.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase()}</small><b>{day.getDate()}</b>{dayKey(day)===dayKey(today)&&<i>Today</i>}</div>)}
-    <div className="calendar-time-column">{hours.map(h=><div key={h} className="calendar-hour-label">{new Date(2000,0,1,h).toLocaleTimeString("en-US",{hour:"numeric"})}</div>)}</div>
-    {visibleDays.map(day=>{const rows=appointmentsFor(day);const isToday=dayKey(day)===dayKey(today);const now=new Date();const nowTop=((now.getHours()-8)*60+now.getMinutes())*1.15;return <div key={dayKey(day)} className={"calendar-day-column "+(isToday?"today":"")}>{hours.map(h=><div className="calendar-hour-cell" key={h}/>)}
-     {isToday&&nowTop>=0&&nowTop<=hours.length*69&&<div className="calendar-now-line" style={{top:nowTop}}><i/></div>}
-     {rows.map(a=>{const start=new Date(a.startsAt);const minute=start.getHours()*60+start.getMinutes()-480;const service=data.services.find(s=>s.id===a.serviceId);const customer=data.customers.find(c=>c.id===a.customerId);const employee=data.employees.find(e=>e.id===a.employeeId);const duration=service?.durationMinutes??45;return <article key={a.id} className={"calendar-event "+a.status} style={{top:Math.max(0,minute*1.15),height:Math.max(42,duration*1.15)}} title={customer?.name+" · "+(service?.name??"Appointment")}><div className="calendar-event-time">{start.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</div><b>{customer?.name??"Client"}</b><span>{service?.name??"Appointment"}</span><small>{employee?.name??"Unassigned"}</small></article>;})}
-    </div>;})}
-   </div></div>}
-   {filtered.length===0&&<div className="calendar-empty"><span><CalendarDays size={22}/></span><b>Your schedule is clear</b><p>No appointments match this date and filter. Enjoy the breathing room or add a new booking.</p><button onClick={onNew}><Plus size={14}/> Add appointment</button></div>}
-   <div className="calendar-legend"><span><i className="pending"/> Pending</span><span><i className="confirmed"/> Confirmed</span><span><i className="completed"/> Completed</span><span><i className="cancelled"/> Cancelled</span><small>Times shown in your device's local timezone</small></div>
-  </section>
- </div>;
+ const [anchor,setAnchor]=useState(()=>{const d=new Date();d.setHours(0,0,0,0);return d;});
+ const [view,setView]=useState<"week"|"day">("week");
+ const [selectedStatus,setSelectedStatus]=useState("all");
+ const start=new Date(anchor);if(view==="week")start.setDate(start.getDate()-((start.getDay()+6)%7));
+ const days=Array.from({length:view==="week"?7:1},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return d;});
+ const end=new Date(days[days.length-1]);end.setHours(23,59,59,999);
+ const dayLabel=days.length===1?anchor.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}):start.toLocaleDateString("en-US",{month:"short",day:"numeric"})+" – "+end.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+ const sameDay=(a:Date,b:Date)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+ const appointments=data.appointments.filter(a=>{const d=new Date(a.startsAt);return d>=start&&d<=end&&(selectedStatus==="all"||a.status===selectedStatus);}).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
+ const hours=Array.from({length:13},(_,i)=>i+7),today=new Date();
+ const move=(direction:number)=>setAnchor(current=>{const d=new Date(current);d.setDate(d.getDate()+direction*(view==="week"?7:1));return d;});
+ const todayCount=data.appointments.filter(a=>sameDay(new Date(a.startsAt),today)).length;
+ const pending=data.appointments.filter(a=>a.status==="pending").length,confirmed=data.appointments.filter(a=>a.status==="confirmed").length;
+ return <section className="schedule-page">
+  <div className="schedule-topline"><div><span className="schedule-eyebrow">YOUR WORKSPACE</span><h1>Calendar</h1><p>Your team, appointments and availability — all in sync.</p></div><button className="schedule-add" onClick={onNew}><Plus size={16}/> New appointment</button></div>
+  <div className="schedule-stats"><article><span><CalendarDays size={16}/> Today</span><b>{todayCount}</b><small>appointments scheduled</small></article><article><span><Activity size={16}/> Confirmed</span><b>{confirmed}</b><small>upcoming appointments</small></article><article><span><Bell size={16}/> Awaiting confirmation</span><b>{pending}</b><small>requests to review</small></article></div>
+  <div className="schedule-toolbar"><div className="schedule-date-controls"><button aria-label="Previous period" onClick={()=>move(-1)}>‹</button><button className="schedule-today" onClick={()=>{const d=new Date();d.setHours(0,0,0,0);setAnchor(d);}}>Today</button><button aria-label="Next period" onClick={()=>move(1)}>›</button><h2>{dayLabel}</h2></div><div className="schedule-view-switch"><button className={view==="day"?"active":""} onClick={()=>setView("day")}>Day</button><button className={view==="week"?"active":""} onClick={()=>setView("week")}>Week</button></div></div>
+  <div className="schedule-filters"><div><span className="schedule-live-dot"/> Live schedule</div><label>Show <select value={selectedStatus} onChange={e=>setSelectedStatus(e.target.value)}><option value="all">All appointments</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></label><div className="schedule-legend"><span><i className="pending"/> Pending</span><span><i className="confirmed"/> Confirmed</span><span><i className="completed"/> Completed</span></div></div>
+  <div className="schedule-board-wrap"><div className="schedule-board" style={{gridTemplateColumns:`66px repeat(${days.length}, minmax(132px, 1fr))`}}>
+   <div className="schedule-corner">LOCAL TIME</div>
+   {days.map(day=><div className={"schedule-day-head "+(sameDay(day,today)?"is-today":"")} key={day.toISOString()}><small>{day.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase()}</small><b>{day.getDate()}</b><span>{appointments.filter(a=>sameDay(new Date(a.startsAt),day)).length} bookings</span></div>)}
+   {hours.map(hour=><React.Fragment key={hour}><div className="schedule-hour">{new Date(2000,0,1,hour).toLocaleTimeString("en-US",{hour:"numeric",hour12:true}).replace(" ","").toLowerCase()}</div>{days.map(day=>{const items=appointments.filter(a=>{const d=new Date(a.startsAt);return sameDay(d,day)&&d.getHours()===hour;});return <div className="schedule-slot" key={day.toISOString()+hour}>{items.map(a=>{const customer=data.customers.find(c=>c.id===a.customerId),service=data.services.find(s=>s.id===a.serviceId),employee=data.employees.find(e=>e.id===a.employeeId);return <article className={"schedule-event "+a.status} key={a.id}><div className="schedule-event-time">{new Date(a.startsAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}{service?.durationMinutes?" · "+service.durationMinutes+" min":""}</div><b>{customer?.name??"Client"}</b><span>{service?.name??"Service"}</span><small>{employee?.name??"Team member"}</small><em>{a.status}</em></article>;})}</div>;})}</React.Fragment>)}
+  </div></div>
+  {appointments.length===0&&<div className="schedule-empty"><CalendarDays size={24}/><b>No appointments in this view</b><span>Try another date or create a new appointment.</span><button onClick={onNew}>Add appointment</button></div>}
+  <div className="schedule-footnote">Appointment times are displayed in your device’s local timezone.</div>
+ </section>;
 }
 function Analytics({data}:{data:Data}){return <><Heading kicker="KNOW YOUR NUMBERS" title="Team performance" desc="See who is driving appointments, collections and commission earnings."/><EmployeePerformance business={data.business} employees={data.employees} appointments={data.appointments} services={data.services} payments={data.payments} commissions={data.commissionEntries} payroll={data.payrollPayments}/></>}
 function Client({data}:{data:Data}){return <div className="client"><header><b>salon.</b><nav><Link to="/discover">Discover</Link>　　For salons</nav><span>{data.business.city}</span><Link className="public-page-link" to="/my-bookings">My bookings</Link></header><section className="hero"><small>A LITTLE TIME FOR YOU</small><h1>Your next feel-good<br/><em>moment starts here.</em></h1><p>Find the right salon, explore services and request an appointment in just a few steps.</p><div className="search"><Scissors/><span>Hair · Nails · Skin · Beauty</span><Link className="client-discover-action" to={"/book/"+data.business.slug}>Find a time</Link></div></section><section className="discover"><small>FEATURED SALON · LEBANON</small><h2>Places to feel your best</h2><p>Explore this salon and book directly with its team.</p><div className="cards"><article><div className="cover">M</div><h3>{data.business.name}</h3><p>{data.business.category} · {data.business.city}</p><span className="sample-label">{data.services.filter(service=>service.active).length} services available</span><Link className="client-book-link" to={"/book/"+data.business.slug}>View services & book</Link></article></div></section><footer>salon.　 Made for good days and great appointments.</footer></div>;}
