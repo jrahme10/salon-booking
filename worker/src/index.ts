@@ -160,7 +160,8 @@ export default {
           to_regclass('private.customer_consent_events') is not null as customer_consent,
           to_regclass('private.customer_reminders') is not null as customer_reminders,
           to_regclass('private.commission_entries') is not null as commissions,
-          to_regclass('private.payroll_payments') is not null as payroll`;
+          to_regclass('private.payroll_payments') is not null as payroll,
+          exists(select 1 from information_schema.columns where table_schema='private' and table_name='businesses' and column_name='calendar_preferences') as calendar_preferences`;
         const schemaReady = Object.values(schema[0] as Record<string, boolean>).every(Boolean);
         return json({ service: "salon-reservation-api", status: "ok", database: "connected", schema_ready: schemaReady }, 200, origin);
       } catch {
