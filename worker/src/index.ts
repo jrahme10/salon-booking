@@ -493,12 +493,13 @@ export default {
         }
 
         if(resource==="business"&&request.method==="PATCH"){
-          const name=value("name"),city=value("city"),address=value("address");
+          const name=value("name"),city=value("city"),address=value("address"),slug=value("slug");
           const currency=value("currency","USD");
-          if(!name||!city||!address||!["USD","LBP"].includes(currency))return json({error:"Complete the salon name, city, address and currency."},400,origin);
+          if(!name||!city||!address||!slug||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||!["USD","LBP"].includes(currency))
+            return json({error:"Complete the salon name, valid public URL, city, address and currency."},400,origin);
           const workingHours=JSON.stringify(body.workingHours??{});
           const bookingRules=JSON.stringify(body.bookingRules??{});
-          const rows=await sql`update private.businesses set name=${name},category=${value("category","Beauty")},city=${city},
+          const rows=await sql`update private.businesses set name=${name},slug=${slug},category=${value("category","Beauty")},city=${city},
             address=${address},phone=nullif(${value("phone")},''),email=nullif(${value("email")},''),
             website=nullif(${value("website")},''),description=nullif(${value("description")},''),
             currency=${currency},timezone=${value("timezone","Asia/Beirut")},
