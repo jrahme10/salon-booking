@@ -91,7 +91,7 @@ create table if not exists private.appointments (
   source text not null default 'provider' check(source in ('provider','client')),
   created_by uuid references private.app_users(id) on delete set null,
   created_at timestamptz not null default now(),updated_at timestamptz not null default now(),
-  check(ends_at>starts_at),unique(business_id,id),
+  check(ends_at>starts_at),
   foreign key(business_id,customer_id) references private.customers(business_id,id),
   foreign key(business_id,service_id) references private.services(business_id,id),
   foreign key(business_id,employee_id) references private.employees(business_id,id)
