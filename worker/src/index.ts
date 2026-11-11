@@ -146,7 +146,23 @@ export default {
     if (request.method === "GET" && url.pathname === "/health/db") {
       try {
         await sql`select 1 as healthy`;
-        return json({ service: "salon-reservation-api", status: "ok", database: "connected" }, 200, origin);
+        const schema = await sql`select
+          to_regclass('private.businesses') is not null as businesses,
+          to_regclass('private.app_users') is not null as app_users,
+          to_regclass('private.auth_sessions') is not null as auth_sessions,
+          to_regclass('private.services') is not null as services,
+          to_regclass('private.employees') is not null as employees,
+          to_regclass('private.customers') is not null as customers,
+          to_regclass('private.appointments') is not null as appointments,
+          to_regclass('private.payments') is not null as payments,
+          to_regclass('private.expenses') is not null as expenses,
+          to_regclass('private.client_appointment_requests') is not null as client_requests,
+          to_regclass('private.customer_consent_events') is not null as customer_consent,
+          to_regclass('private.customer_reminders') is not null as customer_reminders,
+          to_regclass('private.commission_entries') is not null as commissions,
+          to_regclass('private.payroll_payments') is not null as payroll`;
+        const schemaReady = Object.values(schema[0] as Record<string, boolean>).every(Boolean);
+        return json({ service: "salon-reservation-api", status: "ok", database: "connected", schema_ready: schemaReady }, 200, origin);
       } catch {
         return json({ status: "error", code: "DATABASE_CONNECTION_FAILED" }, 503, origin);
       }
