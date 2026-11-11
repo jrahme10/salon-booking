@@ -565,7 +565,8 @@ export default {
             returning id::text,business_id::text as "businessId",customer_id::text as "customerId",action,channel,source,note,captured_at as "capturedAt",customer_confirmed as "customerConfirmed"`;
           if(!rows.length)return json({error:"Customer was not found."},404,origin);
           await sql`update private.customers set marketing_opt_in=${action==="granted"},marketing_opt_in_updated_at=${capturedAt}::timestamptz,updated_at=now()
-            where id=${customerId}::uuid and business_id=${businessId}::uuid`;
+            where id=${customerId}::uuid and business_id=${businessId}::uuid
+              and (marketing_opt_in_updated_at is null or marketing_opt_in_updated_at<=${capturedAt}::timestamptz)`;
           return json({event:rows[0] as unknown as Record<string,unknown>},201,origin);
         }
         if(resource==="customer-reminders"&&request.method==="POST"){
