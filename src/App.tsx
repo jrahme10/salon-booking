@@ -16,10 +16,13 @@ import {CustomerInsights} from "./components/CustomerInsights";
 import type {ClientBookingRequest} from "./components/ClientBooking";
 import {getAvailableSlots} from "./domain/scheduling";
 import {Marketplace,SalonProfile} from "./components/Marketplace";
+import {AuthPage} from "./components/AuthPage";
+import {restoreAuthSession,logout} from "./services/auth";
+import type {AuthSession} from "./services/auth";
 type Data={business:Business;services:Service[];employees:Employee[];customers:Customer[];customerConsentEvents:CustomerConsentEvent[];customerReminders:CustomerReminder[];appointments:Appointment[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[];commissionEntries:CommissionEntry[];payrollPayments:PayrollPayment[]};
 const formatMoney=(amount:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(amount);
 const groups=[{name:"WORKSPACE",links:[["/provider","Overview",LayoutDashboard],["/provider/calendar","Calendar",CalendarDays],["/provider/bookings","Bookings",CalendarRange]]},{name:"MANAGE",links:[["/provider/services","Services",Scissors],["/provider/team","Team",Users],["/provider/customers","Customers",Users]]},{name:"BUSINESS",links:[["/provider/analytics","Analytics",Activity],["/provider/finances","Finances",Wallet],["/provider/settings","Settings",Settings]]}] as const;
-export default function App(){
+function WorkspaceApp(){
  const [data,setData]=useState<Data|null>(null),[client,setClient]=useState(false);
  const refresh=async()=>{const [business,services,employees,customers,customerConsentEvents,customerReminders,appointments,clientRequests,payments,expenses,commissionEntries,payrollPayments]=await Promise.all([salonRepository.getBusiness(),salonRepository.getServices(),salonRepository.getEmployees(),salonRepository.getCustomers(),salonRepository.getCustomerConsentEvents(),salonRepository.getCustomerReminders(),salonRepository.getAppointments(),salonRepository.getClientAppointmentRequests(),salonRepository.getPayments(),salonRepository.getExpenses(),salonRepository.getCommissionEntries(),salonRepository.getPayrollPayments()]);setData({business,services,employees,customers,customerConsentEvents,customerReminders,appointments,clientRequests,payments,expenses,commissionEntries,payrollPayments});};
  useEffect(()=>{void refresh();},[]);
@@ -90,3 +93,12 @@ function Calendar({data,onNew}:{data:Data;onNew:()=>void}){
 }
 function Analytics({data}:{data:Data}){return <><Heading kicker="KNOW YOUR NUMBERS" title="Team performance" desc="See who is driving appointments, collections and commission earnings."/><EmployeePerformance business={data.business} employees={data.employees} appointments={data.appointments} services={data.services} payments={data.payments} commissions={data.commissionEntries} payroll={data.payrollPayments}/></>}
 function Client({data}:{data:Data}){return <div className="client"><header><b>salon.</b><nav><Link to="/discover">Discover</Link>　　For salons</nav><span>{data.business.city}</span><Link className="public-page-link" to="/my-bookings">My bookings</Link></header><section className="hero"><small>A LITTLE TIME FOR YOU</small><h1>Your next feel-good<br/><em>moment starts here.</em></h1><p>Find the right salon, explore services and request an appointment in just a few steps.</p><div className="search"><Scissors/><span>Hair · Nails · Skin · Beauty</span><Link className="client-discover-action" to={"/book/"+data.business.slug}>Find a time</Link></div></section><section className="discover"><small>FEATURED SALON · LEBANON</small><h2>Places to feel your best</h2><p>Explore this salon and book directly with its team.</p><div className="cards"><article><div className="cover">M</div><h3>{data.business.name}</h3><p>{data.business.category} · {data.business.city}</p><span className="sample-label">{data.services.filter(service=>service.active).length} services available</span><Link className="client-book-link" to={"/book/"+data.business.slug}>View services & book</Link></article></div></section><footer>salon.　 Made for good days and great appointments.</footer></div>;}
+
+export default function App(){
+ const [session,setSession]=useState<AuthSession|null>(null);
+ const [checking,setChecking]=useState(true);
+ useEffect(()=>{let active=true;void restoreAuthSession().then(value=>{if(active)setSession(value);}).finally(()=>{if(active)setChecking(false);});return()=>{active=false;};},[]);
+ if(checking)return <div className="loading">salon<span>Checking your secure session…</span></div>;
+ if(!session)return <AuthPage onAuthenticated={setSession}/>;
+ return <><WorkspaceApp/><button className="auth-logout" onClick={()=>{void logout().then(()=>setSession(null));}}>Sign out</button></>;
+}
