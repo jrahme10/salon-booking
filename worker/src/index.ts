@@ -55,9 +55,12 @@ async function sha256Hex(value: string): Promise<string> {
 }
 
 async function derivePassword(password: string, saltHex: string): Promise<string> {
+  const saltBuffer = new ArrayBuffer(saltHex.length / 2);
+  const saltBytes = new Uint8Array(saltBuffer);
+  for (let i = 0; i < saltBytes.length; i++) saltBytes[i] = Number.parseInt(saltHex.slice(i * 2, i * 2 + 2), 16);
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt: fromHex(saltHex), iterations: PASSWORD_ITERATIONS, hash: "SHA-256" },
+    { name: "PBKDF2", salt: saltBuffer, iterations: PASSWORD_ITERATIONS, hash: "SHA-256" },
     key,
     256,
   );
@@ -91,7 +94,7 @@ function validEmail(value: string): boolean {
   return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-async function createSession(sql: ReturnType<typeof neon>, userId: string) {
+type NeonSql = ReturnType<typeof neon<false, false>>;\n\nasync function createSession(sql: NeonSql, userId: string) {
   const token = randomHex(32);
   const tokenHash = await sha256Hex(token);
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000).toISOString();
@@ -100,7 +103,7 @@ async function createSession(sql: ReturnType<typeof neon>, userId: string) {
   return { token, expiresAt };
 }
 
-async function authenticate(request: Request, sql: ReturnType<typeof neon>) {
+async function authenticate(request: Request, sql: NeonSql) {
   const authorization = request.headers.get("Authorization") ?? "";
   const match = /^Bearer ([a-f0-9]{64})$/i.exec(authorization);
   if (!match) return null;
@@ -116,8 +119,7 @@ async function authenticate(request: Request, sql: ReturnType<typeof neon>) {
       and s.revoked_at is null and s.expires_at > now()
       and u.disabled_at is null
     order by case m.role when 'owner' then 0 when 'admin' then 1 else 2 end
-    limit 1`;
-  return rows[0] ?? null;
+    limit 1` as unknown as Record<string, unknown>[];\n  return rows[0] ?? null;
 }
 
 export default {
