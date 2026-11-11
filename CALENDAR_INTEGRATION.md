@@ -14,6 +14,8 @@ The provider settings UI now exposes preferences for two-way calendar sync with 
 
 ## Required backend
 
+A first version-controlled Supabase schema foundation now exists at `supabase/migrations/20261111202000_calendar_connection_security_foundation.sql`. It creates private, RLS-enabled calendar metadata, busy-interval, sync-queue, OAuth-state and encrypted-secret tables. It has **not** been applied to a database, and it deliberately does not grant browser roles access. The app still has no live Supabase connection or deployed Edge Functions.
+
 Supabase has not yet been provisioned for this project. Once it is available, implement:
 
 1. Authenticated, tenant-scoped calendar connection records.
