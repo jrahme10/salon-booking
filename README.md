@@ -138,3 +138,8 @@ This is an active development preview, not a production service. Demo records ar
 - Added owner controls for the public booking slug and marketplace visibility in Business Settings. Active services appear in the salon profile.
 - The directory currently contains clearly labeled sample listings. Their sample ratings/review counts are not presented as customer ratings.
 - Marketplace demo data and non-primary sample requests are browser-local previews only. They are not connected to a shared provider inbox, real salon accounts, or Supabase. A production marketplace still requires server-backed business discovery, tenant-scoped data, listing moderation, verified ratings, and transactional booking storage.
+
+
+## Calendar integrations
+
+The provider settings include two-way sync preferences for Google Calendar and Apple Calendar. The current frontend is a setup foundation only: external accounts are not connected until the secure server-side OAuth/CalDAV services, encrypted credential storage, sync worker and atomic availability validation described in [CALENDAR_INTEGRATION.md](./CALENDAR_INTEGRATION.md) are deployed. No calendar credentials are stored in browser storage.
