@@ -281,7 +281,7 @@ export default {
         if (!user) return json({ error: "Authentication required." }, 401, origin);
         const businessId = String(user.business_id);
         const businessRows = await sql`select id::text, name, slug, category, city, address, phone, email, website, description, currency, timezone,
-          marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules"
+          marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences as "calendarSyncPreferences"
           from private.businesses where id = ${businessId}::uuid limit 1` as unknown as Record<string, unknown>[];
         if (!businessRows.length) return json({ error: "Salon was not found." }, 404, origin);
         const services = await sql`select id::text, business_id::text as "businessId", name, category,
@@ -504,10 +504,10 @@ export default {
             website=nullif(${value("website")},''),description=nullif(${value("description")},''),
             currency=${currency},timezone=${value("timezone","Asia/Beirut")},
             marketplace_visible=${body.marketplaceVisible===true},working_hours=${workingHours}::jsonb,
-            booking_rules=${bookingRules}::jsonb,updated_at=now()
+            booking_rules=${bookingRules}::jsonb,calendar_preferences=${JSON.stringify(body.calendarSyncPreferences??{blockExternalBusyTime:true,syncConfirmedAppointments:true,syncPendingAppointments:false,removeCancelledAppointments:true})}::jsonb,updated_at=now()
             where id=${businessId}::uuid
             returning id::text,name,slug,category,city,address,phone,email,website,description,currency,timezone,
-              marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules"`;
+              marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences as "calendarSyncPreferences"`;
           return json({business:rows[0] as unknown as Record<string,unknown>},200,origin);
         }
         if(resource==="appointments"&&id==="status"&&request.method==="PATCH"){
