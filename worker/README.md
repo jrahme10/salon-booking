@@ -65,3 +65,6 @@ Use the Neon SQL Editor to execute `migrations/0001_calendar_foundation.sql`. Re
 7. Add atomic server-side booking conflict checks before enabling production booking.
 
 The current health-check Worker is deliberately not a production booking API.
+
+
+Deployment verification: triggered a fresh Worker-folder commit.
