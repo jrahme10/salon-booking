@@ -299,17 +299,17 @@ export default {
           from private.client_appointment_requests where business_id=${businessId}::uuid order by created_at desc` as unknown as Record<string, unknown>[];
         const customerConsentEvents = await sql`select id::text,business_id::text as "businessId",customer_id::text as "customerId",
           action,channel,source,note,captured_at as "capturedAt",customer_confirmed as "customerConfirmed"
-          from private.customer_consent_events where business_id=${businessId}::uuid order by captured_at desc` as unknown as Record<string, unknown>[];
+          from private.customer_consent_events where business_id=${businessId}::uuid order by captured_at desc`.catch(() => []) as unknown as Record<string, unknown>[];
         const customerReminders = await sql`select id::text,business_id::text as "businessId",customer_id::text as "customerId",
           due_at as "dueAt",note,status,created_at as "createdAt"
-          from private.customer_reminders where business_id=${businessId}::uuid order by due_at` as unknown as Record<string, unknown>[];
+          from private.customer_reminders where business_id=${businessId}::uuid order by due_at`.catch(() => []) as unknown as Record<string, unknown>[];
         const commissionEntries = await sql`select id::text,business_id::text as "businessId",appointment_id::text as "appointmentId",
           employee_id::text as "employeeId",service_name as "serviceName",base_amount::float8 as "baseAmount",
           commission_type as "commissionType",commission_value::float8 as "commissionValue",amount::float8 as amount,earned_at as "earnedAt"
-          from private.commission_entries where business_id=${businessId}::uuid order by earned_at desc` as unknown as Record<string, unknown>[];
+          from private.commission_entries where business_id=${businessId}::uuid order by earned_at desc`.catch(() => []) as unknown as Record<string, unknown>[];
         const payrollPayments = await sql`select id::text,business_id::text as "businessId",employee_id::text as "employeeId",
           amount::float8 as amount,method,paid_at as "paidAt",note
-          from private.payroll_payments where business_id=${businessId}::uuid order by paid_at desc` as unknown as Record<string, unknown>[];
+          from private.payroll_payments where business_id=${businessId}::uuid order by paid_at desc`.catch(() => []) as unknown as Record<string, unknown>[];
         return json({ business: businessRows[0], services, employees, customers, appointments, payments, expenses,
           clientRequests, customerConsentEvents, customerReminders, commissionEntries, payrollPayments,
           access: { role: user.role, canSchedule: user.role === "owner" || user.role === "admin", readOnly: user.role === "employee" } }, 200, origin);
