@@ -130,6 +130,7 @@ alter table private.appointments
     employee_id with =,
     tstzrange(starts_at, ends_at, '[)') with &&
   ) where (status in ('pending','confirmed'));
+create unique index if not exists appointments_business_id_id_uq on private.appointments(business_id, id);
 create index if not exists appointments_business_time_idx on private.appointments(business_id, starts_at);
 create index if not exists appointments_customer_idx on private.appointments(customer_id, starts_at desc);
 create index if not exists appointments_employee_time_idx on private.appointments(employee_id, starts_at);
