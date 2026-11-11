@@ -179,8 +179,9 @@ export default {
             values (${userId}::uuid, ${email}, ${displayName}, ${passwordHash})
             returning id
           ), new_business as (
-            insert into private.businesses (id, name, slug, city, timezone)
-            values (${businessId}::uuid, ${businessName}, ${slug}, ${city}, 'Asia/Beirut')
+            insert into private.businesses (id, name, slug, city, timezone, working_hours)
+            values (${businessId}::uuid, ${businessName}, ${slug}, ${city}, 'Asia/Beirut',
+              '{"sun":{"enabled":false,"start":"09:00","end":"18:00"},"mon":{"enabled":true,"start":"09:00","end":"18:00"},"tue":{"enabled":true,"start":"09:00","end":"18:00"},"wed":{"enabled":true,"start":"09:00","end":"18:00"},"thu":{"enabled":true,"start":"09:00","end":"18:00"},"fri":{"enabled":true,"start":"09:00","end":"18:00"},"sat":{"enabled":true,"start":"09:00","end":"18:00"}}'::jsonb)
             returning id, name, slug
           ), new_membership as (
             insert into private.business_memberships (id, business_id, user_id, role)
