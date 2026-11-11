@@ -1,5 +1,39 @@
 -- Supporting customer relationship and payroll records.
 -- Apply after 0002_core_platform.sql. Safe to re-run.
+-- The composite key is required by the tenant-scoped foreign keys below and
+-- repairs databases where 0002 stopped at its first composite-FK statement.
+create unique index if not exists appointments_business_id_id_uq
+  on private.appointments(business_id,id);
+
+create table if not exists private.payments (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references private.businesses(id) on delete cascade,
+  appointment_id uuid not null,
+  amount numeric(12,2) not null check (amount > 0),
+  method text not null check (method in ('cash','card','bank_transfer','other')),
+  paid_at timestamptz not null default now(),
+  note text,
+  created_at timestamptz not null default now(),
+  foreign key (business_id,appointment_id) references private.appointments(business_id,id)
+);
+create index if not exists payments_business_paid_idx on private.payments(business_id,paid_at desc);
+
+create table if not exists private.client_appointment_requests (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references private.businesses(id) on delete cascade,
+  appointment_id uuid not null,
+  customer_id uuid not null,
+  kind text not null check (kind in ('cancellation','reschedule')),
+  status text not null default 'pending' check (status in ('pending','approved','declined')),
+  requested_starts_at timestamptz,
+  created_at timestamptz not null default now(),
+  reviewed_at timestamptz,
+  foreign key (business_id,appointment_id) references private.appointments(business_id,id),
+  foreign key (business_id,customer_id) references private.customers(business_id,id)
+);
+create index if not exists client_requests_business_status_idx
+  on private.client_appointment_requests(business_id,status,created_at);
+
 create table if not exists private.customer_consent_events (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references private.businesses(id) on delete cascade,
