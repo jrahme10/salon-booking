@@ -257,6 +257,54 @@ export default {
       }
     }
 
+
+    if (request.method === "GET" && url.pathname === "/provider/bootstrap") {
+      try {
+        const user = await authenticate(request, sql);
+        if (!user) return json({ error: "Authentication required." }, 401, origin);
+        const businessId = String(user.business_id);
+        const businessRows = await sql`select id::text, name, slug, category, city, address, phone, email, website, description, currency, timezone,
+          marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules"
+          from private.businesses where id = ${businessId}::uuid limit 1` as unknown as Record<string, unknown>[];
+        if (!businessRows.length) return json({ error: "Salon was not found." }, 404, origin);
+        const services = await sql`select id::text, business_id::text as "businessId", name, category,
+          duration_minutes as "durationMinutes", price::float8 as price, active
+          from private.services where business_id = ${businessId}::uuid order by name` as unknown as Record<string, unknown>[];
+        const employees = await sql`select id::text, business_id::text as "businessId", name, role, initials, active,
+          service_ids as "serviceIds", working_hours as "workingHours", time_off as "timeOff",
+          commission_type as "commissionType", commission_value::float8 as "commissionValue"
+          from private.employees where business_id = ${businessId}::uuid order by name` as unknown as Record<string, unknown>[];
+        const customers = await sql`select c.id::text, c.business_id::text as "businessId", c.name, c.phone, c.email,
+          c.birthday::text as birthday, c.marketing_opt_in as "marketingOptIn",
+          c.marketing_opt_in_updated_at as "marketingOptInUpdatedAt",
+          count(a.id)::int as visits, max(a.starts_at) as "lastVisit"
+          from private.customers c left join private.appointments a on a.customer_id=c.id and a.status='completed'
+          where c.business_id=${businessId}::uuid group by c.id order by c.name` as unknown as Record<string, unknown>[];
+        const appointments = await sql`select a.id::text, a.business_id::text as "businessId", a.customer_id::text as "customerId",
+          a.service_id::text as "serviceId", a.employee_id::text as "employeeId", a.starts_at as "startsAt",
+          a.status, a.source, coalesce(sum(p.amount),0)::float8 as "paidAmount",
+          (a.starts_at + make_interval(mins => s.duration_minutes)) as "endsAt"
+          from private.appointments a join private.services s on s.id=a.service_id
+          left join private.payments p on p.appointment_id=a.id
+          where a.business_id=${businessId}::uuid
+          group by a.id,s.duration_minutes order by a.starts_at` as unknown as Record<string, unknown>[];
+        const payments = await sql`select id::text, business_id::text as "businessId", appointment_id::text as "appointmentId",
+          amount::float8 as amount, method, paid_at as "paidAt", note
+          from private.payments where business_id=${businessId}::uuid order by paid_at desc` as unknown as Record<string, unknown>[];
+        const expenses = await sql`select id::text, business_id::text as "businessId", amount::float8 as amount,
+          category, description, incurred_at as "incurredAt", payment_method as "paymentMethod"
+          from private.expenses where business_id=${businessId}::uuid order by incurred_at desc` as unknown as Record<string, unknown>[];
+        const clientRequests = await sql`select id::text, business_id::text as "businessId", appointment_id::text as "appointmentId",
+          customer_id::text as "customerId", kind, status, requested_starts_at as "requestedStartsAt", created_at as "createdAt"
+          from private.client_appointment_requests where business_id=${businessId}::uuid order by created_at desc` as unknown as Record<string, unknown>[];
+        return json({ business: businessRows[0], services, employees, customers, appointments, payments, expenses,
+          clientRequests, customerConsentEvents: [], customerReminders: [], commissionEntries: [], payrollPayments: [],
+          access: { role: user.role, canSchedule: user.role === "owner" || user.role === "admin", readOnly: user.role === "employee" } }, 200, origin);
+      } catch {
+        return json({ error: "Could not load salon workspace data." }, 503, origin);
+      }
+    }
+
     return json({ error: "Not found" }, 404, origin);
   },
 } satisfies WorkerHandler<Env>;
