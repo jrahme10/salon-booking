@@ -313,7 +313,7 @@ export default {
           from private.payroll_payments where business_id=${businessId}::uuid order by paid_at desc`.catch(() => []) as unknown as Record<string, unknown>[];
         return json({ business: businessRows[0], services, employees, customers, appointments, payments, expenses,
           clientRequests, customerConsentEvents, customerReminders, commissionEntries, payrollPayments,
-          access: { role: user.role, canSchedule: user.role === "owner" || user.role === "admin", readOnly: user.role === "employee" } }, 200, origin);
+          access: { role: user.role, canSchedule: user.role === "owner", readOnly: user.role !== "owner" } }, 200, origin);
       } catch {
         return json({ error: "Could not load salon workspace data." }, 503, origin);
       }
