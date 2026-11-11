@@ -8,6 +8,7 @@
 - The Worker currently exposes only health checks. No business data or calendar credentials are exposed.
 - The calendar migration is prepared but must not be applied until the database connection test succeeds.
 - Authentication, tenant authorization, Google OAuth, Apple CalDAV, and background sync are not implemented yet.
+- Git deployment connection smoke-test marker: 2026-11-11.
 
 ## Local development
 
