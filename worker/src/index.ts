@@ -4,6 +4,10 @@ interface Env {
   DATABASE_URL: string;
 }
 
+type WorkerHandler<E> = {
+  fetch(request: Request, env: E): Response | Promise<Response>;
+};
+
 const allowedOrigins = new Set([
   "https://jrahme10.github.io",
   "http://localhost:5173",
@@ -79,11 +83,11 @@ export default {
           origin,
         );
       } catch {
-        // Do not return database errors: they may contain connection details.
+        // Never return database errors: they may contain connection details.
         return json({ status: "error", code: "DATABASE_CONNECTION_FAILED" }, 503, origin);
       }
     }
 
     return json({ error: "Not found" }, 404, origin);
   },
-} satisfies ExportedHandler<Env>;
+} satisfies WorkerHandler<Env>;

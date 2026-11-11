@@ -2,39 +2,37 @@
 
 ## Current implementation status
 
-The provider settings UI now exposes preferences for two-way calendar sync with Google Calendar and Apple Calendar. These preferences are stored with the business in the current browser demo repository. Provider connection actions intentionally remain disabled until a trusted backend exists.
+The provider settings UI contains preferences for two-way sync with Google Calendar and Apple Calendar. The connection actions remain disabled until the authenticated provider flows and sync worker are implemented.
 
-**No external calendar account is connected yet.** The frontend does not store OAuth tokens, iCloud passwords, or app-specific passwords. Do not enable connection buttons by removing the disabled state: doing so without server endpoints would create a misleading and unsafe flow.
+The backend foundation is being moved to **Cloudflare Workers + Neon PostgreSQL**. The Worker currently provides safe health checks only; no salon data, OAuth tokens, iCloud credentials or calendar events are exposed through API routes.
 
-## Providers and supported behavior
+## Backend
+
+- Worker source: `worker/src/index.ts`
+- Worker deployment config: `worker/wrangler.toml`
+- Neon migration: `worker/migrations/0001_calendar_foundation.sql`
+- Runtime database secret: `DATABASE_URL` in Cloudflare Worker secrets
+- Health endpoints: `GET /health` and `GET /health/db`
+
+The calendar schema migration is prepared but must not be applied until `/health/db` reports a successful Neon connection. The app remains browser-local; no production authentication, shared database records or server-side booking locks are live yet.
+
+## Providers and intended behavior
 
 - Google Calendar: OAuth 2.0 authorization-code flow with PKCE; Google Calendar API.
-- Apple Calendar: CalDAV against the user's iCloud calendar, authenticated only from a server using an app-specific password. Never request or store an Apple ID password in the browser.
-- Both providers: per-owner and per-employee account connections; user-selected calendars; two-way sync; busy-time import; appointment create/update/cancel; sync health and last-sync status.
+- Apple Calendar: CalDAV against the user's iCloud calendar, authenticated only from the server using an app-specific password. Never request or store an Apple ID password in the browser.
+- Both providers: per-owner and per-employee connections; user-selected calendars; two-way sync; busy-time import; appointment create/update/cancel; sync health and last-sync status.
 
-## Required backend
+## Required implementation before enabling Connect
 
-A first version-controlled Supabase schema foundation now exists at `supabase/migrations/20261111202000_calendar_connection_security_foundation.sql`. It creates private, RLS-enabled calendar metadata, busy-interval, sync-queue, OAuth-state and encrypted-secret tables. It has **not** been applied to a database, and it deliberately does not grant browser roles access. The app still has no live Supabase connection or deployed Edge Functions.
-
-Supabase has not yet been provisioned for this project. Once it is available, implement:
-
-1. Authenticated, tenant-scoped calendar connection records.
-2. A server-side OAuth callback and token refresh service for Google.
-3. A server-side CalDAV adapter for iCloud. Store app-specific credentials encrypted with a server-managed key; never expose them to the client.
-4. A sync queue/worker with retry, exponential backoff, idempotency keys and dead-letter handling.
-5. Google push notifications where configured, plus periodic reconciliation. CalDAV requires scheduled polling/reconciliation.
-6. A booking validation endpoint that checks internal appointments and imported busy intervals atomically before confirming or rescheduling.
-7. Audit events, disconnect/revoke handling, token rotation and deletion of imported event details when a connection is removed.
-
-## Suggested data model
-
-- `calendar_connections`: id, business_id, employee_id nullable (owner/business connection), provider, provider_account_id, encrypted_refresh_token or encrypted CalDAV credential reference, status, connected_at, last_sync_at, last_error.
-- `calendar_resources`: id, connection_id, provider_calendar_id, display_name, sync_to_provider, read_busy_time, timezone, enabled.
-- `calendar_event_links`: id, connection_id, appointment_id, provider_event_id, provider_calendar_id, etag/version, last_synced_at. Unique on connection + provider event and connection + appointment.
-- `external_busy_intervals`: id, connection_id, provider_event_id, starts_at, ends_at, availability_scope, last_seen_at. Store only the minimum event data needed for availability; do not import private event titles or descriptions.
-- `calendar_sync_jobs`: id, connection_id, operation, idempotency_key, payload, attempts, run_after, completed_at, last_error.
-
-Every table must have tenant-aware foreign keys and RLS. Credentials must be encrypted server-side and inaccessible to browser clients, logs, analytics and support exports.
+1. Select and integrate an authentication provider; validate access tokens in the Worker.
+2. Enforce business membership and role authorization on every business-scoped request.
+3. Register Google OAuth consent screen, client ID/secret and exact callback URI.
+4. Implement server-side Google OAuth state/PKCE, token exchange, refresh and revocation.
+5. Implement Apple app-specific-password onboarding and CalDAV discovery/event CRUD.
+6. Encrypt provider credentials with a server-side key. Never log request bodies, tokens or passwords.
+7. Implement scheduled sync queue processing, retries, exponential backoff, idempotency and reconciliation.
+8. Integrate imported busy intervals into availability generation and atomic server-side booking validation.
+9. Add audit events, disconnect/revoke handling, conflict review and deletion of imported event details when a connection is removed.
 
 ## Sync rules
 
@@ -46,28 +44,9 @@ Every table must have tenant-aware foreign keys and RLS. Credentials must be enc
 - Use half-open interval overlap checks: start < other end AND end > other start. Adjacent appointments are allowed.
 - Treat all-day events as busy for the full local calendar day. Normalize timed events to UTC while preserving the calendar's IANA timezone and DST rules.
 - On provider API failure, retain the last successful busy snapshot and show its age; do not silently assume the calendar is free.
-- Resolve simultaneous edits conservatively: salon appointment changes remain authoritative for salon records; personal event changes only affect availability. If a salon booking conflicts with a newly imported personal event, flag it for owner action rather than moving either event automatically.
+- Resolve simultaneous edits conservatively: salon appointment changes remain authoritative for salon records; personal event changes only affect availability.
 - Disconnecting a provider stops future sync and revokes credentials where supported. It must not delete personal calendar events.
 
-## API contract to implement
+## Security and rollout
 
-- `POST /calendar/connections/google/start` — create short-lived OAuth state and return authorization URL.
-- `GET /calendar/connections/google/callback` — validate state, exchange code server-side, persist encrypted credentials.
-- `POST /calendar/connections/apple` — accept an app-specific password over TLS and persist it only after server-side encryption; never log request bodies.
-- `GET /calendar/connections` — list safe connection metadata, never secrets.
-- `PATCH /calendar/resources/:id` — update calendar selection and sync direction.
-- `POST /calendar/connections/:id/sync` — enqueue reconciliation.
-- `DELETE /calendar/connections/:id` — disconnect, revoke and purge credentials.
-- Internal worker: process provider notifications, sync jobs and periodic reconciliation.
-
-## Rollout checklist
-
-- [ ] Provision Supabase and configure Auth, RLS, encrypted secret storage and scheduled worker.
-- [ ] Register Google OAuth consent screen, client ID/secret and approved redirect URI.
-- [ ] Implement and verify Google OAuth, token refresh, event CRUD and push notifications.
-- [ ] Implement Apple app-specific-password onboarding and CalDAV discovery/event CRUD.
-- [ ] Add employee sign-in and per-employee connection ownership.
-- [ ] Integrate imported busy intervals into slot generation and server-side atomic booking validation.
-- [ ] Add sync health, reconnect, disconnect and conflict review UI.
-- [ ] Test DST transitions, recurring events, all-day events, deleted/edited events, revoked tokens, rate limits, retries and duplicate delivery.
-- [ ] Complete privacy review and user-facing consent before production rollout.
+The Worker health check is not a production booking API. Do not enable the calendar Connect buttons or use this backend for real bookings until authentication, tenant authorization, restricted database access, encrypted secrets, provider integrations, background sync and transactional booking checks have been implemented and tested.
