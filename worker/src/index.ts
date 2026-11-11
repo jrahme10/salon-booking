@@ -324,7 +324,7 @@ export default {
       const user = await authenticate(request, sql);
       if (!user) return json({ error: "Authentication required." }, 401, origin);
       if (user.role !== "owner") return json({ error: "Only the salon owner can change workspace data." }, 403, origin);
-      const body = await readBody(request);
+      const body = request.method === "DELETE" ? {} : await readBody(request);
       if (!body) return json({ error: "A valid JSON request body is required." }, 400, origin);
       const businessId = String(user.business_id);
       const path = url.pathname.split("/").filter(Boolean);
