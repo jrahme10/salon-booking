@@ -344,10 +344,18 @@ export default {
           return json({ service: rows[0] as unknown as Record<string, unknown> }, 201, origin);
         }
         if (resource === "services" && id && request.method === "PATCH") {
-          const rows = await sql`update private.services set name=${value("name")},category=${value("category","Other")},
-            duration_minutes=${numeric("durationMinutes")},price=${numeric("price")},active=${body.active !== false},updated_at=now()
-            where id=${id}::uuid and business_id=${businessId}::uuid
-            returning id::text,business_id::text as "businessId",name,category,duration_minutes as "durationMinutes",price::float8 as price,active`;
+          const rows = await sql`with updated_service as (
+              update private.services set name=${value("name")},category=${value("category","Other")},
+                duration_minutes=${numeric("durationMinutes")},price=${numeric("price")},active=${body.active !== false},updated_at=now()
+              where id=${id}::uuid and business_id=${businessId}::uuid
+              returning id,business_id,name,category,duration_minutes,price,active
+            ), adjusted_appointments as (
+              update private.appointments a set ends_at=a.starts_at+make_interval(mins=>s.duration_minutes),updated_at=now()
+              from updated_service s where a.service_id=s.id and a.business_id=s.business_id and a.status in ('pending','confirmed')
+              returning a.id
+            )
+            select id::text,business_id::text as "businessId",name,category,duration_minutes as "durationMinutes",price::float8 as price,active
+            from updated_service`;
           if (!rows.length) return json({ error: "Service was not found." }, 404, origin);
           return json({ service: rows[0] as unknown as Record<string, unknown> }, 200, origin);
         }
