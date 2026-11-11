@@ -453,6 +453,73 @@ export default {
             returning id::text,business_id::text as "businessId",amount::float8 as amount,category,description,incurred_at as "incurredAt",payment_method as "paymentMethod"`;
           return json({expense:rows[0] as unknown as Record<string,unknown>},201,origin);
         }
+
+        if(resource==="business"&&request.method==="PATCH"){
+          const name=value("name"),city=value("city"),address=value("address");
+          const currency=value("currency","USD");
+          if(!name||!city||!address||!["USD","LBP"].includes(currency))return json({error:"Complete the salon name, city, address and currency."},400,origin);
+          const workingHours=JSON.stringify(body.workingHours??{});
+          const bookingRules=JSON.stringify(body.bookingRules??{});
+          const rows=await sql`update private.businesses set name=${name},category=${value("category","Beauty")},city=${city},
+            address=${address},phone=nullif(${value("phone")},''),email=nullif(${value("email")},''),
+            website=nullif(${value("website")},''),description=nullif(${value("description")},''),
+            currency=${currency},timezone=${value("timezone","Asia/Beirut")},
+            marketplace_visible=${body.marketplaceVisible===true},working_hours=${workingHours}::jsonb,
+            booking_rules=${bookingRules}::jsonb,updated_at=now()
+            where id=${businessId}::uuid
+            returning id::text,name,slug,category,city,address,phone,email,website,description,currency,timezone,
+              marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules"`;
+          return json({business:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="appointments"&&id==="status"&&request.method==="PATCH"){
+          return json({error:"Use /provider/appointments/{appointmentId}/status."},400,origin);
+        }
+        if(resource==="appointments"&&id&&path[3]==="status"&&request.method==="PATCH"){
+          const next=value("status");
+          if(!["pending","confirmed","completed","cancelled"].includes(next))return json({error:"Choose a valid appointment status."},400,origin);
+          const rows=await sql`update private.appointments set status=${next},updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid
+              and (status='pending' and ${next} in ('confirmed','cancelled')
+                or status='confirmed' and ${next} in ('completed','cancelled'))
+            returning id::text,status`;
+          if(!rows.length)return json({error:"This appointment status cannot be changed."},409,origin);
+          return json({appointment:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="client-requests"&&request.method==="POST"){
+          const appointmentId=value("appointmentId"),customerId=value("customerId"),kind=value("kind");
+          const requested=value("requestedStartsAt");
+          if(!["cancellation","reschedule"].includes(kind))return json({error:"Choose a valid request type."},400,origin);
+          if(kind==="reschedule"&&!Number.isFinite(Date.parse(requested)))return json({error:"Choose a valid requested date and time."},400,origin);
+          const rows=await sql`insert into private.client_appointment_requests(business_id,appointment_id,customer_id,kind,requested_starts_at)
+            select ${businessId}::uuid,a.id,c.id,${kind},nullif(${requested},'')::timestamptz
+            from private.appointments a join private.customers c on c.id=a.customer_id and c.business_id=a.business_id
+            where a.id=${appointmentId}::uuid and a.business_id=${businessId}::uuid
+              and c.id=${customerId}::uuid and a.status in ('pending','confirmed')
+            returning id::text,business_id::text as "businessId",appointment_id::text as "appointmentId",
+              customer_id::text as "customerId",kind,status,requested_starts_at as "requestedStartsAt",created_at as "createdAt"`;
+          if(!rows.length)return json({error:"The appointment could not be found for this customer."},404,origin);
+          return json({request:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="client-requests"&&id&&request.method==="PATCH"){
+          const next=value("status");
+          if(!["approved","declined"].includes(next))return json({error:"Choose approve or decline."},400,origin);
+          const rows=await sql`update private.client_appointment_requests set status=${next},reviewed_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid and status='pending'
+            returning id::text,status,kind,appointment_id::text as "appointmentId",requested_starts_at as "requestedStartsAt"`;
+          if(!rows.length)return json({error:"This client request was already reviewed or could not be found."},409,origin);
+          if(next==="approved"&&rows[0].kind==="cancellation"){
+            await sql`update private.appointments set status='cancelled',updated_at=now()
+              where id=${String(rows[0].appointmentId)}::uuid and business_id=${businessId}::uuid and status in ('pending','confirmed')`;
+          }
+          if(next==="approved"&&rows[0].kind==="reschedule"&&rows[0].requestedStartsAt){
+            const changed=await sql`update private.appointments a set starts_at=${rows[0].requestedStartsAt}::timestamptz,
+              ends_at=${rows[0].requestedStartsAt}::timestamptz+(select make_interval(mins=>s.duration_minutes) from private.services s where s.id=a.service_id),
+              updated_at=now() where a.id=${String(rows[0].appointmentId)}::uuid and a.business_id=${businessId}::uuid
+                and a.status in ('pending','confirmed') returning a.id`;
+            if(!changed.length)return json({error:"The requested time is no longer available."},409,origin);
+          }
+          return json({request:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
         return json({error:"Unsupported workspace operation."},404,origin);
       } catch (error) {
         const message = error instanceof Error ? error.message : "";
