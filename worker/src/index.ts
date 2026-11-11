@@ -305,6 +305,162 @@ export default {
       }
     }
 
+
+    if (url.pathname.startsWith("/provider/") && request.method !== "GET") {
+      const user = await authenticate(request, sql);
+      if (!user) return json({ error: "Authentication required." }, 401, origin);
+      if (user.role !== "owner") return json({ error: "Only the salon owner can change workspace data." }, 403, origin);
+      const body = await readBody(request);
+      if (!body) return json({ error: "A valid JSON request body is required." }, 400, origin);
+      const businessId = String(user.business_id);
+      const path = url.pathname.split("/").filter(Boolean);
+      const resource = path[1] ?? "";
+      const id = path[2] ?? "";
+      const value = (key: string, fallback = "") => typeof body[key] === "string" ? String(body[key]).trim() : fallback;
+      const numeric = (key: string, fallback = NaN) => typeof body[key] === "number" ? Number(body[key]) : Number(value(key, String(fallback)));
+      try {
+        if (resource === "services" && request.method === "POST") {
+          const name = value("name"), category = value("category", "Other");
+          const duration = numeric("durationMinutes"), price = numeric("price");
+          if (!name || name.length > 160 || !Number.isInteger(duration) || duration < 5 || duration > 1440 || !Number.isFinite(price) || price < 0)
+            return json({ error: "Enter a valid service name, duration and price." }, 400, origin);
+          const rows = await sql`insert into private.services (business_id,name,category,duration_minutes,price,active)
+            values (${businessId}::uuid,${name},${category},${duration},${price},${body.active !== false})
+            returning id::text,business_id::text as "businessId",name,category,duration_minutes as "durationMinutes",price::float8 as price,active`;
+          return json({ service: rows[0] as unknown as Record<string, unknown> }, 201, origin);
+        }
+        if (resource === "services" && id && request.method === "PATCH") {
+          const rows = await sql`update private.services set name=${value("name")},category=${value("category","Other")},
+            duration_minutes=${numeric("durationMinutes")},price=${numeric("price")},active=${body.active !== false},updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid
+            returning id::text,business_id::text as "businessId",name,category,duration_minutes as "durationMinutes",price::float8 as price,active`;
+          if (!rows.length) return json({ error: "Service was not found." }, 404, origin);
+          return json({ service: rows[0] as unknown as Record<string, unknown> }, 200, origin);
+        }
+        if (resource === "services" && id && request.method === "DELETE") {
+          const rows = await sql`update private.services set active=false,updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid returning id::text`;
+          if (!rows.length) return json({ error: "Service was not found." }, 404, origin);
+          return json({ status: "ok" }, 200, origin);
+        }
+        if (resource === "employees" && request.method === "POST") {
+          const name=value("name"),role=value("role","Team member");
+          if(!name||name.length>160)return json({error:"Enter a valid team member name."},400,origin);
+          const serviceIds=Array.isArray(body.serviceIds)?body.serviceIds.filter((x):x is string=>typeof x==="string"):[];
+          const workingHours=JSON.stringify(body.workingHours??{});
+          const timeOff=Array.isArray(body.timeOff)?body.timeOff.filter((x):x is string=>typeof x==="string"):[];
+          const commissionType=value("commissionType","percentage"),commissionValue=numeric("commissionValue",0);
+          if(!["percentage","fixed"].includes(commissionType)||!Number.isFinite(commissionValue)||commissionValue<0||(commissionType==="percentage"&&commissionValue>100))
+            return json({error:"Enter a valid commission value."},400,origin);
+          const rows=await sql`insert into private.employees (business_id,name,role,initials,active,service_ids,working_hours,time_off,commission_type,commission_value)
+            values(${businessId}::uuid,${name},${role},${value("initials",name.slice(0,2).toUpperCase())},${body.active!==false},${serviceIds}::uuid[],${workingHours}::jsonb,${timeOff}::date[],${commissionType},${commissionValue})
+            returning id::text,business_id::text as "businessId",name,role,initials,active,service_ids as "serviceIds",working_hours as "workingHours",time_off as "timeOff",commission_type as "commissionType",commission_value::float8 as "commissionValue"`;
+          return json({employee:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="employees"&&id&&request.method==="PATCH"){
+          const name=value("name"),role=value("role","Team member");
+          const serviceIds=Array.isArray(body.serviceIds)?body.serviceIds.filter((x):x is string=>typeof x==="string"):[];
+          const workingHours=JSON.stringify(body.workingHours??{});
+          const timeOff=Array.isArray(body.timeOff)?body.timeOff.filter((x):x is string=>typeof x==="string"):[];
+          const commissionType=value("commissionType","percentage"),commissionValue=numeric("commissionValue",0);
+          if(!name||!["percentage","fixed"].includes(commissionType)||!Number.isFinite(commissionValue)||commissionValue<0||(commissionType==="percentage"&&commissionValue>100))
+            return json({error:"Enter valid team member details."},400,origin);
+          const rows=await sql`update private.employees set name=${name},role=${role},initials=${value("initials",name.slice(0,2).toUpperCase())},
+            active=${body.active!==false},service_ids=${serviceIds}::uuid[],working_hours=${workingHours}::jsonb,time_off=${timeOff}::date[],
+            commission_type=${commissionType},commission_value=${commissionValue},updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid
+            returning id::text,business_id::text as "businessId",name,role,initials,active,service_ids as "serviceIds",working_hours as "workingHours",time_off as "timeOff",commission_type as "commissionType",commission_value::float8 as "commissionValue"`;
+          if(!rows.length)return json({error:"Team member was not found."},404,origin);
+          return json({employee:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="employees"&&id&&request.method==="DELETE"){
+          const rows=await sql`update private.employees set active=false,updated_at=now() where id=${id}::uuid and business_id=${businessId}::uuid returning id::text`;
+          if(!rows.length)return json({error:"Team member was not found."},404,origin);
+          return json({status:"ok"},200,origin);
+        }
+        if(resource==="customers"&&request.method==="POST"){
+          const name=value("name"),phone=value("phone"),email=value("email");
+          if(!name||!/^[-+0-9() .]{6,25}$/.test(phone))return json({error:"Enter a customer name and valid phone number."},400,origin);
+          const rows=await sql`insert into private.customers(business_id,name,phone,email,birthday)
+            values(${businessId}::uuid,${name},${phone},${email},nullif(${value("birthday")},'')::date)
+            returning id::text,business_id::text as "businessId",name,phone,email,birthday::text as birthday,marketing_opt_in as "marketingOptIn",marketing_opt_in_updated_at as "marketingOptInUpdatedAt"`;
+          return json({customer:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="customers"&&id&&request.method==="PATCH"){
+          const name=value("name"),phone=value("phone"),email=value("email");
+          if(!name||!/^[-+0-9() .]{6,25}$/.test(phone))return json({error:"Enter a customer name and valid phone number."},400,origin);
+          const rows=await sql`update private.customers set name=${name},phone=${phone},email=${email},
+            birthday=nullif(${value("birthday")},'')::date,updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid
+            returning id::text,business_id::text as "businessId",name,phone,email,birthday::text as birthday,marketing_opt_in as "marketingOptIn",marketing_opt_in_updated_at as "marketingOptInUpdatedAt"`;
+          if(!rows.length)return json({error:"Customer was not found."},404,origin);
+          return json({customer:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="appointments"&&request.method==="POST"){
+          const customerId=value("customerId"),serviceId=value("serviceId"),employeeId=value("employeeId");
+          const startsAt=value("startsAt"),status=value("status","pending");
+          if(!["pending","confirmed"].includes(status)||!customerId||!serviceId||!employeeId||!Number.isFinite(Date.parse(startsAt)))
+            return json({error:"Choose a customer, service, team member and valid appointment time."},400,origin);
+          const rows=await sql`insert into private.appointments(business_id,customer_id,service_id,employee_id,starts_at,ends_at,status,source,created_by)
+            select ${businessId}::uuid,c.id,s.id,e.id,${startsAt}::timestamptz,
+              ${startsAt}::timestamptz+make_interval(mins=>s.duration_minutes),${status},${value("source","provider")},${String(user.user_id)}::uuid
+            from private.customers c,private.services s,private.employees e
+            where c.id=${customerId}::uuid and c.business_id=${businessId}::uuid
+              and s.id=${serviceId}::uuid and s.business_id=${businessId}::uuid and s.active
+              and e.id=${employeeId}::uuid and e.business_id=${businessId}::uuid and e.active
+            returning id::text,business_id::text as "businessId",customer_id::text as "customerId",service_id::text as "serviceId",
+              employee_id::text as "employeeId",starts_at as "startsAt",status,source,0::float8 as "paidAmount"`;
+          if(!rows.length)return json({error:"The selected customer, service or team member is unavailable."},400,origin);
+          return json({appointment:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="appointments"&&id&&request.method==="PATCH"){
+          const startsAt=value("startsAt"),status=value("status");
+          if(!Number.isFinite(Date.parse(startsAt))||!["pending","confirmed"].includes(status))
+            return json({error:"Only active appointments can be rescheduled."},400,origin);
+          const rows=await sql`update private.appointments a set starts_at=${startsAt}::timestamptz,
+            ends_at=${startsAt}::timestamptz+(select make_interval(mins=>s.duration_minutes) from private.services s where s.id=a.service_id),
+            customer_id=${value("customerId")}::uuid,service_id=${value("serviceId")}::uuid,employee_id=${value("employeeId")}::uuid,updated_at=now()
+            where a.id=${id}::uuid and a.business_id=${businessId}::uuid and a.status=${status}
+              and exists(select 1 from private.customers c where c.id=${value("customerId")}::uuid and c.business_id=${businessId}::uuid)
+              and exists(select 1 from private.services s where s.id=${value("serviceId")}::uuid and s.business_id=${businessId}::uuid and s.active)
+              and exists(select 1 from private.employees e where e.id=${value("employeeId")}::uuid and e.business_id=${businessId}::uuid and e.active)
+            returning a.id::text,a.business_id::text as "businessId",a.customer_id::text as "customerId",a.service_id::text as "serviceId",a.employee_id::text as "employeeId",a.starts_at as "startsAt",a.status,a.source`;
+          if(!rows.length)return json({error:"Appointment could not be updated. Check its details and availability."},409,origin);
+          return json({appointment:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="appointments"&&id&&request.method==="DELETE"){
+          const rows=await sql`update private.appointments set status='cancelled',updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid and status in ('pending','confirmed') returning id::text`;
+          if(!rows.length)return json({error:"Appointment was not found or is no longer active."},404,origin);
+          return json({status:"ok"},200,origin);
+        }
+        if(resource==="payments"&&request.method==="POST"){
+          const amount=numeric("amount"),method=value("method"),appointmentId=value("appointmentId");
+          if(!Number.isFinite(amount)||amount<=0||!["cash","card","bank_transfer","other"].includes(method))return json({error:"Enter a valid payment amount and method."},400,origin);
+          const rows=await sql`insert into private.payments(business_id,appointment_id,amount,method,paid_at,note)
+            select ${businessId}::uuid,a.id,${amount},${method},coalesce(nullif(${value("paidAt")},'')::timestamptz,now()),nullif(${value("note")},'')
+            from private.appointments a where a.id=${appointmentId}::uuid and a.business_id=${businessId}::uuid
+            returning id::text,business_id::text as "businessId",appointment_id::text as "appointmentId",amount::float8 as amount,method,paid_at as "paidAt",note`;
+          if(!rows.length)return json({error:"Appointment was not found for this salon."},404,origin);
+          return json({payment:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="expenses"&&request.method==="POST"){
+          const amount=numeric("amount"),category=value("category"),description=value("description"),method=value("paymentMethod"),incurredAt=value("incurredAt");
+          if(!Number.isFinite(amount)||amount<=0||!["rent","salary","supplies","utilities","maintenance","marketing","other"].includes(category)||!description||!["cash","card","bank_transfer","other"].includes(method)||!Number.isFinite(Date.parse(incurredAt)))
+            return json({error:"Enter valid expense details."},400,origin);
+          const rows=await sql`insert into private.expenses(business_id,amount,category,description,incurred_at,payment_method)
+            values(${businessId}::uuid,${amount},${category},${description},${incurredAt}::timestamptz,${method})
+            returning id::text,business_id::text as "businessId",amount::float8 as amount,category,description,incurred_at as "incurredAt",payment_method as "paymentMethod"`;
+          return json({expense:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        return json({error:"Unsupported workspace operation."},404,origin);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "";
+        if (message.includes("appointments_employee_no_overlap") || message.includes("exclusion")) return json({error:"This team member already has an appointment at that time."},409,origin);
+        return json({error:"The change could not be saved. Please verify the details and try again."},400,origin);
+      }
+    }
+
     return json({ error: "Not found" }, 404, origin);
   },
 } satisfies WorkerHandler<Env>;
