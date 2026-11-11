@@ -94,7 +94,9 @@ function validEmail(value: string): boolean {
   return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-type NeonSql = ReturnType<typeof neon<false, false>>;\n\nasync function createSession(sql: NeonSql, userId: string) {
+type NeonSql = ReturnType<typeof neon<false, false>>;
+
+async function createSession(sql: NeonSql, userId: string) {
   const token = randomHex(32);
   const tokenHash = await sha256Hex(token);
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000).toISOString();
@@ -119,7 +121,8 @@ async function authenticate(request: Request, sql: NeonSql) {
       and s.revoked_at is null and s.expires_at > now()
       and u.disabled_at is null
     order by case m.role when 'owner' then 0 when 'admin' then 1 else 2 end
-    limit 1` as unknown as Record<string, unknown>[];\n  return rows[0] ?? null;
+    limit 1` as unknown as Record<string, unknown>[];
+  return rows[0] ?? null;
 }
 
 export default {
