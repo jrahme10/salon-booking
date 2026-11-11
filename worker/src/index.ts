@@ -431,7 +431,7 @@ export default {
           if(!Number.isFinite(Date.parse(startsAt))||!["pending","confirmed"].includes(status))
             return json({error:"Only active appointments can be rescheduled."},400,origin);
           const rows=await sql`update private.appointments a set starts_at=${startsAt}::timestamptz,
-            ends_at=${startsAt}::timestamptz+(select make_interval(mins=>s.duration_minutes) from private.services s where s.id=a.service_id),
+            ends_at=${startsAt}::timestamptz+(select make_interval(mins=>s.duration_minutes) from private.services s where s.id=${value("serviceId")}::uuid),
             customer_id=${value("customerId")}::uuid,service_id=${value("serviceId")}::uuid,employee_id=${value("employeeId")}::uuid,updated_at=now()
             where a.id=${id}::uuid and a.business_id=${businessId}::uuid and a.status=${status}
               and exists(select 1 from private.customers c where c.id=${value("customerId")}::uuid and c.business_id=${businessId}::uuid)
