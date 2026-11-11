@@ -46,3 +46,15 @@ export async function logout(){
   if(token)try{await fetch(API_URL+"/auth/logout",{method:"POST",headers:{Authorization:"Bearer "+token}});}catch{/* Local logout must still work offline. */}
   setAuthSession(null);
 }
+
+export async function apiRequest<T>(path:string,init:RequestInit={}):Promise<T>{
+  const token=current?.token;
+  if(!token)throw new Error("Your session has expired. Please sign in again.");
+  const headers=new Headers(init.headers);
+  headers.set("Authorization","Bearer "+token);
+  if(init.body&&!headers.has("Content-Type"))headers.set("Content-Type","application/json");
+  const response=await fetch(API_URL+path,{...init,headers});
+  const data=await response.json().catch(()=>({error:"The server returned an invalid response."})) as T&{error?:string};
+  if(!response.ok)throw new Error(data.error||"The request could not be completed.");
+  return data;
+}
