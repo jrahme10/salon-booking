@@ -297,8 +297,21 @@ export default {
         const clientRequests = await sql`select id::text, business_id::text as "businessId", appointment_id::text as "appointmentId",
           customer_id::text as "customerId", kind, status, requested_starts_at as "requestedStartsAt", created_at as "createdAt"
           from private.client_appointment_requests where business_id=${businessId}::uuid order by created_at desc` as unknown as Record<string, unknown>[];
+        const customerConsentEvents = await sql`select id::text,business_id::text as "businessId",customer_id::text as "customerId",
+          action,channel,source,note,captured_at as "capturedAt",customer_confirmed as "customerConfirmed"
+          from private.customer_consent_events where business_id=${businessId}::uuid order by captured_at desc` as unknown as Record<string, unknown>[];
+        const customerReminders = await sql`select id::text,business_id::text as "businessId",customer_id::text as "customerId",
+          due_at as "dueAt",note,status,created_at as "createdAt"
+          from private.customer_reminders where business_id=${businessId}::uuid order by due_at` as unknown as Record<string, unknown>[];
+        const commissionEntries = await sql`select id::text,business_id::text as "businessId",appointment_id::text as "appointmentId",
+          employee_id::text as "employeeId",service_name as "serviceName",base_amount::float8 as "baseAmount",
+          commission_type as "commissionType",commission_value::float8 as "commissionValue",amount::float8 as amount,earned_at as "earnedAt"
+          from private.commission_entries where business_id=${businessId}::uuid order by earned_at desc` as unknown as Record<string, unknown>[];
+        const payrollPayments = await sql`select id::text,business_id::text as "businessId",employee_id::text as "employeeId",
+          amount::float8 as amount,method,paid_at as "paidAt",note
+          from private.payroll_payments where business_id=${businessId}::uuid order by paid_at desc` as unknown as Record<string, unknown>[];
         return json({ business: businessRows[0], services, employees, customers, appointments, payments, expenses,
-          clientRequests, customerConsentEvents: [], customerReminders: [], commissionEntries: [], payrollPayments: [],
+          clientRequests, customerConsentEvents, customerReminders, commissionEntries, payrollPayments,
           access: { role: user.role, canSchedule: user.role === "owner" || user.role === "admin", readOnly: user.role === "employee" } }, 200, origin);
       } catch {
         return json({ error: "Could not load salon workspace data." }, 503, origin);
@@ -483,6 +496,15 @@ export default {
                 or status='confirmed' and ${next} in ('completed','cancelled'))
             returning id::text,status`;
           if(!rows.length)return json({error:"This appointment status cannot be changed."},409,origin);
+          if(next==="completed"){
+            await sql`insert into private.commission_entries(business_id,appointment_id,employee_id,service_name,base_amount,commission_type,commission_value,amount,earned_at)
+              select a.business_id,a.id,e.id,s.name,s.price,coalesce(e.commission_type,'percentage'),e.commission_value,
+                case when e.commission_type='fixed' then e.commission_value else s.price*e.commission_value/100 end,now()
+              from private.appointments a join private.employees e on e.id=a.employee_id
+              join private.services s on s.id=a.service_id
+              where a.id=${id}::uuid and a.business_id=${businessId}::uuid and e.commission_value>0
+              on conflict(business_id,appointment_id) do nothing`;
+          }
           return json({appointment:rows[0] as unknown as Record<string,unknown>},200,origin);
         }
         if(resource==="client-requests"&&request.method==="POST"){
@@ -519,6 +541,56 @@ export default {
             if(!changed.length)return json({error:"The requested time is no longer available."},409,origin);
           }
           return json({request:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+
+        if(resource==="customer-consent"&&request.method==="POST"){
+          const customerId=value("customerId"),action=value("action"),channel=value("channel"),source=value("source");
+          const capturedAt=value("capturedAt",new Date().toISOString()),note=value("note");
+          if(!["granted","revoked"].includes(action)||!["whatsapp","email","sms","all"].includes(channel)||
+            !["in_person","whatsapp","email","phone","website","other"].includes(source)||
+            (action==="granted"&&body.customerConfirmed!==true)||(action==="granted"&&source==="other"&&!note))
+            return json({error:"Confirm customer consent and provide valid channel, source and date."},400,origin);
+          const rows=await sql`insert into private.customer_consent_events(business_id,customer_id,action,channel,source,note,captured_at,customer_confirmed)
+            select ${businessId}::uuid,c.id,${action},${channel},${source},nullif(${note},''),${capturedAt}::timestamptz,${body.customerConfirmed===true}
+            from private.customers c where c.id=${customerId}::uuid and c.business_id=${businessId}::uuid
+            returning id::text,business_id::text as "businessId",customer_id::text as "customerId",action,channel,source,note,captured_at as "capturedAt",customer_confirmed as "customerConfirmed"`;
+          if(!rows.length)return json({error:"Customer was not found."},404,origin);
+          await sql`update private.customers set marketing_opt_in=${action==="granted"},marketing_opt_in_updated_at=${capturedAt}::timestamptz,updated_at=now()
+            where id=${customerId}::uuid and business_id=${businessId}::uuid`;
+          return json({event:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="customer-reminders"&&request.method==="POST"){
+          const customerId=value("customerId"),dueAt=value("dueAt"),note=value("note");
+          if(!Number.isFinite(Date.parse(dueAt))||!note)return json({error:"Choose a reminder date and add a note."},400,origin);
+          const rows=await sql`insert into private.customer_reminders(business_id,customer_id,due_at,note)
+            select ${businessId}::uuid,c.id,${dueAt}::timestamptz,${note} from private.customers c
+            where c.id=${customerId}::uuid and c.business_id=${businessId}::uuid
+            returning id::text,business_id::text as "businessId",customer_id::text as "customerId",due_at as "dueAt",note,status,created_at as "createdAt"`;
+          if(!rows.length)return json({error:"Customer was not found."},404,origin);
+          return json({reminder:rows[0] as unknown as Record<string,unknown>},201,origin);
+        }
+        if(resource==="customer-reminders"&&id&&request.method==="PATCH"){
+          const status=value("status");
+          if(!["pending","completed","cancelled"].includes(status))return json({error:"Choose a valid reminder status."},400,origin);
+          const rows=await sql`update private.customer_reminders set status=${status}
+            where id=${id}::uuid and business_id=${businessId}::uuid returning id::text,status`;
+          if(!rows.length)return json({error:"Reminder was not found."},404,origin);
+          return json({reminder:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="payroll"&&request.method==="POST"){
+          const employeeId=value("employeeId"),amount=numeric("amount"),method=value("method");
+          if(!Number.isFinite(amount)||amount<=0||!["cash","card","bank_transfer","other"].includes(method))return json({error:"Enter a valid payroll payment."},400,origin);
+          const rows=await sql`with balances as (
+              select coalesce((select sum(amount) from private.commission_entries where business_id=${businessId}::uuid and employee_id=${employeeId}::uuid),0) as earned,
+                     coalesce((select sum(amount) from private.payroll_payments where business_id=${businessId}::uuid and employee_id=${employeeId}::uuid),0) as paid
+            )
+            insert into private.payroll_payments(business_id,employee_id,amount,method,paid_at,note)
+            select ${businessId}::uuid,e.id,${amount},${method},coalesce(nullif(${value("paidAt")},'')::timestamptz,now()),nullif(${value("note")},'')
+            from private.employees e,cross join balances b
+            where e.id=${employeeId}::uuid and e.business_id=${businessId}::uuid and ${amount}<=b.earned-b.paid+0.0001
+            returning id::text,business_id::text as "businessId",employee_id::text as "employeeId",amount::float8 as amount,method,paid_at as "paidAt",note`;
+          if(!rows.length)return json({error:"Employee was not found or payment exceeds unpaid commission."},409,origin);
+          return json({payrollPayment:rows[0] as unknown as Record<string,unknown>},201,origin);
         }
         return json({error:"Unsupported workspace operation."},404,origin);
       } catch (error) {
