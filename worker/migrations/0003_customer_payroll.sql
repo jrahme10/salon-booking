@@ -1,7 +1,6 @@
 -- Repair/complete the core schema and add customer relationship + payroll records.
 -- Apply after 0002_core_platform.sql. Safe to run whether 0002 completed or stopped partway.
 create extension if not exists btree_gist;
-alter table private.businesses add column if not exists calendar_preferences jsonb not null default '{"blockExternalBusyTime":true,"syncConfirmedAppointments":true,"syncPendingAppointments":false,"removeCancelledAppointments":true}'::jsonb;
 
 create table if not exists private.businesses (
   id uuid primary key default gen_random_uuid(),
@@ -18,6 +17,8 @@ create table if not exists private.businesses (
   booking_rules jsonb not null default '{"allowOnlineBooking":true,"minimumNoticeHours":2,"cancellationNoticeHours":24,"slotIntervalMinutes":30}'::jsonb,
   created_at timestamptz not null default now(),updated_at timestamptz not null default now()
 );
+
+alter table private.businesses add column if not exists calendar_preferences jsonb not null default '{"blockExternalBusyTime":true,"syncConfirmedAppointments":true,"syncPendingAppointments":false,"removeCancelledAppointments":true}'::jsonb;
 
 create table if not exists private.app_users (
   id uuid primary key default gen_random_uuid(),
