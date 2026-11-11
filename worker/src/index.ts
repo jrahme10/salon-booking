@@ -586,7 +586,7 @@ export default {
             )
             insert into private.payroll_payments(business_id,employee_id,amount,method,paid_at,note)
             select ${businessId}::uuid,e.id,${amount},${method},coalesce(nullif(${value("paidAt")},'')::timestamptz,now()),nullif(${value("note")},'')
-            from private.employees e,cross join balances b
+            from private.employees e cross join balances b
             where e.id=${employeeId}::uuid and e.business_id=${businessId}::uuid and ${amount}<=b.earned-b.paid+0.0001
             returning id::text,business_id::text as "businessId",employee_id::text as "employeeId",amount::float8 as amount,method,paid_at as "paidAt",note`;
           if(!rows.length)return json({error:"Employee was not found or payment exceeds unpaid commission."},409,origin);
