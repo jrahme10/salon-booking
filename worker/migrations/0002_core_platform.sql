@@ -21,6 +21,7 @@ create table if not exists private.businesses (
   marketplace_visible boolean not null default false,
   working_hours jsonb not null default '{}'::jsonb,
   booking_rules jsonb not null default '{"allowOnlineBooking":true,"minimumNoticeHours":2,"cancellationNoticeHours":24,"slotIntervalMinutes":30}'::jsonb,
+  calendar_preferences jsonb not null default '{"blockExternalBusyTime":true,"syncConfirmedAppointments":true,"syncPendingAppointments":false,"removeCancelledAppointments":true}'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
