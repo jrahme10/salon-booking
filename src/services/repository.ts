@@ -288,7 +288,7 @@ class DemoRepository implements SalonRepository {
 
 class ApiRepository extends DemoRepository {
   private snapshot:Promise<Record<string,any>>|null=null;
-  private async load(){if(!this.snapshot)this.snapshot=apiRequest<Record<string,any>>("/provider/bootstrap");return this.snapshot;}
+  private async load(){if(!this.snapshot)this.snapshot=apiRequest<Record<string,any>>("/provider/bootstrap");try{return await this.snapshot;}catch(error){this.snapshot=null;throw error;}}
   private invalidate(){this.snapshot=null;}
   private async write<T>(path:string,method:string,body?:unknown):Promise<T>{
     const result=await apiRequest<T>(path,{method,...(body===undefined?{}:{body:JSON.stringify(body)})});
