@@ -3,6 +3,7 @@ import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
 import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,CommissionEntry,Customer,CustomerConsentEvent,CustomerReminder,CustomerReminderStatus,Employee,Expense,PayrollPayment,Payment,Service,WeeklySchedule} from "../types";
 import {validateExpense,validatePayment} from "../domain/finance";
 import {calculateCommission} from "../domain/commission";
+import {apiRequest} from "./auth";
 
 export interface SalonRepository {
   getBusiness():Promise<Business>;
@@ -284,6 +285,52 @@ class DemoRepository implements SalonRepository {
 }
 
 
+
+class ApiRepository extends DemoRepository {
+  private snapshot:Promise<Record<string,any>>|null=null;
+  private async load(){if(!this.snapshot)this.snapshot=apiRequest<Record<string,any>>("/provider/bootstrap");return this.snapshot;}
+  private invalidate(){this.snapshot=null;}
+  private async write<T>(path:string,method:string,body?:unknown):Promise<T>{
+    const result=await apiRequest<T>(path,{method,...(body===undefined?{}:{body:JSON.stringify(body)})});
+    this.invalidate();return result;
+  }
+  async getBusiness(){return (await this.load()).business as Business;}
+  async updateBusiness(business:Business){await this.write("/provider/business","PATCH",business);}
+  async getServices(){return (await this.load()).services as Service[];}
+  async getEmployees(){return (await this.load()).employees as Employee[];}
+  async getCustomers(){return (await this.load()).customers as Customer[];}
+  async updateCustomer(customer:Customer){await this.write("/provider/customers/"+customer.id,"PATCH",customer);}
+  async getCustomerConsentEvents(){return (await this.load()).customerConsentEvents as CustomerConsentEvent[];}
+  async recordCustomerConsent(event:CustomerConsentEvent){await this.write("/provider/customer-consent","POST",event);}
+  async getCustomerReminders(){return (await this.load()).customerReminders as CustomerReminder[];}
+  async createCustomerReminder(reminder:CustomerReminder){await this.write("/provider/customer-reminders","POST",reminder);}
+  async updateCustomerReminder(id:string,status:CustomerReminderStatus){await this.write("/provider/customer-reminders/"+id,"PATCH",{status});}
+  async getAppointments(){return (await this.load()).appointments as Appointment[];}
+  async getPayments(){return (await this.load()).payments as Payment[];}
+  async getExpenses(){return (await this.load()).expenses as Expense[];}
+  async getCommissionEntries(){return (await this.load()).commissionEntries as CommissionEntry[];}
+  async getPayrollPayments(){return (await this.load()).payrollPayments as PayrollPayment[];}
+  async createPayrollPayment(payment:PayrollPayment){await this.write("/provider/payroll","POST",payment);}
+  async createPayment(payment:Payment){await this.write("/provider/payments","POST",payment);}
+  async createExpense(expense:Expense){await this.write("/provider/expenses","POST",expense);}
+  async updateAppointmentStatus(id:string,status:Appointment["status"]){await this.write("/provider/appointments/"+id+"/status","PATCH",{status});}
+  async updateAppointment(appointment:Appointment){await this.write("/provider/appointments/"+appointment.id,"PATCH",appointment);}
+  async getClientAppointmentRequests(){return (await this.load()).clientRequests as ClientAppointmentRequest[];}
+  async createClientAppointmentRequest(request:ClientAppointmentRequest){await this.write("/provider/client-requests","POST",request);}
+  async updateClientAppointmentRequest(id:string,status:ClientAppointmentRequest["status"]){await this.write("/provider/client-requests/"+id,"PATCH",{status});}
+  async createAppointment(appointment:Appointment){await this.write("/provider/appointments","POST",appointment);}
+  async createCustomer(customer:Customer):Promise<Customer>{
+    const result=await this.write<{customer:Customer}>("/provider/customers","POST",customer);
+    return {...result.customer,visits:0,lastVisit:""};
+  }
+  async createService(service:Service){await this.write("/provider/services","POST",service);}
+  async updateService(service:Service){await this.write("/provider/services/"+service.id,"PATCH",service);}
+  async deleteService(id:string){await this.write("/provider/services/"+id,"DELETE");}
+  async createEmployee(employee:Employee){await this.write("/provider/employees","POST",employee);}
+  async updateEmployee(employee:Employee){await this.write("/provider/employees/"+employee.id,"PATCH",employee);}
+  async deleteEmployee(id:string){await this.write("/provider/employees/"+id,"DELETE");}
+}
+
 function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:number,checkNotice=false):string|null{
   if(!Number.isFinite(startsAt.getTime()))return "Choose a valid appointment time.";
   const timezone=business.timezone??"Asia/Beirut";
@@ -301,4 +348,4 @@ function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:
 }
 
 /** UI pages depend on this contract, not on a database SDK. Supabase can replace this adapter later. */
-export const salonRepository:SalonRepository=new DemoRepository();
+export const salonRepository:SalonRepository=new ApiRepository();
