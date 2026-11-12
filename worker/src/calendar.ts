@@ -47,6 +47,92 @@ function basicAuth(username: string, password: string): string {
   return "Basic " + btoa(username + ":" + password);
 }
 
+function xmlPropertyHref(xml: string, property: string): string | null {
+  const propertyMatch = new RegExp(
+    `<([\\w.-]+:)?${property}\\b[^>]*>([\\s\\S]*?)<\\/\\1${property}\\s*>`,
+    "i",
+  ).exec(xml);
+  if (!propertyMatch) return null;
+  const hrefMatch = /<(?:[\\w.-]+:)?href\\b[^>]*>([\\s\\S]*?)<\\/(?:[\\w.-]+:)?href\\s*>/i.exec(propertyMatch[2]);
+  if (!hrefMatch) return null;
+  return hrefMatch[1].trim().replace(/&amp;/g, "&").replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+}
+
+function validateICloudUrl(value: string, base: string): URL {
+  const target = new URL(value, base);
+  if (target.protocol !== "https:" ||
+      !(target.hostname === "icloud.com" || target.hostname.endsWith(".icloud.com"))) {
+    throw new Error("APPLE_DISCOVERY_INVALID_URL");
+  }
+  return target;
+}
+
+async function appleCalDavRequest(
+  startUrl: URL,
+  appleId: string,
+  appPassword: string,
+  body: string,
+): Promise<{ response: Response; url: URL }> {
+  let current = startUrl;
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const response = await fetch(current.toString(), {
+      method: "PROPFIND",
+      headers: {
+        Authorization: basicAuth(appleId, appPassword),
+        Depth: "0",
+        "Content-Type": "application/xml; charset=utf-8",
+      },
+      body,
+      redirect: "manual",
+    });
+    if ([301, 302, 303, 307, 308].includes(response.status)) {
+      const location = response.headers.get("Location");
+      if (!location) throw new Error("APPLE_DISCOVERY_REDIRECT_INVALID");
+      current = validateICloudUrl(location, current.toString());
+      continue;
+    }
+    return { response, url: current };
+  }
+  throw new Error("APPLE_DISCOVERY_TOO_MANY_REDIRECTS");
+}
+
+async function discoverAppleCalendar(
+  appleId: string,
+  appPassword: string,
+): Promise<{ principalUrl: string; calendarHomeUrl: string }> {
+  const principalRequest = await appleCalDavRequest(
+    new URL("https://caldav.icloud.com/"),
+    appleId,
+    appPassword,
+    '<?xml version="1.0" encoding="utf-8"?><d:propfind xmlns:d="DAV:"><d:prop><d:current-user-principal/></d:prop></d:propfind>',
+  );
+  if (principalRequest.response.status === 401 || principalRequest.response.status === 403) {
+    throw new Error("APPLE_AUTH_FAILED");
+  }
+  if (!principalRequest.response.ok) throw new Error("APPLE_PRINCIPAL_DISCOVERY_FAILED");
+  const principalXml = await principalRequest.response.text();
+  const principalHref = xmlPropertyHref(principalXml, "current-user-principal");
+  if (!principalHref) throw new Error("APPLE_PRINCIPAL_NOT_FOUND");
+  const principalUrl = validateICloudUrl(principalHref, principalRequest.url.toString());
+
+  const homeRequest = await appleCalDavRequest(
+    principalUrl,
+    appleId,
+    appPassword,
+    '<?xml version="1.0" encoding="utf-8"?><d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav"><d:prop><c:calendar-home-set/></d:prop></d:propfind>',
+  );
+  if (homeRequest.response.status === 401 || homeRequest.response.status === 403) {
+    throw new Error("APPLE_AUTH_FAILED");
+  }
+  if (!homeRequest.response.ok) throw new Error("APPLE_CALENDAR_DISCOVERY_FAILED");
+  const homeXml = await homeRequest.response.text();
+  const homeHref = xmlPropertyHref(homeXml, "calendar-home-set");
+  if (!homeHref) throw new Error("APPLE_CALENDAR_HOME_NOT_FOUND");
+  const calendarHomeUrl = validateICloudUrl(homeHref, homeRequest.url.toString());
+  return { principalUrl: principalUrl.toString(), calendarHomeUrl: calendarHomeUrl.toString() };
+}
+
 export async function handleCalendarRequest(
   request: Request,
   url: URL,
@@ -147,17 +233,15 @@ export async function handleCalendarRequest(
       return json({ error: "Enter a valid Apple Account email and 16-character app-specific password." }, 400);
     }
     try {
-      const probe = await fetch("https://caldav.icloud.com/", {
-        method: "PROPFIND",
-        headers: { Authorization: basicAuth(appleId, appPassword), Depth: "0",
-          "Content-Type": "application/xml; charset=utf-8" },
-        body: '<?xml version="1.0" encoding="utf-8"?><d:propfind xmlns:d="DAV:"><d:prop><d:current-user-principal/></d:prop></d:propfind>',
-        redirect: "follow",
-      });
-      if (probe.status === 401 || probe.status === 403) return json({ error: "Apple rejected these credentials. Check the Apple Account and app-specific password." }, 401);
-      if (!probe.ok && probe.status !== 207) return json({ error: "Apple Calendar could not be reached. Please try again." }, 502);
+      const discovery = await discoverAppleCalendar(appleId, appPassword);
       const connectionId = crypto.randomUUID();
-      const encrypted = await encryptSecret(env, { provider: "apple", appleId, appSpecificPassword: appPassword });
+      const encrypted = await encryptSecret(env, {
+        provider: "apple",
+        appleId,
+        appSpecificPassword: appPassword,
+        principalUrl: discovery.principalUrl,
+        calendarHomeUrl: discovery.calendarHomeUrl,
+      });
       await sql`insert into private.calendar_connections(id,business_id,employee_user_id,provider,account_label,status,created_by,connected_at)
         values(${connectionId}::uuid,${businessId}::uuid,${userId}::uuid,'apple',${appleId},'connected',${userId}::uuid,now())`;
       await sql`insert into private.calendar_connection_secrets(connection_id,encrypted_secret,encryption_key_version)
@@ -165,8 +249,19 @@ export async function handleCalendarRequest(
       await sql`insert into private.calendar_sync_jobs(connection_id,operation,idempotency_key)
         values(${connectionId}::uuid,'initial_sync',${"initial:" + connectionId})`;
       return json({ connection: { id: connectionId, provider: "apple", accountLabel: appleId, status: "connected" } }, 201);
-    } catch {
-      return json({ error: "Apple Calendar could not be connected. Verify the credentials and try again." }, 502);
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "";
+      const messages: Record<string, string> = {
+        APPLE_AUTH_FAILED: "Apple rejected these credentials. Confirm iCloud Calendar is enabled and use a newly generated app-specific password, not your normal Apple Account password.",
+        APPLE_PRINCIPAL_NOT_FOUND: "Apple accepted the login but did not return a calendar account. Make sure iCloud Calendar is enabled for this Apple Account.",
+        APPLE_CALENDAR_HOME_NOT_FOUND: "Apple accepted the login but did not return a calendar collection. Check that iCloud Calendar is enabled.",
+        APPLE_DISCOVERY_INVALID_URL: "Apple returned an unsupported calendar server address. Please try again later.",
+        APPLE_DISCOVERY_REDIRECT_INVALID: "Apple's calendar server returned an invalid redirect. Please try again.",
+        APPLE_DISCOVERY_TOO_MANY_REDIRECTS: "Apple's calendar server redirected too many times. Please try again.",
+        APPLE_PRINCIPAL_DISCOVERY_FAILED: "Could not discover your Apple Calendar account. Please try again.",
+        APPLE_CALENDAR_DISCOVERY_FAILED: "Could not discover your iCloud calendars. Please try again.",
+      };
+      return json({ error: messages[code] ?? "Apple Calendar could not be connected. Check the account details and try again." }, 502);
     }
   }
 
