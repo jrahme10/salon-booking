@@ -8,11 +8,12 @@ export function CalendarConnections(){
  const [loading,setLoading]=useState(true);
  const [busy,setBusy]=useState("");
  const [error,setError]=useState("");
+ const [notice,setNotice]=useState("");
  const [appleOpen,setAppleOpen]=useState(false);
  const [appleId,setAppleId]=useState("");
  const [appPassword,setAppPassword]=useState("");
  const load=useCallback(async()=>{try{const result=await apiRequest<{connections:Connection[]}>("/provider/calendar/connections");setConnections(result.connections);}catch(e){setError(e instanceof Error?e.message:"Could not load calendar connections.");}finally{setLoading(false);}},[]);
- useEffect(()=>{void load();const params=new URLSearchParams(window.location.search);const result=params.get("calendar");if(result){const messages:Record<string,string>={google_connected:"Google Calendar connected. Initial synchronization will begin shortly.",google_setup_required:"Google Calendar setup is incomplete. Server credentials are required.",google_link_expired:"The Google connection link expired. Please try again.",google_token_failed:"Google did not return offline access. Please reconnect and approve access.",google_connection_failed:"Google Calendar could not be connected."};if(messages[result])setError(messages[result]);if(result==="google_connected")void load();params.delete("calendar");const query=params.toString();window.history.replaceState({}, "",window.location.pathname+(query?"?"+query:"")+window.location.hash);}},[load]);
+ useEffect(()=>{void load();const params=new URLSearchParams(window.location.search);const result=params.get("calendar");if(result){const messages:Record<string,string>={google_connected:"Google Calendar connected. Initial synchronization will begin shortly.",google_setup_required:"Google Calendar setup is incomplete. Server credentials are required.",google_link_expired:"The Google connection link expired. Please try again.",google_token_failed:"Google did not return offline access. Please reconnect and approve access.",google_connection_failed:"Google Calendar could not be connected."};if(result==="google_connected")setNotice("Google Calendar account linked. Event synchronization will be enabled in the next rollout.");else if(messages[result])setError(messages[result]);if(result==="google_connected")void load();params.delete("calendar");const query=params.toString();window.history.replaceState({}, "",window.location.pathname+(query?"?"+query:"")+window.location.hash);}},[load]);
  const connectGoogle=async()=>{setBusy("google");setError("");try{const result=await apiRequest<{authorizationUrl:string}>("/provider/calendar/google/start",{method:"POST"});window.location.assign(result.authorizationUrl);}catch(e){setError(e instanceof Error?e.message:"Could not start Google Calendar connection.");setBusy("");}};
  const connectApple=async(event:FormEvent)=>{event.preventDefault();setBusy("apple");setError("");try{await apiRequest("/provider/calendar/apple",{method:"POST",body:JSON.stringify({appleId,appSpecificPassword:appPassword})});setAppleId("");setAppPassword("");setAppleOpen(false);await load();}catch(e){setError(e instanceof Error?e.message:"Could not connect Apple Calendar.");}finally{setBusy("");}};
  const disconnect=async(id:string)=>{setBusy(id);setError("");try{await apiRequest("/provider/calendar/connections/"+id,{method:"DELETE"});await load();}catch(e){setError(e instanceof Error?e.message:"Could not disconnect calendar.");}finally{setBusy("");}};
@@ -31,6 +32,6 @@ export function CalendarConnections(){
   <small>Create an app-specific password at account.apple.com under Sign-In and Security. Your password is sent only to the secure salon API and is encrypted before storage.</small>
   <div><button type="submit" className="primary" disabled={busy==="apple"}>{busy==="apple"?"Connecting…":"Connect Apple Calendar"}</button><button type="button" className="secondary" onClick={()=>setAppleOpen(false)}>Cancel</button></div>
  </form>}
- {error&&<p className="dialog-error" role="alert">{error}</p>}
+ {notice&&<p className="settings-success" role="status">{notice}</p>}{error&&<p className="dialog-error" role="alert">{error}</p>}
  </>;
 }
