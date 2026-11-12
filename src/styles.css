@@ -838,3 +838,197 @@ a:focus-visible,button:focus-visible{outline-color:#a65fff}
 button:hover{--hover-accent:#a65fff}
 [class*="success"],[class*="confirmed"],[class*="completed"]{--status-color:#80558b}
 [class*="success"]{--status-color:#80558b}
+
+
+/* Full visual redesign: editorial luxury beauty studio, not a recolor */
+:root{--ink:#25221e;--muted:#89766f;--line:#eadbd2;--green:#533234;--green-dark:#3d2528;--sage:#f1e4dc;--cream:#f5e1ce;--white:#fffaf6;--accent:#a65fff}
+body{font-family:'DM Sans',sans-serif;letter-spacing:-.01em}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+.heading{align-items:flex-end;margin-bottom:28px}
+.heading>div>small{font-size:9px;letter-spacing:2px;color:#a65f70}
+.heading h1{font:500 clamp(32px,4vw,46px)/1.08 'Playfair Display',serif;letter-spacing:-1.1px;margin:9px 0 8px}
+.heading p{font-size:12px;color:#89766f}
+.primary,.secondary{min-height:43px;border-radius:999px;padding:0 20px;font-size:11px;letter-spacing:.01em}
+.panel,.metric,.owner-kpi,.booking-dialog{border-radius:20px}
+.panel{box-shadow:0 10px 35px #5332340a}
+.metric{padding:19px;border-radius:18px}
+.metric b{font:500 28px 'Playfair Display',serif}
+.sidebar{width:248px;padding:27px 19px}
+.brand{padding:0 9px 30px}
+.brand>span{width:42px;height:42px;border-radius:50%;font-family:'Playfair Display',serif}
+.business{padding:13px;border-radius:13px}
+.nav-group{margin-top:27px}
+.nav-group>small{font-size:8px;letter-spacing:1.7px}
+.nav-group a{padding:11px 12px;font-size:11px;letter-spacing:.01em}
+.main>header{height:65px;padding:0 32px}
+.content{padding:34px 36px 60px}
+.owner-welcome,.home-hero{min-height:250px;border-radius:24px;padding:34px}
+.owner-welcome h1,.home-hero-copy h1{font-size:39px;line-height:1.1}
+.owner-kpis{gap:14px}
+.owner-kpi{padding:19px;border-radius:18px}
+.owner-kpi>b{font:500 28px 'Playfair Display',serif}
+.owner-dashboard-grid,.owner-bottom-grid{gap:16px}
+.owner-dashboard-grid .panel,.owner-team-panel,.owner-service-panel{border-radius:19px;padding:21px}
+.table-wrap{border-radius:18px}
+.table-wrap th{font-size:8px;letter-spacing:1.2px;padding:15px 14px}
+.table-wrap td{padding:15px 14px;font-size:11px}
+.filters{gap:9px;margin:0 0 15px}
+.filters>div{border-radius:999px;padding:0 14px}
+.filters button{border-radius:999px;padding:9px 15px;font-size:10px}
+.status{border-radius:999px;padding:6px 10px;font-size:8px;letter-spacing:.3px}
+.booking-dialog{border-radius:24px}
+.dialog-head{padding:23px 25px}
+.dialog-body{padding:24px 25px}
+.form input,.booking-dialog input,.booking-dialog select{border-radius:11px;min-height:43px}
+.auth-screen{background:radial-gradient(ellipse at 15% 10%,#ead2c8 0,transparent 30%),radial-gradient(ellipse at 90% 90%,#e8d9e8 0,transparent 28%),#f8f2ed}
+.auth-card{border-radius:26px;padding:38px;box-shadow:0 25px 90px #53323416}
+.auth-brand>span{border-radius:50%}
+.auth-heading h1{font-size:32px}
+.auth-card input{border-radius:12px}
+.auth-submit{border-radius:999px}
+.marketplace{background:#f8f2ed;color:#302522}
+.market-header{height:82px;max-width:1240px;border:0;padding:0 36px}
+.market-brand{font:600 31px 'Playfair Display',serif;color:#302522}
+.market-brand span{color:#a65fff}
+.market-header nav{gap:34px}
+.market-header nav a{font-size:11px;color:#6d5c55}
+.market-location{border:1px solid #eadbd2;border-radius:999px;padding:9px 13px;background:#fffaf6}
+.market-hero{max-width:1240px;min-height:440px;padding:65px 68px;border-radius:25px;background:linear-gradient(115deg,#2b2421 0%,#533234 68%,#76505a 100%);color:#fff5ed;position:relative}
+.market-hero-copy{position:relative;z-index:2}
+.market-hero-copy>small,.market-heading>div>small,.market-owner-cta small,.market-profile-hero>div>small{letter-spacing:2px;color:#e5c8b2;font-size:9px}
+.market-hero h1{font:500 clamp(42px,5vw,64px)/1.04 'Playfair Display',serif;letter-spacing:-1.8px;color:#fff7f0;margin:18px 0}
+.market-hero h1 em{font-weight:400;color:#e5c8b2}
+.market-hero p{max-width:420px;color:#e2d0c8;font-size:13px;line-height:1.8}
+.market-search{height:58px;max-width:530px;margin-top:28px;border-radius:999px;padding:0 8px 0 19px;background:#fffaf6;border:1px solid #ffffff40;box-shadow:0 12px 30px #1b111126}
+.market-search input{font-size:12px;color:#302522}
+.market-search a{border-radius:999px;background:#a65fff;color:#fff;padding:12px 21px;font-size:10px}
+.market-hero-art{min-height:280px;position:relative}
+.market-art-orbit{width:280px;height:280px;border:1px solid #e5c8b266;border-radius:50%;position:absolute;right:10%;top:0;box-shadow:0 0 0 26px #e5c8b210,0 0 0 54px #e5c8b20b}
+.market-art-card{position:absolute;right:14%;top:36px;width:210px;height:235px;padding:25px;border-radius:18px;background:linear-gradient(145deg,#f5e1ce,#d5aaa1);color:#533234;box-shadow:0 25px 55px #170e0e40;transform:rotate(5deg);display:flex;flex-direction:column;justify-content:space-between}
+.market-art-card span{font-size:8px;letter-spacing:2px}
+.market-art-card b{font:500 29px/1.05 'Playfair Display',serif}
+.market-art-card small{font-size:8px;letter-spacing:.5px}
+.market-content{max-width:1240px;margin:58px auto;padding:0 36px}
+.market-heading{align-items:end;margin-bottom:24px}
+.market-heading h2,.market-owner-cta h2,.market-profile-services h2,.market-booking-panel h2{font:500 35px 'Playfair Display',serif;color:#302522;letter-spacing:-.8px}
+.market-heading p{font-size:12px;color:#89766f}
+.market-heading>span{border-radius:999px;background:#f0e3dc;padding:8px 13px;color:#80555b;font-size:10px}
+.market-filters{padding:14px 0 20px;border-top:1px solid #eadbd2;border-bottom:1px solid #eadbd2}
+.market-filters label{border:1px solid #eadbd2;border-radius:999px;background:#fffaf6;padding:9px 14px}
+.market-filters>div{gap:7px}
+.market-filters>div button{border:1px solid #eadbd2;border-radius:999px;background:#fffaf6;color:#806d65;padding:9px 16px;font-size:10px}
+.market-filters>div button.active{background:#533234;border-color:#533234;color:#fff}
+.market-filters>select{border:1px solid #eadbd2;border-radius:999px;background:#fffaf6;padding:9px 13px;color:#6d5c55;font-size:10px}
+.market-grid{gap:22px}
+.market-card{border:1px solid #eadbd2;border-radius:20px;background:#fffaf6;box-shadow:0 10px 30px #53323408}
+.market-card:hover{transform:translateY(-5px);box-shadow:0 18px 40px #53323416}
+.market-cover{height:210px;background:linear-gradient(135deg,#ead8d1,#f4e9e1)}
+.market-cover>span{font:500 66px 'Playfair Display',serif;color:#80555b}
+.market-cover>small{border-radius:999px;background:#fffaf6;color:#80555b}
+.market-card-body{padding:20px}
+.market-card-title h3{font:500 22px 'Playfair Display',serif;color:#302522}
+.market-card-title p{font-size:10px;color:#89766f}
+.market-tags span{border-radius:999px;background:#f4e8e1;color:#80555b;padding:6px 10px;font-size:8px}
+.market-card-foot{border-top:1px solid #f0e4dd;padding-top:14px;margin-top:15px}
+.market-card-foot>span{font-size:9px;color:#89766f}
+.market-card-foot b{font-size:15px;color:#533234}
+.market-card-foot a{color:#80555b;font-size:10px}
+.market-owner-cta{margin-top:65px;border-radius:24px;padding:40px;background:linear-gradient(115deg,#302522,#533234);color:#fff}
+.market-owner-cta h2{color:#fff;font-size:37px}
+.market-owner-cta p{color:#e2d0c8;font-size:12px}
+.market-owner-cta>a{border-radius:999px;background:#f5e1ce;color:#533234;padding:13px 19px;font-size:10px}
+.market-footer{padding:30px;color:#89766f}
+.market-profile{background:#f8f2ed}
+.market-profile>header{max-width:1180px;border:0;border-bottom:1px solid #eadbd2}
+.market-back{color:#80555b}
+.market-profile-hero{max-width:1180px;margin:35px auto 28px;gap:35px}
+.market-profile-cover{height:260px;border-radius:22px;background:linear-gradient(135deg,#ead8d1,#f4e9e1)}
+.market-profile-cover>span{font:500 85px 'Playfair Display',serif;color:#80555b}
+.market-profile-hero h1{font:500 44px 'Playfair Display',serif;color:#302522}
+.market-profile-hero p{font-size:12px;color:#89766f;line-height:1.8}
+.market-rating{border-radius:999px;background:#f0e3dc;color:#80555b;padding:8px 12px;font-size:9px}
+.market-profile-details{border:1px solid #eadbd2;border-radius:18px;background:#fffaf6}
+.market-profile-details>div{border-color:#eadbd2}
+.market-profile-details small,.market-profile-services>div>small{font-size:8px;letter-spacing:1.5px;color:#a17c78}
+.market-profile-details b{font:500 17px 'Playfair Display',serif;color:#533234}
+.market-profile-services{max-width:1180px}
+.market-profile-services h2,.market-booking-panel h2{font-size:32px}
+.market-profile-services article{padding:17px 4px;border-color:#eadbd2}
+.market-profile-services article b{font:500 17px 'Playfair Display',serif;color:#302522}
+.market-profile-services article small{font-size:9px;color:#89766f}
+.market-profile-services article strong{color:#533234;font-size:13px}
+.market-booking-panel{max-width:1180px;border:1px solid #eadbd2;border-radius:24px;background:#fffaf6;padding:30px}
+.market-booking-panel>div>small{letter-spacing:1.5px;color:#a17c78;font-size:8px}
+.market-booking-panel>div>p{font-size:11px;color:#89766f}
+.client-booking{background:#f8f2ed;color:#302522;min-height:100vh}
+.client-booking-header{height:76px;padding:0 max(24px,calc((100vw - 1180px)/2));border-bottom:1px solid #eadbd2;background:#fffaf6}
+.client-booking-header>a:first-child b{font:600 28px 'Playfair Display',serif;color:#533234}
+.client-booking-header>span{font-size:10px;color:#89766f}
+.client-booking-hero{min-height:310px;padding:70px max(24px,calc((100vw - 1180px)/2));background:linear-gradient(110deg,#302522,#533234 68%,#76505a);position:relative;overflow:hidden}
+.client-booking-hero:after{content:"";position:absolute;width:330px;height:330px;right:12%;top:-40px;border:1px solid #e5c8b266;border-radius:50%;box-shadow:0 0 0 35px #e5c8b20d,0 0 0 70px #e5c8b208}
+.client-booking-hero>small{font-size:9px;letter-spacing:2px;color:#e5c8b2}
+.client-booking-hero h1{font:500 52px 'Playfair Display',serif;letter-spacing:-1.4px;margin:14px 0;color:#fff7f0}
+.client-booking-hero p{font-size:11px;color:#e2d0c8;max-width:580px}
+.client-business-rating{display:inline-flex;align-items:center;gap:7px;margin-top:10px;color:#f5e1ce;font-size:10px}
+.client-booking-content{max-width:1180px;margin:0 auto;padding:45px 28px 70px}
+.client-booking-intro{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:25px}
+.client-booking-intro>div:first-child>small{font-size:8px;letter-spacing:1.8px;color:#a17c78}
+.client-booking-intro h2{font:500 34px 'Playfair Display',serif;color:#302522;margin:8px 0}
+.client-booking-intro p{font-size:11px;color:#89766f}
+.client-booking-steps{display:flex;gap:7px}
+.client-booking-steps span{padding:8px 12px;border-radius:999px;background:#f0e3dc;color:#80555b;font-size:8px}
+.client-booking-form{padding:28px;border:1px solid #eadbd2;border-radius:24px;background:#fffaf6;box-shadow:0 14px 45px #5332340b;display:grid;gap:22px}
+.client-booking-section{border:0;border-bottom:1px solid #f0e4dd;border-radius:0;padding:0 0 23px;background:transparent}
+.client-booking-section h3{font:500 21px 'Playfair Display',serif;color:#302522;margin-bottom:15px}
+.client-booking-section h3 svg{color:#a65fff}
+.client-service-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.client-service-options>button{min-height:78px;padding:15px 17px;border:1px solid #eadbd2;border-radius:15px;background:#fff;color:#302522;transition:all .18s}
+.client-service-options>button:hover{border-color:#c69acb;transform:translateY(-2px)}
+.client-service-options>button.selected{border-color:#a65fff;background:#f5edf5;box-shadow:0 0 0 2px #a65fff18}
+.client-service-options>button b{font:500 16px 'Playfair Display',serif}
+.client-service-options>button small{font-size:9px;color:#89766f}
+.client-service-options>button strong{font:500 15px 'DM Sans',sans-serif;color:#533234}
+.client-field{font-size:9px;color:#806d65;letter-spacing:.4px}
+.client-field input,.client-field select{min-height:44px;border:1px solid #eadbd2;border-radius:11px;background:#fff;color:#302522;padding:0 13px}
+.client-field input:focus,.client-field select:focus{border-color:#a65fff;outline:3px solid #a65fff18}
+.client-time-slots{gap:8px}
+.client-time-slots>button{border:1px solid #eadbd2;border-radius:999px;background:#fff;color:#6d5c55;padding:10px 15px;font-size:10px}
+.client-time-slots>button.selected{border-color:#533234;background:#533234;color:#fff}
+.client-time-slots>button small{color:inherit;opacity:.75}
+.client-contact-fields{gap:13px}
+.client-booking-summary{border:1px solid #eadbd2;border-radius:15px;background:#f8eee8;padding:17px}
+.client-booking-summary span{font-size:10px;color:#806d65}
+.client-booking-summary b{font:500 20px 'Playfair Display',serif;color:#533234}
+.client-booking-summary small{font-size:9px;color:#89766f}
+.client-submit{min-height:52px;border-radius:999px;background:#533234;color:#fff;font-size:11px;letter-spacing:.3px}
+.client-booking-disclaimer{font-size:9px;color:#89766f}
+.client-booking-footer{border-top:1px solid #eadbd2;color:#89766f;font-size:9px;padding:25px}
+.client-booking-success{min-height:100vh;background:#f8f2ed;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+.client-booking-success>span{width:66px;height:66px;border-radius:50%;background:#f0e3dc;color:#80555b;display:grid;place-items:center}
+.client-booking-success>small{margin-top:22px;letter-spacing:2px;color:#a17c78;font-size:9px}
+.client-booking-success h1{max-width:650px;font:500 42px 'Playfair Display',serif;color:#302522}
+.client-booking-success p{max-width:480px;color:#89766f;font-size:12px;line-height:1.8}
+.client-appointments-content{max-width:920px}
+@media(max-width:800px){
+ .content{padding:23px 18px 90px}.main>header{padding:0 18px}.sidebar{display:none}
+ .market-header{height:68px;padding:0 20px}.market-hero{min-height:380px;padding:45px 30px;grid-template-columns:1fr}.market-hero-art{display:none}
+ .market-content{padding:0 20px;margin:40px auto}.market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .market-profile-hero{margin:25px 20px;grid-template-columns:1fr}.market-profile-cover{height:190px}
+ .market-profile-details{margin:0 20px 25px}.market-profile-services{padding:0 20px}.market-booking-panel{margin:0 20px 30px;padding:20px}
+ .client-booking-hero{padding:55px 24px;min-height:280px}.client-booking-hero h1{font-size:42px}
+ .client-booking-content{padding:30px 20px 60px}.client-booking-form{padding:21px}
+}
+@media(max-width:560px){
+ .heading{align-items:flex-start;flex-direction:column;gap:14px}.heading h1{font-size:35px}.heading .primary{width:100%;justify-content:center}
+ .market-header{padding:0 16px}.market-header nav{gap:14px}.market-header nav a{font-size:9px}.market-location{display:none}
+ .market-hero{min-height:350px;padding:37px 21px;border-radius:0 0 20px 20px}.market-hero h1{font-size:39px}.market-hero p{font-size:11px}.market-search{height:51px}
+ .market-content{padding:0 16px;margin:34px auto}.market-heading h2{font-size:29px}.market-filters{gap:9px}.market-filters>div{overflow:auto;flex-wrap:nowrap}.market-filters>div button{white-space:nowrap}.market-grid{grid-template-columns:1fr;gap:14px}.market-cover{height:185px}
+ .market-owner-cta{padding:25px 21px}.market-owner-cta h2{font-size:30px}
+ .market-profile-hero{margin:20px 16px}.market-profile-hero h1{font-size:34px}.market-profile-details{margin:0 16px 22px;padding:12px}.market-profile-services{padding:0 16px}.market-booking-panel{margin:0 12px 25px;padding:15px}
+ .client-booking-header{height:63px;padding:0 17px}.client-booking-hero{min-height:250px;padding:43px 19px}.client-booking-hero h1{font-size:37px}.client-booking-hero:after{right:-210px}
+ .client-booking-content{padding:25px 14px 45px}.client-booking-intro{align-items:flex-start;flex-direction:column}.client-booking-intro h2{font-size:29px}.client-booking-steps{width:100%;justify-content:space-between}
+ .client-booking-form{padding:17px;border-radius:18px;gap:18px}.client-service-options{grid-template-columns:1fr}.client-service-options>button{min-height:70px}
+ .client-booking-section h3{font-size:19px}.client-contact-fields{grid-template-columns:1fr}.client-time-slots>button{min-width:calc(33.33% - 6px);flex:1}.client-booking-summary{padding:13px}
+ .client-booking-success h1{font-size:32px}
+ .mobile-nav{height:68px}
+}
