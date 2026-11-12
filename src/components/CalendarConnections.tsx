@@ -23,7 +23,7 @@ export function CalendarConnections(){
  return <><div className="calendar-provider-grid">
   {(["google","apple"] as const).map(provider=>{const item=connection(provider);return <article className="calendar-provider-card" key={provider}>
    <div className={"calendar-provider-brand "+(provider==="google"?"google-calendar-mark":"apple-calendar-mark")}>{provider==="google"?"31":<><small>WED</small><b>11</b></>}</div>
-   <div className="calendar-provider-copy"><b>{provider==="google"?"Google Calendar":"Apple Calendar"}</b><small>{provider==="google"?"Google account · events and busy times":"iCloud account · CalDAV calendar sync"}</small><span className="calendar-connection-status"><i style={{background:item?.status==="connected"?"#39966a":item?.status==="attention_required"?"#d49a36":undefined}}/>{statusText(item)}{item?.accountLabel?" · "+item.accountLabel:""}</span></div>
+   <div className="calendar-provider-copy"><b>{provider==="google"?"Google Calendar":"Apple Calendar"}</b><small>{provider==="google"?"Google account · events and busy times":"iCloud account · CalDAV calendar sync"}</small><span className="calendar-connection-status"><i style={{background:item?.status==="connected"?"#533234":item?.status==="attention_required"?"#d49a36":undefined}}/>{statusText(item)}{item?.accountLabel?" · "+item.accountLabel:""}</span></div>
    {item?<button type="button" className="secondary" disabled={busy===item.id} onClick={()=>void disconnect(item.id)}>{busy===item.id?"…":"Disconnect"}</button>:<button type="button" className="secondary" disabled={loading||!!busy} onClick={()=>provider==="google"?void connectGoogle():setAppleOpen(true)}>{busy===provider?"Connecting…":"Connect"}</button>}
   </article>;})}
  </div>
