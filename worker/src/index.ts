@@ -1,7 +1,11 @@
 import { neon } from "@neondatabase/serverless";
+import { handleCalendarRequest } from "./calendar";
 
 interface Env {
   DATABASE_URL: string;
+  GOOGLE_CALENDAR_CLIENT_ID?: string;
+  GOOGLE_CALENDAR_CLIENT_SECRET?: string;
+  CALENDAR_ENCRYPTION_KEY?: string;
 }
 
 type WorkerHandler<E> = {
@@ -283,6 +287,18 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
         return json({ status: "ok" }, 200, origin);
       } catch {
         return json({ error: "Could not end the session." }, 503, origin);
+      }
+    }
+
+
+    if (url.pathname === "/calendar/google/callback" || url.pathname.startsWith("/provider/calendar/")) {
+      try {
+        const calendarUser = url.pathname.startsWith("/provider/calendar/") ? await authenticate(request, sql) : null;
+        const calendarResponse = await handleCalendarRequest(request, url, sql, env, origin, calendarUser);
+        if (calendarResponse) return calendarResponse;
+      } catch (error) {
+        console.error("calendar_request_failed", { name: error instanceof Error ? error.name : "UnknownError" });
+        return json({ error: "Calendar operation could not be completed. Please try again." }, 500, origin);
       }
     }
 
