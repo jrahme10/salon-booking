@@ -144,6 +144,20 @@ export default {
       return json({ service: "salon-reservation-api", status: "ok", database: "not_checked" }, 200, origin);
     }
 
+    if (request.method === "GET" && url.pathname === "/health/calendar-config") {
+      const calendarConfig = {
+        clientId: Boolean(env.GOOGLE_CALENDAR_CLIENT_ID?.trim()),
+        clientSecret: Boolean(env.GOOGLE_CALENDAR_CLIENT_SECRET?.trim()),
+        encryptionKey: Boolean(env.CALENDAR_ENCRYPTION_KEY?.trim()),
+      };
+      const missing = Object.entries(calendarConfig).filter(([, configured]) => !configured).map(([name]) => name);
+      return json({
+        service: "salon-reservation-api",
+        calendar_config: { ...calendarConfig, configured: missing.length === 0 },
+        missing,
+      }, 200, origin);
+    }
+
     if (!env.DATABASE_URL) return json({ status: "error", code: "DATABASE_NOT_CONFIGURED" }, 503, origin);
     const sql = neon(env.DATABASE_URL);
 
