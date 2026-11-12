@@ -805,3 +805,36 @@ body{background:#f8f2ed;color:#25221e}
  .panel,.metric{box-shadow:0 5px 18px #5332340b}
  .owner-welcome,.home-hero{border-radius:19px}
 }
+
+
+/* Final palette cleanup: remove the legacy green/sage theme everywhere */
+:root{
+ --green:#533234;--green-dark:#3d2528;--sage:#f1e4dc;
+ --success:#80558b;--success-bg:#f2e6f1;--accent:#a65fff;
+ accent-color:#a65fff;
+}
+.loading{color:#a65fff}
+.main>header div>small{color:#a17c78}
+.primary,.filters button.chosen,.calendar-empty button,.auth-submit{background:#533234;border-color:#533234;color:#fff8f1}
+.primary:hover,.calendar-empty button:hover,.auth-submit:hover{background:#3d2528}
+.status.confirmed,.status.completed,.status.pending{background:#f2e6f1;color:#80558b}
+.status.cancelled{background:#f8e8e5;color:#a25f5f}
+.tiny,.tiny.icon-action.confirm-action,.tiny.icon-action.complete-action{border-color:#e7d5e4;background:#f2e6f1;color:#80558b}
+.tiny.icon-action.confirm-action:hover,.tiny.icon-action.complete-action:hover{background:#ead9e9}
+.notice{background:#f2e6f1;color:#80558b}
+.notice p{color:#806a82}
+.calendar-event,.calendar-month-event,.schedule-month-event{border-color:#a65fff;background:#f4e9f1;color:#704d75}
+.calendar-event.confirmed,.calendar-month-event.confirmed,.schedule-month-event.confirmed{border-color:#a65fff;background:#f2e6f1;color:#80558b}
+.calendar-event.pending,.calendar-month-event.pending,.schedule-month-event.pending{border-color:#c49a58;background:#fbf2e5;color:#806438}
+.calendar-event.completed,.calendar-month-event.completed,.schedule-month-event.completed{border-color:#bda8c2;background:#f1edf2;color:#78677d}
+.calendar-event.cancelled,.calendar-month-event.cancelled,.schedule-month-event.cancelled{border-color:#c58b7c;background:#faf3f1;color:#a87568}
+.calendar-legend i,.calendar-legend i.confirmed{background:#a65fff}
+.calendar-summary-icon.confirmed,.calendar-status-filters button.active{background:#f2e6f1;color:#80558b}
+.calendar-connection-status.connected,.calendar-connection-status.success{color:#80558b}
+.calendar-connection-status.connected i,.calendar-connection-status.success i{background:#a65fff}
+.calendar-preference input{accent-color:#a65fff}
+input[type=checkbox],input[type=radio],input[type=range]{accent-color:#a65fff}
+a:focus-visible,button:focus-visible{outline-color:#a65fff}
+button:hover{--hover-accent:#a65fff}
+[class*="success"],[class*="confirmed"],[class*="completed"]{--status-color:#80558b}
+[class*="success"]{--status-color:#80558b}
