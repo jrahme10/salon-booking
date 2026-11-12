@@ -681,3 +681,128 @@
 @media(max-width:520px){.auth-card{padding:26px 21px;border-radius:18px}.auth-brand{margin-bottom:29px}.auth-heading h1{font-size:24px}.auth-logout{top:auto;bottom:78px;right:14px}}
 
 .calendar-apple-form{display:grid;gap:12px;padding:16px;margin:10px 0;border:1px solid var(--line);border-radius:13px;background:#fbfcfa}.calendar-apple-form label{display:grid;gap:6px;font-size:11px;font-weight:600;color:var(--ink)}.calendar-apple-form input{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}.calendar-apple-form>small{font-size:10px;line-height:1.5;color:var(--muted)}.calendar-apple-form>div{display:flex;gap:8px;flex-wrap:wrap}
+
+
+/* ── Everly-inspired premium salon visual system ── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+:root{
+ --ink:#25221e;--muted:#89766f;--line:#eadbd2;--green:#533234;--green-dark:#3d2528;
+ --sage:#f1e4dc;--cream:#f5e1ce;--white:#fffaf6;--radius:20px;
+ color:#25221e;background:#f8f2ed;font-family:'DM Sans',sans-serif;
+}
+body{background:#f8f2ed;color:#25221e}
+.loading{color:#533234}
+.sidebar{background:#25221e;border-right:1px solid #39302d;color:#f8eee7}
+.brand{padding-bottom:30px}
+.brand>span{background:#a65fff;color:#fff;border-radius:14px;box-shadow:0 7px 20px #a65fff35}
+.brand b{color:#fff;font-family:'Playfair Display',serif;font-size:27px;font-weight:600;letter-spacing:0}
+.brand small{color:#bca9a0;letter-spacing:1.7px}
+.business{background:#332b28;border:1px solid #51413d;border-radius:15px}
+.business>i,.main>header i{background:#533234;color:#f5e1ce}
+.business b{color:#fff4ec}
+.business small{color:#bca9a0}
+.nav-group>small{color:#a89187}
+.nav-group a{color:#d0bfb6;border-radius:12px}
+.nav-group a:hover{background:#3b302d;color:#fff}
+.nav-group a.active{background:#533234;color:#fff1e8;box-shadow:inset 3px 0 #a65fff}
+.nav-group a.active svg{color:#d6a8ff}
+.sidebar-foot{border-color:#51413d;color:#fff1e8}
+.sidebar-foot small{color:#bca9a0}
+.main{background:#f8f2ed}
+.main>header{background:#fffaf6;border-color:#eadbd2;color:#9a8880}
+.main>header b{color:#332725}
+.main>header div>small{color:#8b6262}
+.content{max-width:1500px}
+.heading h1,.section-title h2,.panel h2{color:#302522}
+.heading h1,.owner-welcome h1,.home-hero-copy h1{font-family:'Playfair Display',serif;letter-spacing:-.5px}
+.heading>div>small,.dialog-head>div>small{color:#a17c78}
+.primary,.home-main-action{background:#533234;color:#fff8f1;box-shadow:0 6px 16px #53323425}
+.primary:hover{background:#3d2528}
+.secondary{border-color:#e6d4ca;background:#fffaf6;color:#533234}
+.panel,.metric,.booking-dialog{background:#fffaf6;border-color:#eadbd2;box-shadow:0 8px 26px #4b30250b}
+.metric>span{background:#f4e8e1;color:#8d5c62}
+.metric b{color:#352725}
+.metric em{color:#9a827a}
+.welcome,.owner-welcome,.home-hero{background:radial-gradient(ellipse at 85% 20%,#76515a 0%,transparent 36%),linear-gradient(120deg,#25221e 0%,#533234 65%,#70464a 100%);color:#fff5ed}
+.welcome>small,.owner-eyebrow,.home-eyebrow{color:#e8cfc4}
+.welcome h2,.owner-welcome h1,.home-hero-copy h1{color:#fff7f0}
+.welcome h2 em,.owner-welcome h1 em,.home-hero-copy h1 em{color:#e5c8b2}
+.welcome p,.owner-welcome p,.home-hero-copy p{color:#e0cfc6}
+.owner-primary-action,.home-main-action{background:#f5e1ce;color:#533234}
+.owner-kpi,.owner-dashboard-grid .panel,.owner-team-panel,.owner-service-panel{background:#fffaf6;border-color:#eadbd2}
+.owner-kpi-icon,.owner-panel-heading>span{background:#f3e5de;color:#87565c}
+.owner-kpi>b,.owner-team-values>b,.owner-service-result>b{color:#352725}
+.owner-chart-column .revenue,.owner-chart-legend .revenue{background:#a65fff}
+.owner-chart-column .cost,.owner-chart-legend .cost{background:#d9b6a8}
+.owner-service-bar i{background:linear-gradient(90deg,#a65fff,#c68bdc)}
+.owner-insight-card{background:linear-gradient(145deg,#533234,#302321);color:#fff3eb}
+.owner-insight-card h2,.owner-insight-card p{color:#fff3eb}
+.owner-insight-card>span{background:#ffffff20;color:#f5d9cc}
+.owner-team-rank,.owner-service-rank{color:#a17c78}
+.status.pending{background:#fbf0df;color:#9c7429}
+.status.confirmed{background:#f0e5ef;color:#80558b}
+.status.completed{background:#f0e9e2;color:#78665e}
+.status.cancelled{background:#f8e8e5;color:#a25f5f}
+.filters>div,.filters button,.table-wrap table,.calendar-workspace,.calendar-provider-card{background:#fffaf6;border-color:#eadbd2}
+.filters button.chosen{background:#533234;border-color:#533234}
+.table-wrap th{background:#f8eee8;color:#9a8178}
+.table-wrap td{border-color:#f0e4dd}
+.tiny{border-color:#e6d4ca;background:#f5e9e2;color:#70464a}
+.tiny.icon-action.confirm-action,.tiny.icon-action.complete-action{background:#f1e5ed;border-color:#e7d5e4;color:#80558b}
+.calendar-summary>div{background:#fffaf6;border-color:#eadbd2}
+.calendar-summary-icon{background:#f4e7e0;color:#86565c}
+.calendar-summary-icon.confirmed{background:#f0e5ef;color:#80558b}
+.calendar-grid-head,.calendar-time-column,.calendar-month-cell{background:#fffaf6}
+.calendar-grid-head.today>b,.calendar-month-cell.today .calendar-month-date,.schedule-month-cell.is-today .schedule-month-date{background:#533234;color:#fff}
+.calendar-event,.calendar-month-event{border-color:#a65fff;background:#f4e9f1;color:#704d75}
+.calendar-event.confirmed,.calendar-month-event.confirmed{border-color:#a65fff;background:#f3e9f3;color:#754c7c}
+.calendar-event.pending,.calendar-month-event.pending{border-color:#c49a58;background:#fbf2e5;color:#806438}
+.calendar-now-line,.calendar-now-line i{background:#c04a2d}
+.calendar-status-filters button.active{border-color:#e4d0e2;background:#f2e6f1;color:#80558b}
+.calendar-empty>span{background:#f4e7e0;color:#86565c}
+.calendar-empty button{background:#533234}
+.calendar-legend i.confirmed{background:#a65fff}
+.form input,.booking-dialog input,.booking-dialog select,.calendar-provider-card{border-color:#eadbd2}
+.form input:focus,.booking-dialog input:focus,.booking-dialog select:focus{outline-color:#a65fff}
+.dialog-backdrop{background:#211817c9;backdrop-filter:blur(5px)}
+.booking-summary{background:#f5e9e2;color:#806a62}
+.booking-summary b{color:#533234}
+.client{background:#f8f2ed;color:#302522}
+.client>header{background:#fffaf6;border-color:#eadbd2}
+.client>header>b{color:#533234}
+.hero,.client-booking-hero{background:radial-gradient(ellipse at 80% 20%,#f1d9ce 0%,transparent 38%),linear-gradient(135deg,#302522,#533234);color:#fff5ed}
+.hero h1,.client-booking-hero h1{font-family:'Playfair Display',serif;color:#fff5ed}
+.hero h1 em{color:#e5c8b2}
+.hero>small,.client-booking-hero>small{color:#e5c8b2}
+.hero>p,.client-booking-hero p{color:#e6d2c8}
+.search,.cards article,.client-booking-form,.client-booking-section{background:#fffaf6;border-color:#eadbd2}
+.search button,.cards button,.client-submit{background:#533234}
+.cover{background:#f1e4dc;color:#8b6262}
+.cards article>span{color:#a16d73}
+.client footer{border-color:#eadbd2}
+.auth-screen{background:radial-gradient(circle at 12% 8%,#f0ddd4 0,transparent 35%),#f8f2ed}
+.auth-card{background:#fffaf6;border-color:#eadbd2;box-shadow:0 22px 70px #53323415}
+.auth-brand>span{background:#533234;color:#f5e1ce}
+.auth-brand b{font-family:'Playfair Display',serif;color:#302522}
+.auth-brand small,.auth-heading>small{color:#a17c78}
+.auth-heading h1{font-family:'Playfair Display',serif;color:#302522}
+.auth-tabs{background:#f5e9e2}
+.auth-tabs button.active{color:#533234}
+.auth-card input{border-color:#eadbd2;background:#fff}
+.auth-card input:focus{border-color:#a65fff;box-shadow:0 0 0 3px #a65fff18}
+.auth-submit{background:#533234}
+.auth-logout{border-color:#eadbd2;background:#fffaf6;color:#533234}
+.mode-switch{border-color:#eadbd2;background:#fffaf6;color:#533234}
+.mobile-nav{background:#25221ef2;border-color:#493a36;box-shadow:0 -8px 24px #1d15141f}
+.mobile-nav a,.mobile-nav button{color:#c5b1a7}
+.mobile-nav a.active,.mobile-nav button.selected{color:#e5c8b2}
+.mobile-nav a.active svg,.mobile-nav button.selected svg{color:#c58bf2}
+.more-menu{background:#302724;border-color:#51413d}
+.more-menu a{color:#f5e8df}
+.more-menu a.active{background:#533234;color:#fff}
+@media(max-width:680px){
+ .main>header{background:#f8f2ed}
+ .content{padding-top:18px}
+ .panel,.metric{box-shadow:0 5px 18px #5332340b}
+ .owner-welcome,.home-hero{border-radius:19px}
+}
