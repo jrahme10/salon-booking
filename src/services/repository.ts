@@ -1,0 +1,351 @@
+import * as demo from "../data/mock";
+import {DEFAULT_WORKING_HOURS,validateBooking} from "../domain/scheduling";
+import type {Appointment,Business,BusinessBookingRules,ClientAppointmentRequest,CommissionEntry,Customer,CustomerConsentEvent,CustomerReminder,CustomerReminderStatus,Employee,Expense,PayrollPayment,Payment,Service,WeeklySchedule} from "../types";
+import {validateExpense,validatePayment} from "../domain/finance";
+import {calculateCommission} from "../domain/commission";
+import {apiRequest} from "./auth";
+
+export interface SalonRepository {
+  getBusiness():Promise<Business>;
+  updateBusiness(business:Business):Promise<void>;
+  getServices():Promise<Service[]>;
+  getEmployees():Promise<Employee[]>;
+  getCustomers():Promise<Customer[]>;
+  updateCustomer(customer:Customer):Promise<void>;
+  getCustomerConsentEvents():Promise<CustomerConsentEvent[]>;
+  recordCustomerConsent(event:CustomerConsentEvent):Promise<void>;
+  getCustomerReminders():Promise<CustomerReminder[]>;
+  createCustomerReminder(reminder:CustomerReminder):Promise<void>;
+  updateCustomerReminder(id:string,status:CustomerReminderStatus):Promise<void>;
+  getAppointments():Promise<Appointment[]>;
+  getPayments():Promise<Payment[]>;
+  getExpenses():Promise<Expense[]>;
+  getCommissionEntries():Promise<CommissionEntry[]>;
+  getPayrollPayments():Promise<PayrollPayment[]>;
+  createPayrollPayment(payment:PayrollPayment):Promise<void>;
+  createPayment(payment:Payment):Promise<void>;
+  createExpense(expense:Expense):Promise<void>;
+  updateAppointmentStatus(id:string,status:Appointment["status"]):Promise<void>;
+  updateAppointment(appointment:Appointment):Promise<void>;
+  getClientAppointmentRequests():Promise<ClientAppointmentRequest[]>;
+  createClientAppointmentRequest(request:ClientAppointmentRequest):Promise<void>;
+  updateClientAppointmentRequest(id:string,status:ClientAppointmentRequest["status"]):Promise<void>;
+  createAppointment(appointment:Appointment):Promise<void>;
+  createCustomer(customer:Customer):Promise<Customer>;
+  createService(service:Service):Promise<void>;
+  updateService(service:Service):Promise<void>;
+  deleteService(id:string):Promise<void>;
+  createEmployee(employee:Employee):Promise<void>;
+  updateEmployee(employee:Employee):Promise<void>;
+  deleteEmployee(id:string):Promise<void>;
+}
+type StoredState={business:Business;appointments:Appointment[];services:Service[];employees:Employee[];customers:Customer[];customerConsentEvents:CustomerConsentEvent[];customerReminders:CustomerReminder[];clientRequests:ClientAppointmentRequest[];payments:Payment[];expenses:Expense[];commissionEntries:CommissionEntry[];payrollPayments:PayrollPayment[]};
+const STORAGE_KEY="salon-reservation-demo-v1";
+const copy=<T,>(value:T):T=>JSON.parse(JSON.stringify(value)) as T;
+const seed=():StoredState=>({business:copy(demo.business),appointments:copy(demo.appointments),services:copy(demo.services),employees:copy(demo.employees),customers:copy(demo.customers),customerConsentEvents:[],customerReminders:[],clientRequests:[],payments:[],expenses:[],commissionEntries:[],payrollPayments:[]});
+
+class DemoRepository implements SalonRepository {
+  private state:StoredState;
+  constructor(){
+    try {
+      const saved=typeof localStorage!=="undefined"?localStorage.getItem(STORAGE_KEY):null;
+      const parsed=saved?JSON.parse(saved) as Partial<StoredState>:{};
+      const defaults=seed();
+      const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
+      this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,customerConsentEvents:Array.isArray(parsed.customerConsentEvents)?parsed.customerConsentEvents:[],customerReminders:Array.isArray(parsed.customerReminders)?parsed.customerReminders:[],clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses,commissionEntries:Array.isArray(parsed.commissionEntries)?parsed.commissionEntries:[],payrollPayments:Array.isArray(parsed.payrollPayments)?parsed.payrollPayments:[]};
+    } catch { this.state=seed(); }
+  }
+  private persist(){
+    try { if(typeof localStorage!=="undefined") localStorage.setItem(STORAGE_KEY,JSON.stringify(this.state)); }
+    catch { throw new Error("Your browser could not save the changes. Check available storage and try again."); }
+  }
+  private commit(next:StoredState){const previous=this.state;this.state=next;try{this.persist();}catch(error){this.state=previous;throw error;}}
+  async getBusiness(){return copy(this.state.business);}
+  async updateBusiness(business:Business){
+    this.assertBusiness(business);
+    const future=this.state.appointments.filter(row=>(row.status==="pending"||row.status==="confirmed")&&new Date(row.startsAt).getTime()>Date.now());
+    for(const appointment of future){const service=this.state.services.find(row=>row.id===appointment.serviceId);if(service){const reason=validateBusinessWindow(business,new Date(appointment.startsAt),service.durationMinutes);if(reason)throw new Error("These hours would affect an existing appointment ("+appointment.id+"): "+reason);}}
+    this.commit({...this.state,business:copy(business)});
+  }
+  async getServices(){return copy(this.state.services);}
+  async getEmployees(){return copy(this.state.employees);}
+  async getCustomers(){return copy(this.state.customers);}
+  async updateCustomer(customer:Customer){
+    const current=this.state.customers.find(row=>row.id===customer.id);
+    if(!current||customer.businessId&&customer.businessId!==this.state.business.id)throw new Error("Customer was not found for this business.");
+    const phone=customer.phone.replace(/\D/g,"");
+    if(!customer.name.trim()||phone.length<6)throw new Error("Enter a customer name and valid phone number.");
+    if(customer.birthday&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(customer.birthday))throw new Error("Enter a valid birthday.");
+    if(customer.birthday){const [year,month,day]=customer.birthday.split("-").map(Number);const date=new Date(year,month-1,day);if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)throw new Error("Enter a valid birthday.");}
+    if(this.state.customers.some(row=>row.id!==customer.id&&row.phone.replace(/\D/g,"")===phone&&phone.length>=6))throw new Error("Another customer already uses this phone number.");
+    this.commit({...this.state,customers:this.state.customers.map(row=>row.id===customer.id?{...customer,marketingOptIn:current.marketingOptIn,marketingOptInUpdatedAt:current.marketingOptInUpdatedAt,name:customer.name.trim(),phone:customer.phone.trim(),email:customer.email.trim()}:row)});
+  }
+  async getCustomerConsentEvents(){return copy(this.state.customerConsentEvents);}
+  async recordCustomerConsent(event:CustomerConsentEvent){
+    if(this.state.customerConsentEvents.some(row=>row.id===event.id))throw new Error("This consent record already exists.");
+    if(event.businessId!==this.state.business.id||!this.state.customers.some(row=>row.id===event.customerId))throw new Error("Choose a customer from this business.");
+    if(!Number.isFinite(new Date(event.capturedAt).getTime()))throw new Error("A valid consent date is required.");
+    if(!["granted","revoked"].includes(event.action)||!["whatsapp","email","sms","all"].includes(event.channel)||!["in_person","whatsapp","email","phone","website","other"].includes(event.source))throw new Error("Choose a valid consent action, channel and source.");
+    if(event.note&&event.note.length>240)throw new Error("Consent notes must be 240 characters or fewer.");
+    if(event.action==="granted"&&!event.customerConfirmed)throw new Error("Record consent only after the customer has explicitly agreed.");
+    if(!event.note?.trim()&&event.action==="granted"&&event.source==="other")throw new Error("Add a note describing how the customer gave consent.");
+    const events=[...this.state.customerConsentEvents,copy({...event,note:event.note?.trim()||undefined})];
+    const latest=events.filter(row=>row.customerId===event.customerId).sort((a,b)=>a.capturedAt.localeCompare(b.capturedAt)).slice(-1)[0];
+    this.commit({...this.state,customerConsentEvents:events,customers:this.state.customers.map(customer=>customer.id===event.customerId?{...customer,marketingOptIn:latest.action==="granted",marketingOptInUpdatedAt:latest.capturedAt}:customer)});
+  }
+  async getCustomerReminders(){return copy(this.state.customerReminders);}
+  async createCustomerReminder(reminder:CustomerReminder){
+    if(this.state.customerReminders.some(row=>row.id===reminder.id))throw new Error("This reminder already exists.");
+    if(reminder.businessId!==this.state.business.id||!this.state.customers.some(row=>row.id===reminder.customerId))throw new Error("Choose a customer from this business.");
+    if(!Number.isFinite(new Date(reminder.dueAt).getTime())||!reminder.note.trim())throw new Error("Choose a reminder date and add a note.");
+    this.commit({...this.state,customerReminders:[...this.state.customerReminders,copy(reminder)]});
+  }
+  async updateCustomerReminder(id:string,status:CustomerReminderStatus){
+    if(!this.state.customerReminders.some(row=>row.id===id))throw new Error("Reminder was not found.");
+    this.commit({...this.state,customerReminders:this.state.customerReminders.map(row=>row.id===id?{...row,status}:row)});
+  }
+  async getAppointments(){return copy(this.state.appointments);}
+  async updateAppointmentStatus(id:string,status:Appointment["status"]){
+    const current=this.state.appointments.find(row=>row.id===id);
+    if(!current) throw new Error("Appointment was not found.");
+    const allowed:Record<Appointment["status"],Appointment["status"][]>={pending:["confirmed","cancelled"],confirmed:["completed","cancelled"],completed:[],cancelled:[]};
+    if(!allowed[current.status].includes(status)) throw new Error("This appointment status cannot be changed in that way.");
+    let commissionEntries=this.state.commissionEntries;
+    if(status==="completed"){
+      const employee=this.state.employees.find(row=>row.id===current.employeeId);
+      const service=this.state.services.find(row=>row.id===current.serviceId);
+      const type=employee?.commissionType??"percentage";
+      const value=employee?.commissionValue??0;
+      if(employee&&service&&value>0&&!commissionEntries.some(row=>row.appointmentId===id)){
+        const amount=calculateCommission(service.price,type,value);
+        commissionEntries=[...commissionEntries,{id:"com-"+id,businessId:current.businessId,appointmentId:id,employeeId:employee.id,serviceName:service.name,baseAmount:service.price,commissionType:type,commissionValue:value,amount:Number(amount.toFixed(2)),earnedAt:new Date().toISOString()}];
+      }
+    }
+    this.commit({...this.state,commissionEntries,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
+  }
+
+  async getPayments(){return copy(this.state.payments);}
+  async getExpenses(){return copy(this.state.expenses);}
+  async getCommissionEntries(){return copy(this.state.commissionEntries);}
+  async getPayrollPayments(){return copy(this.state.payrollPayments);}
+  async createPayrollPayment(payment:PayrollPayment){
+    if(this.state.payrollPayments.some(row=>row.id===payment.id))throw new Error("Payroll payment already exists.");
+    if(payment.businessId!==this.state.business.id||!Number.isFinite(payment.amount)||payment.amount<=0)throw new Error("Enter a valid payroll payment.");
+    if(!this.state.employees.some(row=>row.id===payment.employeeId))throw new Error("Choose a valid team member.");
+    const earned=this.state.commissionEntries.filter(row=>row.employeeId===payment.employeeId).reduce((sum,row)=>sum+row.amount,0);
+    const paid=this.state.payrollPayments.filter(row=>row.employeeId===payment.employeeId).reduce((sum,row)=>sum+row.amount,0);
+    if(payment.amount>earned-paid+0.0001)throw new Error("This payment is higher than the employee's unpaid commission balance.");
+    this.commit({...this.state,payrollPayments:[...this.state.payrollPayments,copy(payment)]});
+  }
+  async createPayment(payment:Payment){
+    if(this.state.payments.some(row=>row.id===payment.id))throw new Error("Payment already exists.");
+    const appointment=this.state.appointments.find(row=>row.id===payment.appointmentId);
+    if(!appointment)throw new Error("Appointment was not found.");
+    const service=this.state.services.find(row=>row.id===appointment.serviceId);
+    if(!service)throw new Error("The appointment service could not be found.");
+    const reason=validatePayment(payment,appointment,service);
+    if(reason)throw new Error(reason);
+    this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===appointment.id?{...row,paidAmount:row.paidAmount+payment.amount}:row),payments:[...this.state.payments,copy(payment)]});
+  }
+  async createExpense(expense:Expense){
+    if(this.state.expenses.some(row=>row.id===expense.id))throw new Error("Expense already exists.");
+    const reason=validateExpense(expense,this.state.business.id);
+    if(reason)throw new Error(reason);
+    this.commit({...this.state,expenses:[...this.state.expenses,copy(expense)]});
+  }
+  async getClientAppointmentRequests(){return copy(this.state.clientRequests);}
+  async createClientAppointmentRequest(request:ClientAppointmentRequest){
+    if(request.businessId!==demo.business.id) throw new Error("Invalid business for this request.");
+    const appointment=this.state.appointments.find(row=>row.id===request.appointmentId);
+    if(!appointment||appointment.businessId!==request.businessId||appointment.customerId!==request.customerId) throw new Error("This appointment could not be found for this client.");
+    if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("Only active appointments can be changed.");
+    if(new Date(appointment.startsAt).getTime()<=Date.now()) throw new Error("Requests are only available for future appointments.");
+    if(this.state.clientRequests.some(row=>row.appointmentId===request.appointmentId&&row.status==="pending")) throw new Error("There is already a request waiting for this appointment.");
+    if(request.kind==="cancellation"&&new Date(appointment.startsAt).getTime()<Date.now()+(this.state.business.bookingRules?.cancellationNoticeHours??0)*3_600_000)throw new Error("The cancellation notice period has passed. Please contact the salon directly.");
+    if(request.kind==="reschedule"){
+      if(!request.requestedStartsAt) throw new Error("Choose a new date and time.");
+      const service=this.state.services.find(row=>row.id===appointment.serviceId);
+      const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+      if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
+      const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);
+      const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+      if(reason) throw new Error(reason);
+    }
+    this.commit({...this.state,clientRequests:[...this.state.clientRequests,copy(request)]});
+  }
+  async updateClientAppointmentRequest(id:string,status:ClientAppointmentRequest["status"]){
+    const request=this.state.clientRequests.find(row=>row.id===id);
+    if(!request) throw new Error("Client request was not found.");
+    if(request.status!=="pending") throw new Error("This request has already been reviewed.");
+    let appointments=this.state.appointments;
+    if(status==="approved"){
+      const appointment=appointments.find(row=>row.id===request.appointmentId);
+      if(!appointment||appointment.customerId!==request.customerId||appointment.businessId!==request.businessId) throw new Error("The linked appointment could not be found.");
+      if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("This appointment is no longer active.");
+      if(request.kind==="cancellation"){
+        appointments=appointments.map(row=>row.id===appointment.id?{...row,status:"cancelled" as const}:row);
+      }else{
+        if(!request.requestedStartsAt) throw new Error("The requested date and time is missing.");
+        const service=this.state.services.find(row=>row.id===appointment.serviceId);
+        const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+        if(!service||!employee) throw new Error("The appointment service or team member is no longer available.");
+        const businessReason=validateBusinessWindow(this.state.business,new Date(request.requestedStartsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);
+        const reason=validateBooking({service,employee,startsAt:new Date(request.requestedStartsAt),appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+        if(reason) throw new Error("Cannot approve this time: "+reason);
+        appointments=appointments.map(row=>row.id===appointment.id?{...row,startsAt:request.requestedStartsAt!}:row).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
+      }
+    }
+    this.commit({...this.state,appointments,clientRequests:this.state.clientRequests.map(row=>row.id===id?{...row,status}:row)});
+  }
+  async updateAppointment(appointment:Appointment){
+    const current=this.state.appointments.find(row=>row.id===appointment.id);
+    if(!current) throw new Error("Appointment was not found.");
+    if(current.status!=="pending"&&current.status!=="confirmed") throw new Error("Only pending or confirmed appointments can be edited.");
+    if(appointment.status!==current.status) throw new Error("Appointment status cannot be changed while editing.");
+    if(appointment.businessId!==current.businessId||appointment.businessId!==demo.business.id) throw new Error("Invalid business for this appointment.");
+    const service=this.state.services.find(row=>row.id===appointment.serviceId);
+    const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+    const customer=this.state.customers.find(row=>row.id===appointment.customerId);
+    if(!service||!employee||!customer) throw new Error("Choose an existing customer, service and team member.");
+    if(service.businessId!==appointment.businessId||employee.businessId!==appointment.businessId) throw new Error("The selected service and team member must belong to this business.");
+    if(customer.businessId&&customer.businessId!==appointment.businessId) throw new Error("The selected customer belongs to another business.");
+    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});
+    if(reason) throw new Error(reason);
+    const updated={...current,customerId:appointment.customerId,serviceId:appointment.serviceId,employeeId:appointment.employeeId,startsAt:appointment.startsAt};
+    this.commit({...this.state,appointments:this.state.appointments.map(row=>row.id===appointment.id?updated:row).sort((a,b)=>a.startsAt.localeCompare(b.startsAt))});
+  }
+  async createAppointment(appointment:Appointment){
+    if(this.state.appointments.some(row=>row.id===appointment.id)) throw new Error("Appointment already exists.");
+    const service=this.state.services.find(row=>row.id===appointment.serviceId);
+    const employee=this.state.employees.find(row=>row.id===appointment.employeeId);
+    const customer=this.state.customers.find(row=>row.id===appointment.customerId);
+    if(!service||!employee||!customer) throw new Error("Choose an existing customer, service and team member.");
+    if(customer.businessId&&customer.businessId!==appointment.businessId) throw new Error("The selected customer belongs to another business.");
+    if(appointment.status!=="pending"&&appointment.status!=="confirmed") throw new Error("New appointments must be pending or confirmed.");
+    if(appointment.businessId!==demo.business.id) throw new Error("Invalid business for this appointment.");
+    const businessReason=validateBusinessWindow(this.state.business,new Date(appointment.startsAt),service.durationMinutes,true);if(businessReason)throw new Error(businessReason);
+    const reason=validateBooking({service,employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services});
+    if(reason) throw new Error(reason);
+    this.commit({...this.state,appointments:[...this.state.appointments,copy(appointment)].sort((a,b)=>a.startsAt.localeCompare(b.startsAt))});
+  }
+  async createCustomer(customer:Customer):Promise<Customer>{
+    const phone=customer.phone.replace(/\D/g,"");
+    const existing=this.state.customers.find(row=>row.phone.replace(/\D/g,"")===phone&&phone.length>=6);
+    if(existing) return copy(existing);
+    if(!customer.name.trim()||phone.length<6) throw new Error("Enter a name and a valid phone number.");
+    this.commit({...this.state,customers:[...this.state.customers,{...copy(customer),phone:customer.phone.trim()}]});
+    return copy(customer);
+  }
+  async createService(service:Service){
+    this.assertService(service);
+    if(this.state.services.some(row=>row.id===service.id)) throw new Error("Service already exists.");
+    this.commit({...this.state,services:[...this.state.services,copy(service)]});
+  }
+  async updateService(service:Service){
+    this.assertService(service);
+    if(!this.state.services.some(row=>row.id===service.id)) throw new Error("Service was not found.");
+    const nextServices=this.state.services.map(row=>row.id===service.id?copy(service):row);if(service.durationMinutes!==this.state.services.find(row=>row.id===service.id)?.durationMinutes){for(const appointment of this.state.appointments.filter(row=>row.serviceId===service.id&&(row.status==="pending"||row.status==="confirmed")&&new Date(row.startsAt).getTime()>Date.now())){const employee=this.state.employees.find(row=>row.id===appointment.employeeId);if(employee){const reason=validateBooking({service:{...service,active:true},employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:nextServices,excludeAppointmentId:appointment.id});if(reason)throw new Error("This duration change conflicts with an existing booking: "+reason);}}}this.commit({...this.state,services:nextServices});
+  }
+  async deleteService(id:string){
+    if(this.state.appointments.some(row=>row.serviceId===id&&row.status!=="cancelled")) throw new Error("This service is linked to appointments. Deactivate it instead.");
+    this.commit({...this.state,services:this.state.services.filter(row=>row.id!==id),employees:this.state.employees.map(row=>({...row,serviceIds:row.serviceIds?.filter(serviceId=>serviceId!==id)}))});
+  }
+  async createEmployee(employee:Employee){
+    this.assertEmployee(employee);
+    if(this.state.employees.some(row=>row.id===employee.id)) throw new Error("Team member already exists.");
+    this.commit({...this.state,employees:[...this.state.employees,copy(employee)]});
+  }
+  async updateEmployee(employee:Employee){
+    this.assertEmployee(employee);
+    if(!this.state.employees.some(row=>row.id===employee.id)) throw new Error("Team member was not found.");
+    for(const appointment of this.state.appointments.filter(row=>row.employeeId===employee.id&&(row.status==="pending"||row.status==="confirmed")&&new Date(row.startsAt).getTime()>Date.now())){const service=this.state.services.find(row=>row.id===appointment.serviceId);if(service){const reason=validateBooking({service:{...service,active:true},employee,startsAt:new Date(appointment.startsAt),appointments:this.state.appointments,services:this.state.services,excludeAppointmentId:appointment.id});if(reason)throw new Error("This change conflicts with an existing booking: "+reason);}}this.commit({...this.state,employees:this.state.employees.map(row=>row.id===employee.id?copy(employee):row)});
+  }
+  async deleteEmployee(id:string){
+    if(this.state.appointments.some(row=>row.employeeId===id&&row.status!=="cancelled")) throw new Error("This team member is linked to appointments. Deactivate them instead.");
+    this.commit({...this.state,employees:this.state.employees.filter(row=>row.id!==id)});
+  }
+  private assertBusiness(business:Business){
+    if(business.id!==this.state.business.id||!business.name.trim()||!business.slug.trim()||!business.category.trim()||!business.city.trim()||!business.address.trim())throw new Error("Complete the required business profile fields.");
+    if(business.phone&&!/^[+0-9() .-]{6,25}$/.test(business.phone))throw new Error("Enter a valid business phone number.");
+    if(business.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(business.email))throw new Error("Enter a valid business email address.");
+    try{new Intl.DateTimeFormat("en-US",{timeZone:business.timezone??"Asia/Beirut"}).format(new Date());}catch{throw new Error("Choose a valid IANA timezone.");}
+    for(const [day,hours] of Object.entries(business.workingHours??{})){if(hours.enabled&&(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.start)||!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(hours.end)||hours.start>=hours.end))throw new Error("Check the business hours for "+day+".");}
+    const rules=business.bookingRules as BusinessBookingRules|undefined;if(!rules||![15,30,60].includes(rules.slotIntervalMinutes)||!Number.isInteger(rules.minimumNoticeHours)||rules.minimumNoticeHours<0||rules.minimumNoticeHours>720||!Number.isInteger(rules.cancellationNoticeHours)||rules.cancellationNoticeHours<0||rules.cancellationNoticeHours>720)throw new Error("Check your booking rules.");
+  }
+  private assertService(service:Service){
+    if(service.businessId!==demo.business.id||!service.name.trim()||!service.category.trim()||!Number.isInteger(service.durationMinutes)||service.durationMinutes<5||service.durationMinutes>720||!Number.isFinite(service.price)||service.price<0) throw new Error("Enter a valid service name, category, duration and non-negative price.");
+  }
+  private assertEmployee(employee:Employee){
+    if(employee.businessId!==demo.business.id||!employee.name.trim()||!employee.role.trim()) throw new Error("Enter a team member name and role.");
+    if(employee.commissionValue!==undefined&&(!Number.isFinite(employee.commissionValue)||employee.commissionValue<0||(employee.commissionType==="percentage"&&employee.commissionValue>100)))throw new Error("Enter a valid commission rate (0–100% or a non-negative fixed amount).");
+    if(employee.commissionValue!==undefined&&(!Number.isFinite(employee.commissionValue)||employee.commissionValue<0||(employee.commissionType==="percentage"&&employee.commissionValue>100)))throw new Error("Enter a valid commission rate (0–100% or a non-negative fixed amount).");
+    if(employee.serviceIds?.some(id=>!this.state.services.some(service=>service.id===id))) throw new Error("Choose services that exist in this business.");
+    for(const [day,hours] of Object.entries(employee.workingHours??{})){if(hours.enabled&&(!/^([01]\d|2[0-3]):[0-5]\d$/.test(hours.start)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(hours.end)||hours.start>=hours.end)) throw new Error(`Check the working hours for ${day}.`);}
+  }
+}
+
+
+
+class ApiRepository extends DemoRepository {
+  private snapshot:Promise<Record<string,any>>|null=null;
+  private async load(){if(!this.snapshot)this.snapshot=apiRequest<Record<string,any>>("/provider/bootstrap");try{return await this.snapshot;}catch(error){this.snapshot=null;throw error;}}
+  private invalidate(){this.snapshot=null;}
+  private async write<T>(path:string,method:string,body?:unknown):Promise<T>{
+    const result=await apiRequest<T>(path,{method,...(body===undefined?{}:{body:JSON.stringify(body)})});
+    this.invalidate();return result;
+  }
+  async getBusiness(){return (await this.load()).business as Business;}
+  async updateBusiness(business:Business){await this.write("/provider/business","PATCH",business);}
+  async getServices(){return (await this.load()).services as Service[];}
+  async getEmployees(){return (await this.load()).employees as Employee[];}
+  async getCustomers(){return (await this.load()).customers as Customer[];}
+  async updateCustomer(customer:Customer){await this.write("/provider/customers/"+customer.id,"PATCH",customer);}
+  async getCustomerConsentEvents(){return (await this.load()).customerConsentEvents as CustomerConsentEvent[];}
+  async recordCustomerConsent(event:CustomerConsentEvent){await this.write("/provider/customer-consent","POST",event);}
+  async getCustomerReminders(){return (await this.load()).customerReminders as CustomerReminder[];}
+  async createCustomerReminder(reminder:CustomerReminder){await this.write("/provider/customer-reminders","POST",reminder);}
+  async updateCustomerReminder(id:string,status:CustomerReminderStatus){await this.write("/provider/customer-reminders/"+id,"PATCH",{status});}
+  async getAppointments(){return (await this.load()).appointments as Appointment[];}
+  async getPayments(){return (await this.load()).payments as Payment[];}
+  async getExpenses(){return (await this.load()).expenses as Expense[];}
+  async getCommissionEntries(){return (await this.load()).commissionEntries as CommissionEntry[];}
+  async getPayrollPayments(){return (await this.load()).payrollPayments as PayrollPayment[];}
+  async createPayrollPayment(payment:PayrollPayment){await this.write("/provider/payroll","POST",payment);}
+  async createPayment(payment:Payment){await this.write("/provider/payments","POST",payment);}
+  async createExpense(expense:Expense){await this.write("/provider/expenses","POST",expense);}
+  async updateAppointmentStatus(id:string,status:Appointment["status"]){await this.write("/provider/appointments/"+id+"/status","PATCH",{status});}
+  async updateAppointment(appointment:Appointment){await this.write("/provider/appointments/"+appointment.id,"PATCH",appointment);}
+  async getClientAppointmentRequests(){return (await this.load()).clientRequests as ClientAppointmentRequest[];}
+  async createClientAppointmentRequest(request:ClientAppointmentRequest){await this.write("/provider/client-requests","POST",request);}
+  async updateClientAppointmentRequest(id:string,status:ClientAppointmentRequest["status"]){await this.write("/provider/client-requests/"+id,"PATCH",{status});}
+  async createAppointment(appointment:Appointment){await this.write("/provider/appointments","POST",appointment);}
+  async createCustomer(customer:Customer):Promise<Customer>{
+    const result=await this.write<{customer:Customer}>("/provider/customers","POST",customer);
+    return {...result.customer,visits:0,lastVisit:""};
+  }
+  async createService(service:Service){await this.write("/provider/services","POST",service);}
+  async updateService(service:Service){await this.write("/provider/services/"+service.id,"PATCH",service);}
+  async deleteService(id:string){await this.write("/provider/services/"+id,"DELETE");}
+  async createEmployee(employee:Employee){await this.write("/provider/employees","POST",employee);}
+  async updateEmployee(employee:Employee){await this.write("/provider/employees/"+employee.id,"PATCH",employee);}
+  async deleteEmployee(id:string){await this.write("/provider/employees/"+id,"DELETE");}
+}
+
+function validateBusinessWindow(business:Business,startsAt:Date,durationMinutes:number,checkNotice=false):string|null{
+  if(!Number.isFinite(startsAt.getTime()))return "Choose a valid appointment time.";
+  const timezone=business.timezone??"Asia/Beirut";
+  const rules=business.bookingRules??{allowOnlineBooking:true,minimumNoticeHours:0,cancellationNoticeHours:24,slotIntervalMinutes:30};
+  if(checkNotice&&startsAt.getTime()<Date.now()+rules.minimumNoticeHours*3_600_000-60_000)return "This appointment does not meet the business minimum booking notice.";
+  const format=(date:Date)=>{const parts=new Intl.DateTimeFormat("en-US",{timeZone:timezone,weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(date);const value=(key:string)=>parts.find(part=>part.type===key)?.value??"";return {weekday:value("weekday").toLowerCase().slice(0,3),minute:Number(value("hour"))*60+Number(value("minute"))};};
+  const end=new Date(startsAt.getTime()+durationMinutes*60_000-1);
+  const startParts=format(startsAt),endParts=format(end);
+  if(startParts.weekday!==endParts.weekday)return "The service must finish before the business closes.";
+  const hours=business.workingHours?.[startParts.weekday as keyof WeeklySchedule];
+  if(!hours||!hours.enabled)return "The business is closed on the selected day.";
+  const toMinutes=(value:string)=>{const [h,m]=value.split(":").map(Number);return h*60+m;};
+  if(startParts.minute<toMinutes(hours.start)||endParts.minute>=toMinutes(hours.end))return "Choose a time within the business opening hours.";
+  return null;
+}
+
+/** UI pages depend on this contract, not on a database SDK. Supabase can replace this adapter later. */
+export const salonRepository:SalonRepository=new ApiRepository();

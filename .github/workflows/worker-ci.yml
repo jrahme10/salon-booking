@@ -1,0 +1,28 @@
+name: Worker CI
+
+on:
+  push:
+    branches: [main, production-foundation]
+    paths:
+      - "worker/**"
+      - ".github/workflows/worker-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - ".github/workflows/worker-ci.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run typecheck
+      - run: npx wrangler deploy --dry-run

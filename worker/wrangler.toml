@@ -1,0 +1,6 @@
+name = "salon-booking"
+main = "src/index.ts"
+compatibility_date = "2026-11-11"
+
+[observability]
+enabled = true
