@@ -49,11 +49,14 @@ function basicAuth(username: string, password: string): string {
 
 function xmlPropertyHref(xml: string, property: string): string | null {
   const propertyMatch = new RegExp(
-    `<([\\w.-]+:)?${property}\\b[^>]*>([\\s\\S]*?)<\\/\\1${property}\\s*>`,
+    "<([\\w.-]+:)?" + property + "\\b[^>]*>([\\s\\S]*?)</\\1" + property + "\\s*>",
     "i",
   ).exec(xml);
   if (!propertyMatch) return null;
-  const hrefMatch = /<(?:[\\w.-]+:)?href\\b[^>]*>([\\s\\S]*?)<\\/(?:[\\w.-]+:)?href\\s*>/i.exec(propertyMatch[2]);
+  const hrefMatch = new RegExp(
+    "<(?:[\\w.-]+:)?href\\b[^>]*>([\\s\\S]*?)</(?:[\\w.-]+:)?href\\s*>",
+    "i",
+  ).exec(propertyMatch[2]);
   if (!hrefMatch) return null;
   return hrefMatch[1].trim().replace(/&amp;/g, "&").replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
