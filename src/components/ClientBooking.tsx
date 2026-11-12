@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Link} from "react-router-dom";
 import type {FormEvent} from "react";
-import {CalendarDays,CheckCircle2,Clock3,MapPin,Scissors,Star,UserRound,ArrowLeft,ArrowRight} from "lucide-react";
+import {CheckCircle2,Clock3,MapPin,Scissors,Star,UserRound,ArrowLeft,ArrowRight} from "lucide-react";
 import type {Appointment,Business,Employee,Service} from "../types";
 import {getAvailableSlots,isWithinBusinessHours} from "../domain/scheduling";
 
