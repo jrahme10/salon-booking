@@ -189,7 +189,7 @@ export default {
         const membershipId = crypto.randomUUID();
         registrationStage = "password_hash";
         const salt = randomHex(16);
-        const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePassword(password, salt)}`;
+const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePassword(password, salt)}`;
         const slugBase = makeSlug(businessName);
         const slug = `${slugBase}-${randomHex(3)}`;
         registrationStage = "database_insert";
