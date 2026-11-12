@@ -98,6 +98,7 @@ export default function App(){
  const [session,setSession]=useState<AuthSession|null>(null);
  const [checking,setChecking]=useState(true);
  useEffect(()=>{let active=true;void restoreAuthSession().then(value=>{if(active)setSession(value);}).finally(()=>{if(active)setChecking(false);});return()=>{active=false;};},[]);
+ useEffect(()=>{const result=new URLSearchParams(window.location.search).get("calendar");if(!result||!window.opener)return;window.opener.postMessage({type:"salon-calendar-oauth-result",result},window.location.origin);window.close();},[]);
  if(checking)return <div className="loading">salon<span>Checking your secure session…</span></div>;
  if(!session)return <AuthPage onAuthenticated={setSession}/>;
  return <><WorkspaceApp/><button className="auth-logout" onClick={()=>{void logout().then(()=>setSession(null));}}>Sign out</button></>;
