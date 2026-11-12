@@ -244,12 +244,27 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
           from private.app_users where lower(email) = ${email} and disabled_at is null limit 1`;
         const user = users[0];
         if (!user || typeof user.password_hash !== "string") return json({ error: "Invalid email or password." }, 401, origin);
-        const parts = user.password_hash.split("$");
-        if (parts.length !== 4 || parts[0] !== "pbkdf2-sha256" || Number(parts[1]) !== PASSWORD_ITERATIONS) {
+        const storedHash = user.password_hash;
+        const parts = storedHash.split("$");
+        let salt = "";
+        let expectedHash = "";
+        if (parts.length === 4 && parts[0] === "pbkdf2-sha256" && Number(parts[1]) === PASSWORD_ITERATIONS) {
+          salt = parts[2];
+          expectedHash = parts[3];
+        } else {
+          // Backward compatibility for accounts created while the separators were missing.
+          const legacyPrefix = `pbkdf2-sha256${PASSWORD_ITERATIONS}`;
+          if (!storedHash.startsWith(legacyPrefix) || storedHash.length !== legacyPrefix.length + 96) {
+            return json({ error: "Invalid email or password." }, 401, origin);
+          }
+          salt = storedHash.slice(legacyPrefix.length, legacyPrefix.length + 32);
+          expectedHash = storedHash.slice(legacyPrefix.length + 32);
+        }
+        if (!/^[a-f0-9]{32}$/i.test(salt) || !/^[a-f0-9]{64}$/i.test(expectedHash)) {
           return json({ error: "Invalid email or password." }, 401, origin);
         }
-        const actual = await derivePassword(password, parts[2]);
-        if (!safeEqual(actual, parts[3])) return json({ error: "Invalid email or password." }, 401, origin);
+        const actual = await derivePassword(password, salt);
+        if (!safeEqual(actual, expectedHash)) return json({ error: "Invalid email or password." }, 401, origin);
         const memberships = await sql`select m.business_id, m.role, b.name as business_name, b.slug as business_slug
           from private.business_memberships m join private.businesses b on b.id = m.business_id
           where m.user_id = ${user.id}::uuid
