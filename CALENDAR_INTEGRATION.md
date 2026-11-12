@@ -19,7 +19,7 @@ The calendar schema migration is prepared but must not be applied until `/health
 ## Providers and intended behavior
 
 - Google Calendar: OAuth 2.0 authorization-code flow with PKCE; Google Calendar API.
-- Apple Calendar: CalDAV against the user's iCloud calendar, authenticated only from the server using an app-specific password. Never request or store an Apple ID password in the browser.
+- Apple Calendar: CalDAV against the user's iCloud calendar, authenticated only from the server using an app-specific password. The Worker follows iCloud redirects and discovers the account principal and calendar-home URL. Never request or store an Apple Account password in the browser.
 - Both providers: per-owner and per-employee connections; user-selected calendars; two-way sync; busy-time import; appointment create/update/cancel; sync health and last-sync status.
 
 ## Required implementation before enabling Connect
@@ -28,7 +28,7 @@ The calendar schema migration is prepared but must not be applied until `/health
 2. Enforce business membership and role authorization on every business-scoped request.
 3. Register Google OAuth consent screen, client ID/secret and exact callback URI.
 4. Implement server-side Google OAuth state/PKCE, token exchange, refresh and revocation.
-5. Implement Apple app-specific-password onboarding and CalDAV discovery/event CRUD.
+5. Implement Apple CalDAV calendar listing and event CRUD using the discovered principal and calendar-home URLs.
 6. Encrypt provider credentials with a server-side key. Never log request bodies, tokens or passwords.
 7. Implement scheduled sync queue processing, retries, exponential backoff, idempotency and reconciliation.
 8. Integrate imported busy intervals into availability generation and atomic server-side booking validation.

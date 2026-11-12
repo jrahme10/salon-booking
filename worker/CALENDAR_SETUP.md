@@ -36,7 +36,7 @@ The app requests calendar access so it can later read busy periods and create/up
 
 ## Apple Calendar (iCloud)
 
-Each person connecting Apple Calendar must create an app-specific password at [account.apple.com](https://account.apple.com/) under **Sign-In and Security → App-Specific Passwords**. In Salon Reservation, enter their Apple Account email and that app-specific password. Do not use the person's normal Apple Account password.
+Each person connecting Apple Calendar must have two-factor authentication enabled and create an app-specific password at [account.apple.com](https://account.apple.com/) under **Sign-In and Security → App-Specific Passwords**. In Salon Reservation, enter their Apple Account email and that app-specific password. Do not use the person's normal Apple Account password. The Worker follows iCloud CalDAV redirects, discovers the account's current-user principal and calendar-home collection, and only then records the connection. The discovered URLs and app-specific password are stored together in the encrypted connection secret.
 
 ## Current implementation boundary
 
