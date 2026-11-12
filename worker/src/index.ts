@@ -14,7 +14,7 @@ const allowedOrigins = new Set([
 ]);
 
 const SESSION_DAYS = 30;
-const PASSWORD_ITERATIONS = 210_000;
+const PASSWORD_ITERATIONS = 100_000;
 
 function corsHeaders(origin: string | null): Headers {
   const headers = new Headers({
