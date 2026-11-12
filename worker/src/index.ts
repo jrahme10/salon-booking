@@ -182,14 +182,17 @@ export default {
         return json({ error: "Please provide your name, valid email, password (12–128 characters), salon name and city." }, 400, origin);
       }
 
-      const userId = crypto.randomUUID();
-      const businessId = crypto.randomUUID();
-      const membershipId = crypto.randomUUID();
-      const salt = randomHex(16);
-      const passwordHash = `pbkdf2-sha256$${PASSWORD_ITERATIONS}$${salt}$${await derivePassword(password, salt)}`;
-      const slugBase = makeSlug(businessName);
-      const slug = `${slugBase}-${randomHex(3)}`;
+      let registrationStage = "prepare_account";
       try {
+        const userId = crypto.randomUUID();
+        const businessId = crypto.randomUUID();
+        const membershipId = crypto.randomUUID();
+        registrationStage = "password_hash";
+        const salt = randomHex(16);
+        const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePassword(password, salt)}`;
+        const slugBase = makeSlug(businessName);
+        const slug = `${slugBase}-${randomHex(3)}`;
+        registrationStage = "database_insert";
         const rows = await sql`
           with new_user as (
             insert into private.app_users (id, email, display_name, password_hash)
@@ -208,12 +211,20 @@ export default {
           )
           select u.id as user_id, b.id as business_id, b.name as business_name, b.slug as business_slug, m.role
           from new_user u cross join new_business b cross join new_membership m`;
+        registrationStage = "create_session";
         const session = await createSession(sql, userId);
         return json({ user: { id: rows[0].user_id, displayName, email },
           business: { id: rows[0].business_id, name: rows[0].business_name, slug: rows[0].business_slug },
           role: rows[0].role, ...session }, 201, origin);
-      } catch {
-        return json({ error: "An account with this email may already exist, or the account could not be created." }, 409, origin);
+      } catch (error) {
+        const dbCode = error && typeof error === "object" && "code" in error
+          ? String((error as { code?: unknown }).code ?? "") : "";
+        const errorName = error instanceof Error ? error.name : "UnknownError";
+        console.error("auth_register_failed", { stage: registrationStage, errorName, dbCode });
+        if (dbCode === "23505") {
+          return json({ error: "An account with this email already exists. Please sign in instead." }, 409, origin);
+        }
+        return json({ error: "Account creation failed. Please try again later.", stage: registrationStage }, 500, origin);
       }
     }
 
