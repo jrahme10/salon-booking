@@ -1035,3 +1035,171 @@ button,input,select,textarea{font-family:'DM Sans',sans-serif}
 
 /* Final brand palette enforcement: no green UI accents */
 :root{--green:#533234;--green-dark:#3d2528;--sage:#f2e6f1;--ink:#302522;--muted:#89766f;--line:#eadbd2;--cream:#f8f2ed;--white:#fffaf6;color-scheme:light}
+
+
+/* -------------------------------------------------------
+   Salon Studio — premium visual system refinement
+   ------------------------------------------------------- */
+:root{
+ --ink:#2b2422;--muted:#81736e;--line:#eadfd8;--green:#57373b;--green-dark:#39272a;
+ --sage:#f3e9e4;--cream:#f7f1eb;--white:#fffdfa;--accent:#a879b8;
+ --surface:#fffdfa;--surface-soft:#fbf6f1;--rose:#d6a99c;
+ --shadow-soft:0 12px 34px rgba(66,43,39,.065);
+ --shadow-card:0 18px 48px rgba(66,43,39,.09);
+}
+html{scroll-behavior:smooth}
+body{background:#f7f1eb;color:#2b2422;font-family:'DM Sans',sans-serif}
+::selection{background:#e8d4dc;color:#39272a}
+input,select,textarea{accent-color:#a879b8}
+button,a{ -webkit-tap-highlight-color:transparent}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a879b844;outline-offset:3px}
+.layout{background:#f7f1eb}
+.sidebar{background:#fffdfa;border-right:1px solid #eadfd8;box-shadow:5px 0 28px rgba(66,43,39,.025)}
+.brand>span{background:linear-gradient(145deg,#684349,#39272a);box-shadow:0 7px 18px #57373b30}
+.brand b{font-family:'Playfair Display',serif;font-weight:600;color:#39272a}
+.brand small{color:#a18d85}
+.business{background:#fbf5f0;border-color:#eee2da}
+.business>i,.main>header i{background:#f0e3dd;color:#684349}
+.nav-group>small{color:#ad9a91}
+.nav-group a{color:#82746e;transition:background .18s,color .18s,transform .18s}
+.nav-group a:hover{background:#faf2ee;color:#57373b;transform:translateX(2px)}
+.nav-group a.active{background:#f2e7e2;color:#57373b;box-shadow:inset 3px 0 #a879b8}
+.sidebar-foot{border-color:#eee2da}
+.main>header{background:rgba(255,253,250,.92);backdrop-filter:blur(16px);border-color:#eadfd8;color:#9a8981}
+.main>header div>small{color:#a879b8;letter-spacing:1.1px}
+.content{max-width:1500px;padding-top:39px}
+.heading>div>small,.dialog-head>div>small{color:#a879b8}
+.heading h1{color:#39272a}
+.heading p{color:#81736e}
+.primary,.owner-primary-action,.client-submit{background:linear-gradient(135deg,#684349,#39272a);box-shadow:0 8px 20px #57373b25;transition:transform .18s,box-shadow .18s,filter .18s}
+.primary:hover,.owner-primary-action:hover,.client-submit:hover{background:linear-gradient(135deg,#765158,#493034);transform:translateY(-1px);box-shadow:0 12px 25px #57373b30}
+.secondary{background:#fffdfa;border-color:#eadfd8;color:#57373b}
+.panel,.metric,.owner-kpi,.booking-dialog,.table-wrap{background:#fffdfa;border:1px solid #eee3dc;box-shadow:var(--shadow-soft)}
+.panel h2,.section-title h2{color:#39272a}
+.metric{transition:transform .2s,box-shadow .2s}
+.metric:hover,.owner-kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.metric>span,.owner-kpi-icon{background:#f3e8e3;color:#684349}
+.metric b,.owner-kpi>b{color:#39272a}
+.metric em{color:#a18e86}
+.welcome{background:linear-gradient(115deg,#f3e5df,#f7eee8 55%,#eee3ed);border:1px solid #eadbd4;box-shadow:var(--shadow-soft)}
+.welcome>small{color:#a879b8}
+.welcome h2{color:#57373b;font-family:'Playfair Display',serif}
+.welcome p{color:#81736e}
+.filters>div,.filters>select,.filters input{border-color:#eadfd8;background:#fffdfa}
+.filters button{color:#82746e}
+.filters button.active{background:#57373b;color:#fff}
+.status{border-radius:999px}
+.table-wrap{overflow:hidden}
+.table-wrap th{background:#fbf6f1;color:#a18d85}
+.table-wrap td{border-color:#f0e7e1}
+.table-wrap tr:hover td{background:#fdf9f6}
+.form input,.form select,.form textarea,.booking-dialog input,.booking-dialog select,.booking-dialog textarea{background:#fffdfa;border:1px solid #e8dcd5;color:#39272a}
+.form input:focus,.form select:focus,.form textarea:focus{border-color:#b98bc7;box-shadow:0 0 0 3px #b98bc71c}
+.booking-dialog{box-shadow:0 30px 100px rgba(43,30,29,.2)}
+.dialog-head{background:#fffdfa;border-bottom:1px solid #eee3dc}
+.dialog-head h2{font-family:'Playfair Display',serif;color:#39272a}
+.auth-screen{background:radial-gradient(ellipse at 12% 12%,#ead4ca 0,transparent 32%),radial-gradient(ellipse at 88% 85%,#eaddec 0,transparent 30%),#f7f1eb}
+.auth-card{background:rgba(255,253,250,.96);border:1px solid #fff;box-shadow:0 28px 90px rgba(66,43,39,.13)}
+.auth-heading h1{font-family:'Playfair Display',serif;color:#39272a}
+.auth-brand>span{background:linear-gradient(145deg,#684349,#39272a)}
+.auth-card input{background:#fffdfa;border-color:#eadfd8}
+.owner-welcome{background:linear-gradient(115deg,#302326 0%,#57373b 62%,#79535d 100%);box-shadow:0 22px 55px rgba(57,39,42,.18);border:1px solid #684349}
+.owner-welcome h1{font-family:'Playfair Display',serif;letter-spacing:-1.4px}
+.owner-welcome p{color:#e5d5ce}
+.owner-welcome .owner-eyebrow{color:#e6c6b8}
+.owner-welcome-foot{color:#e6d6cf}
+.owner-welcome-art{filter:saturate(.78)}
+.owner-kpi{border-radius:20px}
+.owner-kpi small{color:#8b7b75}
+.owner-kpi em{color:#a18e86}
+.owner-dashboard-toolbar h2,.owner-panel-heading h2{font-family:'Playfair Display',serif;color:#39272a}
+.owner-dashboard-toolbar>div>small,.owner-panel-heading>div>small{color:#a879b8}
+.owner-dashboard-grid .panel,.owner-team-panel,.owner-service-panel{background:#fffdfa;border-color:#eee3dc;box-shadow:var(--shadow-soft)}
+.owner-chart-bars .revenue,.owner-chart-legend .revenue{background:#684349}
+.owner-chart-bars .cost,.owner-chart-legend .cost{background:#c9a6a0}
+.owner-booking-panel .owner-status-list .done{background:#a879b8}
+.owner-booking-panel .owner-status-list .waiting{background:#d5ad83}
+.owner-booking-panel .owner-status-list .cancelled{background:#c58b82}
+.owner-team-rank,.owner-service-rank{color:#a879b8}
+.owner-team-person b,.owner-service-title b{color:#39272a}
+.owner-team-values b,.owner-service-main b{color:#57373b}
+.owner-service-bar{background:#f0e5df}
+.owner-service-bar i{background:linear-gradient(90deg,#57373b,#a879b8)}
+.marketplace{background:#f7f1eb}
+.market-header{max-width:1320px}
+.market-brand{font-size:33px}
+.market-brand span{color:#a879b8}
+.market-hero{max-width:1320px;min-height:470px;border-radius:28px;background:linear-gradient(105deg,rgba(43,31,32,.97),rgba(87,55,59,.88)),url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1800&q=85') center/cover;box-shadow:0 25px 65px rgba(57,39,42,.16)}
+.market-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(43,31,32,.24),transparent 70%);pointer-events:none}
+.market-hero-copy{max-width:650px}
+.market-hero h1{font-size:clamp(46px,5.4vw,70px)}
+.market-hero-art{z-index:1}
+.market-art-card{border:7px solid rgba(255,253,250,.72);outline:1px solid #e5c8b266}
+.market-content{max-width:1320px}
+.market-heading h2,.market-owner-cta h2,.market-profile-services h2,.market-booking-panel h2{font-size:38px}
+.market-filters{border-color:#e8dcd5}
+.market-filters label,.market-filters>select{box-shadow:0 3px 12px rgba(66,43,39,.035)}
+.market-filters>div button.active{background:#57373b;border-color:#57373b}
+.market-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.market-card{overflow:hidden;border:1px solid #eadfd8;border-radius:22px;box-shadow:0 8px 26px rgba(66,43,39,.055);transition:transform .22s,box-shadow .22s}
+.market-card:hover{transform:translateY(-6px);box-shadow:0 22px 50px rgba(66,43,39,.13)}
+.market-cover{height:230px;position:relative;isolation:isolate;overflow:hidden;background-color:#e8d9d2;background-image:linear-gradient(180deg,transparent 48%,rgba(43,31,32,.25)),url('https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=900&q=85');background-size:cover;background-position:center}
+.market-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(87,55,59,.08),rgba(43,31,32,.28));z-index:-1}
+.market-cover>span{font-size:58px;color:#fffdfa;text-shadow:0 4px 22px #2b1f20aa}
+.market-cover>small{background:rgba(255,253,250,.9);backdrop-filter:blur(10px);color:#684349}
+.market-cover.the-nail-atelier{background-image:linear-gradient(180deg,transparent 50%,rgba(43,31,32,.25)),url('https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=900&q=85')}
+.market-cover.studio-lumiere{background-image:linear-gradient(180deg,transparent 50%,rgba(43,31,32,.25)),url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=85')}
+.market-cover-body{background:#fffdfa}
+.market-card-title h3{font-size:23px}
+.market-card-foot a{font-weight:700}
+.market-owner-cta{background:linear-gradient(110deg,#302326,#57373b 65%,#79535d);box-shadow:0 18px 45px rgba(57,39,42,.15)}
+.market-owner-cta>a{background:#f3e3dc;transition:transform .18s}
+.market-owner-cta>a:hover{transform:translateY(-2px)}
+.market-profile,.client-booking{background:#f7f1eb}
+.market-profile-cover{background-image:linear-gradient(135deg,rgba(57,39,42,.18),rgba(57,39,42,.04)),url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1100&q=85');background-size:cover;background-position:center}
+.market-profile-cover>span{color:#fffdfa;text-shadow:0 4px 22px #2b1f20aa}
+.market-profile-details,.market-booking-panel{box-shadow:var(--shadow-soft)}
+.market-profile-services article{transition:background .16s;padding-left:13px;padding-right:13px;border-radius:12px}
+.market-profile-services article:hover{background:#fbf3ee}
+.client-booking-header{background:rgba(255,253,250,.94);backdrop-filter:blur(14px)}
+.client-booking-hero{background:linear-gradient(105deg,rgba(43,31,32,.96),rgba(87,55,59,.86)),url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1800&q=85') center/cover}
+.client-booking-content{max-width:1220px}
+.client-booking-form{box-shadow:0 18px 50px rgba(66,43,39,.075)}
+.client-booking-section h3{font-size:23px}
+.client-booking-section h3 svg{color:#a879b8}
+.client-service-options>button{background:#fffdfa;transition:transform .18s,border-color .18s,box-shadow .18s}
+.client-service-options>button.selected{border-color:#a879b8;background:#f7f0f8;box-shadow:0 0 0 2px #a879b822}
+.client-service-options>button.selected:before{background:#a879b8}
+.client-field input:focus,.client-field select:focus{border-color:#a879b8;outline:3px solid #a879b81c}
+.client-time-slots>button.selected{background:#57373b;border-color:#57373b}
+.client-booking-summary{background:#f7eee9;border-color:#e9dcd4}
+.client-booking-success{background:radial-gradient(ellipse at 50% 20%,#efe0e8 0,transparent 38%),#f7f1eb}
+.client-booking-success>span{background:#f0e3dd;color:#684349}
+.calendar-event,.calendar-month-event,.schedule-month-event{border-color:#a879b8;background:#f4edf5;color:#684d70}
+.calendar-event.confirmed,.calendar-month-event.confirmed,.schedule-month-event.confirmed{border-color:#a879b8;background:#f4edf5;color:#684d70}
+.calendar-legend i,.calendar-legend i.confirmed{background:#a879b8}
+.calendar-summary-icon.confirmed,.calendar-status-filters button.active{background:#f3e8f3;color:#684d70}
+.calendar-connection-status.connected,.calendar-connection-status.success{color:#684d70}
+.calendar-connection-status.connected i,.calendar-connection-status.success i{background:#a879b8}
+input[type=checkbox],input[type=radio],input[type=range]{accent-color:#a879b8}
+button:hover{--hover-accent:#a879b8}
+@media(max-width:1000px){
+ .content{padding-left:25px;padding-right:25px}
+ .market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-dashboard-grid{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+ .content{padding:24px 18px 90px}
+ .market-hero{border-radius:0 0 22px 22px}
+ .market-cover{height:205px}
+}
+@media(max-width:560px){
+ .content{padding:22px 14px 86px}
+ .market-grid{grid-template-columns:1fr}
+ .market-cover{height:205px}
+ .owner-welcome{padding:26px 22px}
+ .owner-welcome h1{font-size:34px}
+ .owner-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-kpi{padding:15px}
+ .owner-kpi>b{font-size:23px}
+}
