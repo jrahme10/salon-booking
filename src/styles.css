@@ -1391,3 +1391,24 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
  .owner-kpi{padding:15px}
  .owner-kpi>b{font-size:23px}
 }
+
+
+/* iOS Safari: prevent automatic page zoom when form fields receive focus */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea,
+  [contenteditable="true"],
+  .form input,
+  .form select,
+  .form textarea,
+  .booking-dialog input,
+  .booking-dialog select,
+  .booking-dialog textarea,
+  .auth-card input,
+  .market-search input,
+  .client-field input,
+  .client-field select {
+    font-size: 16px !important;
+  }
+}
