@@ -850,3 +850,114 @@ h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market
  .owner-summary-stats small{font-size:7px}
  .owner-summary-stats b{font-size:22px}
 }
+
+
+/* Dashboard performance panels: refined hierarchy, balanced rows and intentional empty states */
+.owner-team-panel,.owner-service-panel{
+ position:relative;overflow:hidden;padding:22px 24px 18px;
+ border:1px solid #ebe5ef;border-radius:18px;
+ background:linear-gradient(145deg,#fff 0%,#fff 72%,#fbf8fc 100%);
+ box-shadow:0 12px 30px rgba(48,31,60,.045);
+}
+.owner-team-panel:before,.owner-service-panel:before{
+ content:"";position:absolute;inset:0 auto 0 0;width:3px;
+ background:linear-gradient(180deg,#9a75ae,#d5bfdc);opacity:.8;
+}
+.owner-team-panel .owner-panel-heading,.owner-service-panel .owner-panel-heading{
+ align-items:flex-start;gap:18px;padding-bottom:17px;border-bottom:1px solid #f0ebf3;
+}
+.owner-team-panel .owner-panel-heading>div,.owner-service-panel .owner-panel-heading>div{min-width:0}
+.owner-team-panel .owner-panel-heading small,.owner-service-panel .owner-panel-heading small{
+ display:inline-flex;align-items:center;gap:7px;margin-bottom:6px;
+ color:#92799f;font-size:8px;font-weight:800;letter-spacing:1.35px;
+}
+.owner-team-panel .owner-panel-heading h2,.owner-service-panel .owner-panel-heading h2{
+ margin:0;color:#30243a;font:500 22px/1.25 'Lora',Georgia,serif;letter-spacing:-.35px;
+}
+.owner-team-panel .owner-panel-heading p,.owner-service-panel .owner-panel-heading p{
+ max-width:650px;margin:6px 0 0;color:#918798;font-size:9px;line-height:1.65;
+}
+.owner-team-panel .owner-panel-heading>span,.owner-service-panel .owner-panel-heading>span{
+ width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;
+ border:1px solid #eee6f1;border-radius:12px;background:#f8f4fa;color:#79558c;
+}
+.owner-team-list,.owner-service-list{gap:0;margin-top:5px}
+.owner-team-list article,.owner-service-list article{
+ min-width:0;gap:13px;padding:14px 2px;border-bottom:1px solid #f2edf3;
+ transition:background .18s ease;
+}
+.owner-team-list article:last-child,.owner-service-list article:last-child{border-bottom:0}
+.owner-team-list article:hover,.owner-service-list article:hover{background:#fcfaff}
+.owner-team-rank,.owner-service-rank{
+ width:24px;flex:0 0 24px;color:#a99caf;font-size:9px;font-weight:800;text-align:center;
+}
+.owner-team-list .team-avatar{
+ width:40px;height:40px;flex-basis:40px;border:1px solid #e9deef;border-radius:13px;
+ background:linear-gradient(145deg,#f6eff9,#eee5f3);color:#69477e;font-size:12px;
+}
+.owner-team-person{gap:5px}
+.owner-team-person b,.owner-service-title b{display:block;color:#3d3047;font-size:10px;font-weight:750}
+.owner-team-person small,.owner-service-title small,.owner-service-meta{
+ color:#968b9c;font-size:8px;line-height:1.5;
+}
+.owner-team-values{min-width:112px;display:grid;gap:4px;color:#5d4770;font-size:10px;text-align:right}
+.owner-team-values b,.owner-service-result b{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+.owner-team-values small,.owner-service-result small{color:#9a8fa0;font-size:7px;font-weight:600}
+.owner-team-values.collected{padding-left:15px;border-left:1px solid #eee8f0;color:#76578a}
+.owner-team-foot{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+ margin-top:12px;padding:11px 13px;border:1px solid #eee7f1;border-radius:11px;
+ background:#faf7fb;color:#887b90;font-size:8px;
+}
+.owner-team-foot span:last-child{color:#67477a;font-weight:800}
+.owner-service-list article{align-items:center;padding:15px 2px}
+.owner-service-main{gap:8px}
+.owner-service-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.owner-service-title small{white-space:nowrap}
+.owner-service-bar{height:7px;border-radius:20px;background:#f1ecf4}
+.owner-service-bar i{border-radius:20px;background:linear-gradient(90deg,#c3a6d1,#79518f);transition:width .35s ease}
+.owner-service-meta{display:block}
+.owner-service-result{min-width:105px;display:grid;justify-items:end;gap:4px;color:#65457a;text-align:right}
+.owner-service-result em{
+ margin-top:3px;padding:4px 7px;border:1px solid #e9e0ef;border-radius:20px;
+ background:#f8f4fa;color:#80638e;font-size:7px;font-style:normal;font-weight:700;
+}
+.owner-service-foot{
+ margin-top:10px;padding-top:11px;border-top:1px solid #f0ebf2;
+ color:#a096a4;font-size:7px;line-height:1.6;
+}
+.owner-performance-empty{
+ min-height:178px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:8px;padding:24px 18px;margin:12px 0 2px;border:1px dashed #e4d9e9;border-radius:14px;
+ background:radial-gradient(ellipse at 50% 0%,#f6f0f9 0%,#fcfafc 68%);
+ text-align:center;
+}
+.owner-performance-empty-icon{
+ width:44px;height:44px;display:grid;place-items:center;margin-bottom:3px;
+ border:1px solid #e7dbea;border-radius:15px;background:#fff;color:#79568e;
+ box-shadow:0 5px 15px rgba(75,48,91,.07);
+}
+.owner-performance-empty b{color:#493853;font:500 15px/1.35 'Lora',Georgia,serif}
+.owner-performance-empty p{max-width:420px;margin:0;color:#918596;font-size:9px;line-height:1.7}
+.owner-performance-empty small{margin-top:2px;color:#a18da9;font-size:8px;font-weight:700;letter-spacing:.2px}
+.owner-performance-empty.service-empty{min-height:190px}
+@media(max-width:700px){
+ .owner-team-panel,.owner-service-panel{padding:18px 15px 15px;border-radius:15px}
+ .owner-team-panel .owner-panel-heading h2,.owner-service-panel .owner-panel-heading h2{font-size:20px}
+ .owner-team-list article,.owner-service-list article{gap:9px}
+ .owner-team-list .team-avatar{width:35px;height:35px;flex-basis:35px}
+ .owner-team-values{min-width:85px}
+ .owner-team-values.collected{padding-left:9px}
+ .owner-service-result{min-width:82px}
+ .owner-service-title{display:grid;gap:3px}
+ .owner-service-title small{white-space:normal}
+ .owner-team-foot{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:430px){
+ .owner-team-rank,.owner-service-rank{width:18px;flex-basis:18px}
+ .owner-team-values{min-width:72px;font-size:9px}
+ .owner-team-values b,.owner-service-result b{font-size:10px}
+ .owner-team-values small,.owner-service-result small{font-size:6px}
+ .owner-service-result{min-width:72px}
+ .owner-performance-empty{min-height:165px;padding:20px 12px}
+}
