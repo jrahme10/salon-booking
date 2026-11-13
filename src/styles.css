@@ -1,6 +1,6 @@
 
 /* Premium owner authentication experience */
-.auth-screen{font-family:'DM Sans',sans-serif;
+.auth-screen{font-family:'Manrope',sans-serif;
  min-height:100dvh;display:grid;place-items:center;padding:34px;
  background:radial-gradient(ellipse at 8% 8%,#eee7ff 0,transparent 34%),#f8f7fb;
 }
@@ -22,7 +22,7 @@
 .auth-story .auth-brand-mark{width:50px;height:50px;display:grid;place-items:center;border:1px solid #e8d2ef8c;border-radius:16px;background:linear-gradient(145deg,#ffffff20,#ffffff08);color:#f0cce9;box-shadow:inset 0 1px #ffffff20,0 8px 22px #140a2430}.auth-story .auth-brand-mark svg{width:34px;height:34px}
 .auth-story .auth-brand-type{display:flex;flex-direction:column;gap:2px}
 .auth-story .auth-brand-type b{font:600 31px/.95 'Lora',Georgia,serif;letter-spacing:.2px;color:#fff}
-.auth-story .auth-brand-type small{font:700 8px 'DM Sans',sans-serif;letter-spacing:2.1px;color:#ddcbe9}
+.auth-story .auth-brand-type small{font:700 8px 'Manrope',sans-serif;letter-spacing:2.1px;color:#ddcbe9}
 .auth-story-copy{position:relative;z-index:1;margin:auto 0;padding:60px 0 50px;max-width:410px}
 .auth-overline{display:flex;align-items:center;gap:9px;color:#d9c9f5;font-size:9px;font-weight:700;letter-spacing:1.6px}
 .auth-overline i,.auth-secure i{width:7px;height:7px;border-radius:50%;background:#c4b5fd;box-shadow:0 0 0 4px #c4b5fd20}
@@ -147,14 +147,14 @@
 }
 *{box-sizing:border-box}
 html{background:#f8f6f9;scroll-behavior:smooth}
-body{margin:0;background:#f8f6f9;color:var(--salon-ink);font-family:'DM Sans',Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:#f8f6f9;color:var(--salon-ink);font-family:'Manrope',Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #9c77bd66;outline-offset:2px}
 a{color:inherit}
 .loading{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:30px;background:radial-gradient(ellipse at 50% 35%,#eee4f3 0,transparent 42%),#faf8fb;color:var(--salon-plum);font:600 35px 'Lora',Georgia,serif;letter-spacing:-1px}
 .loading:before{content:"";width:52px;height:52px;border:2px solid #e6dced;border-top-color:var(--salon-plum);border-radius:50%;animation:salon-spin .9s linear infinite}
-.loading span{color:var(--salon-muted);font:500 11px 'DM Sans',sans-serif;letter-spacing:.2px}
+.loading span{color:var(--salon-muted);font:500 11px 'Manrope',sans-serif;letter-spacing:.2px}
 .loading .primary{margin-top:8px}
 @keyframes salon-spin{to{transform:rotate(360deg)}}
 
@@ -380,7 +380,7 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 .finance-list article>div{display:grid;gap:5px;flex:1;min-width:0}
 .finance-list article b{color:#43344b;font-size:9px}
 .finance-list article small{color:#9a909e;font-size:8px}
-.finance-list article>strong{color:#513666;font:600 12px 'DM Sans',sans-serif}
+.finance-list article>strong{color:#513666;font:600 12px 'Manrope',sans-serif}
 .finance-row-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#f0eaf5;color:#6c4784}
 .finance-row-icon.expense{background:#f7eef2;color:#a16e86}
 .expense-value{color:#a16e86!important}
@@ -512,10 +512,10 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 .client-request-pending{color:#a0718a;font-size:8px}
 .client-reschedule-panel{display:grid;gap:12px;margin-top:14px;padding:15px;border-radius:11px;background:#faf6fb}
 .client-empty{padding:30px;border:1px dashed #e6dce9;border-radius:14px;color:#958a99;text-align:center;font-size:10px}
-.mode-switch{font-family:'DM Sans',sans-serif}
+.mode-switch{font-family:'Manrope',sans-serif}
 
 /* Marketplace discovery and salon profile */
-.marketplace,.market-profile{min-height:100dvh;background:#fbf8f6;color:#33253a;font-family:'DM Sans',sans-serif}
+.marketplace,.market-profile{min-height:100dvh;background:#fbf8f6;color:#33253a;font-family:'Manrope',sans-serif}
 .market-header,.market-profile>header{height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(20px,7vw,100px);border-bottom:1px solid #eee7ed;background:#fff}
 .market-brand{font:600 27px 'Lora',Georgia,serif;letter-spacing:-1px}
 .market-brand span{color:#b58aa8}
@@ -734,7 +734,7 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 
 
 /* Final polish: typography, account actions and page-specific details */
-body,input,button,select,textarea{font-family:'DM Sans',Inter,system-ui,sans-serif}
+body,input,button,select,textarea{font-family:'Manrope',Inter,system-ui,sans-serif}
 h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market-heading h2,.client .hero h1,.client .discover>h2,.client-booking-hero h1,.client-booking-intro h2,.client-appointments-heading h1{font-family:'Lora',Georgia,serif}
 .sidebar-signout{display:flex;align-items:center;gap:8px;margin:13px 0 0 -48px;padding:10px 11px;border:1px solid #ffffff20;border-radius:9px;background:#ffffff0a;color:#e8ddea;font-size:9px;font-weight:700;text-align:left;transition:background .18s,border-color .18s}
 .sidebar-signout:hover{border-color:#ffffff3b;background:#ffffff16;color:#fff}
