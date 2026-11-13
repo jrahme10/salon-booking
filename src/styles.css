@@ -818,3 +818,36 @@ h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market
   white-space:nowrap;
   overflow:hidden;
 }
+
+
+/* Sidebar: keep the workspace rail at viewport height and scroll only its navigation */
+.layout{min-height:100dvh}
+.sidebar{height:100dvh;min-height:100dvh;overflow:hidden}
+.sidebar-nav-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 2px 12px 0;scrollbar-width:thin;scrollbar-color:#75617f transparent}
+.sidebar-nav-scroll::-webkit-scrollbar{width:5px}
+.sidebar-nav-scroll::-webkit-scrollbar-thumb{border-radius:8px;background:#75617f}
+.sidebar-nav-scroll .nav-group:last-child{margin-bottom:0}
+.sidebar-foot{flex:0 0 auto}
+
+/* Replace decorative dashboard artwork with live operational information */
+.owner-welcome-summary{display:grid;grid-template-columns:minmax(250px,1fr) minmax(330px,1.1fr);column-gap:30px;row-gap:14px;align-items:center;min-height:190px}
+.owner-summary-copy{max-width:570px}
+.owner-welcome-summary h1{margin:10px 0 7px}
+.owner-summary-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.owner-summary-stats>div{min-width:0;display:flex;flex-direction:column;gap:7px;padding:15px 13px;border:1px solid #ffffff25;border-radius:13px;background:#ffffff12}
+.owner-summary-stats small{min-height:24px;color:#e4d5eb;font-size:8px;line-height:1.4}
+.owner-summary-stats b{color:#fff;font:500 27px/1 'Lora',Georgia,serif}
+.owner-summary-stats span{color:#d9c9e1;font-size:8px}
+.owner-next-appointment{grid-column:2;display:flex;align-items:center;gap:8px;color:#ead9ef;font-size:9px}
+.owner-next-appointment b{margin-left:auto;color:#fff;font-size:11px}
+@media(max-width:900px){
+ .owner-welcome-summary{grid-template-columns:1fr;gap:17px}
+ .owner-summary-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .owner-next-appointment{grid-column:1}
+}
+@media(max-width:560px){
+ .owner-summary-stats{gap:7px}
+ .owner-summary-stats>div{padding:11px 9px}
+ .owner-summary-stats small{font-size:7px}
+ .owner-summary-stats b{font-size:22px}
+}
