@@ -7,6 +7,6 @@
 <path d="M30 5C26 17 12 20 12 34c0 10 8 16 18 16s18-6 18-16C48 20 34 17 30 5Z"/>
 <path d="M30 50c-12 0-19 5-19 12m19-12c12 0 19 5 19 12M30 19v31M22 30c3 4 5.5 5.5 8 5.5s5-1.5 8-5.5"/>
 </g>
-<text x="116" y="53" fill="#281638" font-family="Cormorant Garamond, Georgia, serif" font-size="49" font-weight="600" letter-spacing=".5">salon</text>
-<text x="119" y="76" fill="#786987" font-family="Manrope, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="3.5">BUSINESS STUDIO</text>
+<text x="116" y="53" fill="#281638" font-family="Lora, Georgia, serif" font-size="49" font-weight="600" letter-spacing=".5">salon</text>
+<text x="119" y="76" fill="#786987" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="3.5">BUSINESS STUDIO</text>
 </svg>
