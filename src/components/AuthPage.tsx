@@ -1,6 +1,6 @@
 import {useState} from "react";
 import type {FormEvent} from "react";
-import {Eye,EyeOff,ArrowUpRight,Sparkles} from "lucide-react";
+import {Eye,EyeOff,ArrowUpRight,Sparkles,ShieldCheck,FileText} from "lucide-react";
 import {loginOwner,registerOwner} from "../services/auth";
 import type {AuthSession} from "../services/auth";
 
@@ -67,7 +67,13 @@ export function AuthPage({onAuthenticated}:{onAuthenticated:(session:AuthSession
      {error&&<p className="auth-error" role="alert">{error}</p>}
      <button className="auth-submit" disabled={busy}>{busy?"Please wait…":isRegister?"Create owner account":"Sign in to your salon"}<ArrowUpRight size={18}/></button>
     </form>
-    <p className="auth-foot">{isRegister?"By creating an account, you can start organizing your salon in one place.":"Your salon workspace is ready when you are."}<br/><span className="auth-legal-links"><a href="/salon-booking/privacy-policy.html" target="_blank" rel="noreferrer">Privacy Policy</a><span aria-hidden="true">·</span><a href="/salon-booking/terms-and-conditions.html" target="_blank" rel="noreferrer">Terms &amp; Conditions</a></span></p>
+    <div className="auth-footer">
+     <p>{isRegister?"By creating an account, you can start organizing your salon in one place.":"Your salon workspace is ready when you are."}</p>
+     <div className="auth-legal-cards">
+      <a className="auth-legal-card" href="/salon-booking/privacy-policy.html" target="_blank" rel="noreferrer"><span className="auth-legal-icon"><ShieldCheck size={17}/></span><span><strong>Privacy Policy</strong><small>Your data, handled with care</small></span><ArrowUpRight className="auth-legal-arrow" size={15}/></a>
+      <a className="auth-legal-card" href="/salon-booking/terms-and-conditions.html" target="_blank" rel="noreferrer"><span className="auth-legal-icon"><FileText size={17}/></span><span><strong>Terms &amp; Conditions</strong><small>Guidelines for using Salon</small></span><ArrowUpRight className="auth-legal-arrow" size={15}/></a>
+     </div>
+    </div>
    </section>
   </section>
  </main>;

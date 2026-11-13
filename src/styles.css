@@ -106,3 +106,20 @@
 .auth-story-copy h1 em{color:#e4c9ed}
 @media(max-width:820px){.auth-story .auth-brand-mark{width:43px;height:43px;border-radius:13px}.auth-story .auth-brand-mark svg{width:30px;height:30px}.auth-story .auth-brand-type b{font-size:28px}}
 @media(max-width:480px){.auth-story .auth-brand-mark{width:43px;height:43px}.auth-story .auth-brand-type b{font-size:25px}}
+
+
+/* Authentication footer cards and precise password field sizing */
+.auth-password-wrap{display:block;width:100%;min-width:0;box-sizing:border-box}
+.auth-password-wrap input{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding-right:58px}
+.auth-password-toggle{right:9px}
+.auth-footer{margin-top:24px}
+.auth-footer>p{margin:0 0 13px;color:#96909e;font-size:9px;line-height:1.7}
+.auth-legal-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.auth-legal-card{display:flex;align-items:center;gap:10px;min-width:0;padding:11px 12px;border:1px solid #eee8f4;border-radius:12px;background:linear-gradient(145deg,#fff,#faf8fc);color:#30243c;text-decoration:none;transition:border-color .18s,background .18s,transform .18s,box-shadow .18s}
+.auth-legal-card:hover{border-color:#d8c5ef;background:#fcfaff;transform:translateY(-2px);box-shadow:0 7px 18px #3d23500d}
+.auth-legal-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border:1px solid #e8def3;border-radius:10px;background:#f5effb;color:#6d28d9}
+.auth-legal-card>span:nth-child(2){display:grid;gap:4px;min-width:0}
+.auth-legal-card strong{font-size:9px;font-weight:700;white-space:nowrap}
+.auth-legal-card small{font-size:8px;color:#9891a2;line-height:1.35}
+.auth-legal-arrow{margin-left:auto;flex:0 0 auto;color:#9b7ac5}
+@media(max-width:480px){.auth-legal-cards{grid-template-columns:1fr}.auth-legal-card{padding:10px 12px}.auth-footer{margin-top:21px}}
