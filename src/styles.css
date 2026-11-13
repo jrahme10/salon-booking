@@ -961,3 +961,81 @@ h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market
  .owner-service-result{min-width:72px}
  .owner-performance-empty{min-height:165px;padding:20px 12px}
 }
+
+
+/* Owner dashboard: today's schedule and business insight cards */
+.owner-bottom-grid{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ align-items:stretch;gap:20px;
+}
+.owner-today-panel{
+ min-width:0;min-height:228px;padding:22px 23px;
+ border:1px solid #ebe5ef;border-radius:18px;
+ background:linear-gradient(150deg,#fff 0%,#fff 70%,#fbf8fc 100%);
+ box-shadow:0 12px 30px rgba(48,31,60,.045);
+}
+.owner-today-panel .owner-panel-heading{
+ display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+ padding-bottom:15px;border-bottom:1px solid #f0ebf3;
+}
+.owner-today-panel .owner-panel-heading small{
+ display:block;margin-bottom:5px;color:#92799f;font-size:8px;font-weight:800;letter-spacing:1.4px;
+}
+.owner-today-panel .owner-panel-heading h2{
+ margin:0;color:#30243a;font:500 21px/1.25 'Lora',Georgia,serif;
+}
+.owner-today-panel .owner-panel-heading>span{
+ flex:0 0 auto;padding:7px 10px;border:1px solid #ece4f0;border-radius:10px;
+ background:#f9f5fa;color:#654777;font-size:9px;font-weight:800;
+}
+.owner-today-empty{
+ min-height:132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:7px;padding:18px 14px;margin-top:13px;border:1px dashed #e6dce9;border-radius:13px;
+ background:radial-gradient(ellipse at 50% 0%,#f7f2f9 0%,#fcfafc 72%);text-align:center;
+}
+.owner-today-empty>span{
+ width:39px;height:39px;display:grid;place-items:center;margin-bottom:2px;
+ border:1px solid #e9dfed;border-radius:13px;background:#fff;color:#79568e;
+ box-shadow:0 5px 14px rgba(75,48,91,.06);
+}
+.owner-today-empty b{color:#493853;font:500 14px/1.35 'Lora',Georgia,serif}
+.owner-today-empty p{max-width:330px;margin:0;color:#918596;font-size:8px;line-height:1.65}
+.owner-today-empty small{color:#a18da9;font-size:7px;font-weight:700}
+.owner-today-row{
+ display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #f2edf3;
+}
+.owner-today-row:last-child{border-bottom:0}
+.owner-today-row>b{min-width:54px;color:#674a78;font-size:9px;font-variant-numeric:tabular-nums}
+.owner-today-row>div{min-width:0;flex:1}
+.owner-today-row>div strong{display:block;overflow:hidden;color:#403347;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.owner-today-row>div small{display:block;margin-top:3px;color:#968b9c;font-size:8px}
+.owner-insight-card{
+ position:relative;isolation:isolate;overflow:hidden;min-width:0;min-height:228px;
+ display:flex;flex-direction:column;justify-content:center;padding:24px 25px;
+ border:1px solid #e8deed;border-radius:18px;
+ background:radial-gradient(ellipse at 100% 0%,#eee3f3 0%,transparent 48%),
+ linear-gradient(145deg,#35233f 0%,#493052 58%,#62436e 100%);
+ box-shadow:0 14px 32px rgba(48,31,60,.10);color:#fff;
+}
+.owner-insight-card:after{
+ content:"";position:absolute;z-index:-1;width:190px;height:190px;right:-95px;bottom:-120px;
+ border:1px solid #ffffff20;border-radius:50%;box-shadow:0 0 0 22px #ffffff08,0 0 0 44px #ffffff05;
+}
+.owner-insight-heading{display:flex;align-items:center;gap:9px;margin-bottom:15px}
+.owner-insight-heading>span{
+ width:35px;height:35px;display:grid;place-items:center;border:1px solid #ffffff35;
+ border-radius:11px;background:#ffffff14;color:#f0dff5;
+}
+.owner-insight-heading small{color:#e3d2e9;font-size:8px;font-weight:800;letter-spacing:1.4px}
+.owner-insight-card h2{
+ max-width:440px;margin:0 0 10px;color:#fff;
+ font:500 clamp(19px,2vw,25px)/1.28 'Lora',Georgia,serif;letter-spacing:-.25px;
+}
+.owner-insight-card p{max-width:470px;margin:0;color:#e5d9e9;font-size:10px;line-height:1.8}
+.owner-insight-card p strong{color:#fff}
+@media(max-width:700px){
+ .owner-bottom-grid{grid-template-columns:1fr;gap:14px}
+ .owner-today-panel,.owner-insight-card{min-height:0;padding:19px}
+ .owner-insight-card{padding:22px}
+ .owner-insight-card h2{font-size:21px}
+}
