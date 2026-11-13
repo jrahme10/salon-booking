@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" role="img" aria-labelledby="title desc">
+<title id="title">Salon Business Studio</title><desc id="desc">A delicate floral-inspired monogram beside the Salon wordmark.</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b98acb"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
+<rect x="2" y="2" width="92" height="92" rx="25" fill="#281638"/>
+<rect x="2.75" y="2.75" width="90.5" height="90.5" rx="24.25" fill="none" stroke="#d8b8e8" stroke-opacity=".65" stroke-width="1.5"/>
+<g transform="translate(18 15)" fill="none" stroke="url(#g)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+<path d="M30 5C26 17 12 20 12 34c0 10 8 16 18 16s18-6 18-16C48 20 34 17 30 5Z"/>
+<path d="M30 50c-12 0-19 5-19 12m19-12c12 0 19 5 19 12M30 19v31M22 30c3 4 5.5 5.5 8 5.5s5-1.5 8-5.5"/>
+</g>
+<text x="116" y="53" fill="#281638" font-family="Cormorant Garamond, Georgia, serif" font-size="49" font-weight="600" letter-spacing=".5">salon</text>
+<text x="119" y="76" fill="#786987" font-family="Manrope, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="3.5">BUSINESS STUDIO</text>
+</svg>
