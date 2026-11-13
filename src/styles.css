@@ -734,7 +734,7 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 
 
 /* Final polish: typography, account actions and page-specific details */
-body,input,button,select,textarea{font-family:'Manrope',Inter,system-ui,sans-serif}
+body,input,button,select,textarea{font-family:sans-serif}
 h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market-heading h2,.client .hero h1,.client .discover>h2,.client-booking-hero h1,.client-booking-intro h2,.client-appointments-heading h1{font-family:'Lora',Georgia,serif}
 .sidebar-signout{display:flex;align-items:center;gap:8px;margin:13px 0 0 -48px;padding:10px 11px;border:1px solid #ffffff20;border-radius:9px;background:#ffffff0a;color:#e8ddea;font-size:9px;font-weight:700;text-align:left;transition:background .18s,border-color .18s}
 .sidebar-signout:hover{border-color:#ffffff3b;background:#ffffff16;color:#fff}
