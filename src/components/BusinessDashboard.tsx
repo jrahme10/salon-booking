@@ -17,12 +17,18 @@ export function BusinessDashboard({business,appointments,payments,expenses,payro
  const today=new Date();
  const todayAppointments=appointments.filter(row=>{const date=new Date(row.startsAt);return date.getFullYear()===today.getFullYear()&&date.getMonth()===today.getMonth()&&date.getDate()===today.getDate();}).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
  const topTeam=team.rows.slice(0,3);
+ const pendingToday=todayAppointments.filter(row=>row.status==="pending").length;
+ const nextAppointment=todayAppointments.find(row=>new Date(row.startsAt)>=new Date());
  const revenueChange=report.revenueChange;
  return <div className="owner-dashboard">
-  <section className="owner-welcome">
-   <div><span className="owner-eyebrow">BUSINESS AT A GLANCE · {today.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</span><h1>Your business,<br/><em>beautifully in balance.</em></h1><p>A clear view of revenue, bookings and the people behind every great visit.</p><button className="owner-primary-action" onClick={onNew}>＋ New appointment</button></div>
-   <div className="owner-welcome-art"><span className="owner-art-orbit orbit-one"/><span className="owner-art-orbit orbit-two"/><span className="owner-art-center"><ChartNoAxesCombined size={36}/><small>GROW<br/>WITH INTENTION</small></span><i>✳</i><b>✦</b></div>
-   <div className="owner-welcome-foot"><span><i/> OWNER OVERVIEW</span><span>{employees.filter(row=>row.active).length} active team members</span></div>
+  <section className="owner-welcome owner-welcome-summary">
+   <div className="owner-summary-copy"><span className="owner-eyebrow">TODAY · {today.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</span><h1>Your salon today</h1><p>{todayAppointments.length ? todayAppointments.length+" appointment"+(todayAppointments.length===1?"":"s")+" on the schedule"+(pendingToday?", including "+pendingToday+" awaiting confirmation":"")+"." : "No appointments are scheduled today. It’s a good time to review your calendar or add a new booking."}</p><button className="owner-primary-action" onClick={onNew}>＋ New appointment</button></div>
+   <div className="owner-summary-stats">
+    <div><small>Today's bookings</small><b>{todayAppointments.length}</b><span>{todayAppointments.filter(row=>row.status==="completed").length} completed</span></div>
+    <div><small>Awaiting confirmation</small><b>{pendingToday}</b><span>Needs your attention</span></div>
+    <div><small>Active team</small><b>{employees.filter(row=>row.active).length}</b><span>Team members</span></div>
+   </div>
+   {nextAppointment?<div className="owner-next-appointment"><Clock3 size={14}/><span>Next appointment</span><b>{new Date(nextAppointment.startsAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</b></div>:null}
   </section>
   <div className="owner-dashboard-toolbar"><div><small>THE BIG PICTURE</small><h2>Business performance</h2><p>Revenue is based on recorded payments, not appointment estimates.</p></div><div className="owner-period-switch" role="group" aria-label="Dashboard reporting period"><button className={period==="30"?"active":""} onClick={()=>setPeriod("30")}>30 days</button><button className={period==="90"?"active":""} onClick={()=>setPeriod("90")}>90 days</button></div></div>
   <section className="owner-kpis">
