@@ -786,3 +786,35 @@ h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market
  .schedule-view-switch{width:100%}
  .schedule-view-switch button{flex:1}
 }
+
+
+/* Calendar control refinements from browser feedback */
+.schedule-month-cell .schedule-month-date{
+  width:26px;
+  min-width:26px;
+  height:26px;
+  min-height:26px;
+  flex:0 0 26px;
+  aspect-ratio:1 / 1;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  line-height:1;
+  box-sizing:border-box;
+}
+.schedule-board .schedule-corner{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  padding:6px 2px;
+  font-family:Inter,Arial,sans-serif;
+  font-size:7px;
+  font-weight:600;
+  line-height:1.15;
+  letter-spacing:.25px;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+}
