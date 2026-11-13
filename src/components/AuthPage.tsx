@@ -1,6 +1,6 @@
 import {useState} from "react";
 import type {FormEvent} from "react";
-import {Eye,EyeOff,ArrowUpRight,LockKeyhole,Sparkles} from "lucide-react";
+import {Eye,EyeOff,ArrowUpRight,Sparkles} from "lucide-react";
 import {loginOwner,registerOwner} from "../services/auth";
 import type {AuthSession} from "../services/auth";
 
