@@ -1,6 +1,6 @@
 
 /* Premium owner authentication experience */
-.auth-screen{font-family:'Plus Jakarta Sans',sans-serif;
+.auth-screen{font-family:'DM Sans',sans-serif;
  min-height:100dvh;display:grid;place-items:center;padding:34px;
  background:radial-gradient(ellipse at 8% 8%,#eee7ff 0,transparent 34%),#f8f7fb;
 }
@@ -22,7 +22,7 @@
 .auth-story .auth-brand-mark{width:50px;height:50px;display:grid;place-items:center;border:1px solid #e8d2ef8c;border-radius:16px;background:linear-gradient(145deg,#ffffff20,#ffffff08);color:#f0cce9;box-shadow:inset 0 1px #ffffff20,0 8px 22px #140a2430}.auth-story .auth-brand-mark svg{width:34px;height:34px}
 .auth-story .auth-brand-type{display:flex;flex-direction:column;gap:2px}
 .auth-story .auth-brand-type b{font:600 31px/.95 'Lora',Georgia,serif;letter-spacing:.2px;color:#fff}
-.auth-story .auth-brand-type small{font:700 8px 'Plus Jakarta Sans',sans-serif;letter-spacing:2.1px;color:#ddcbe9}
+.auth-story .auth-brand-type small{font:700 8px 'DM Sans',sans-serif;letter-spacing:2.1px;color:#ddcbe9}
 .auth-story-copy{position:relative;z-index:1;margin:auto 0;padding:60px 0 50px;max-width:410px}
 .auth-overline{display:flex;align-items:center;gap:9px;color:#d9c9f5;font-size:9px;font-weight:700;letter-spacing:1.6px}
 .auth-overline i,.auth-secure i{width:7px;height:7px;border-radius:50%;background:#c4b5fd;box-shadow:0 0 0 4px #c4b5fd20}
@@ -147,14 +147,14 @@
 }
 *{box-sizing:border-box}
 html{background:#f8f6f9;scroll-behavior:smooth}
-body{margin:0;background:#f8f6f9;color:var(--salon-ink);font-family:'Plus Jakarta Sans',Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:#f8f6f9;color:var(--salon-ink);font-family:'DM Sans',Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #9c77bd66;outline-offset:2px}
 a{color:inherit}
 .loading{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:30px;background:radial-gradient(ellipse at 50% 35%,#eee4f3 0,transparent 42%),#faf8fb;color:var(--salon-plum);font:600 35px 'Lora',Georgia,serif;letter-spacing:-1px}
 .loading:before{content:"";width:52px;height:52px;border:2px solid #e6dced;border-top-color:var(--salon-plum);border-radius:50%;animation:salon-spin .9s linear infinite}
-.loading span{color:var(--salon-muted);font:500 11px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px}
+.loading span{color:var(--salon-muted);font:500 11px 'DM Sans',sans-serif;letter-spacing:.2px}
 .loading .primary{margin-top:8px}
 @keyframes salon-spin{to{transform:rotate(360deg)}}
 
@@ -380,7 +380,7 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 .finance-list article>div{display:grid;gap:5px;flex:1;min-width:0}
 .finance-list article b{color:#43344b;font-size:9px}
 .finance-list article small{color:#9a909e;font-size:8px}
-.finance-list article>strong{color:#513666;font:600 12px 'Plus Jakarta Sans',sans-serif}
+.finance-list article>strong{color:#513666;font:600 12px 'DM Sans',sans-serif}
 .finance-row-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#f0eaf5;color:#6c4784}
 .finance-row-icon.expense{background:#f7eef2;color:#a16e86}
 .expense-value{color:#a16e86!important}
@@ -512,10 +512,10 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 .client-request-pending{color:#a0718a;font-size:8px}
 .client-reschedule-panel{display:grid;gap:12px;margin-top:14px;padding:15px;border-radius:11px;background:#faf6fb}
 .client-empty{padding:30px;border:1px dashed #e6dce9;border-radius:14px;color:#958a99;text-align:center;font-size:10px}
-.mode-switch{font-family:'Plus Jakarta Sans',sans-serif}
+.mode-switch{font-family:'DM Sans',sans-serif}
 
 /* Marketplace discovery and salon profile */
-.marketplace,.market-profile{min-height:100dvh;background:#fbf8f6;color:#33253a;font-family:'Plus Jakarta Sans',sans-serif}
+.marketplace,.market-profile{min-height:100dvh;background:#fbf8f6;color:#33253a;font-family:'DM Sans',sans-serif}
 .market-header,.market-profile>header{height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(20px,7vw,100px);border-bottom:1px solid #eee7ed;background:#fff}
 .market-brand{font:600 27px 'Lora',Georgia,serif;letter-spacing:-1px}
 .market-brand span{color:#b58aa8}
@@ -730,4 +730,59 @@ td small{display:block;margin-top:5px;color:#a198a5;font-size:8px;font-weight:40
 }
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+
+/* Final polish: typography, account actions and page-specific details */
+body,input,button,select,textarea{font-family:'DM Sans',Inter,system-ui,sans-serif}
+h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market-heading h2,.client .hero h1,.client .discover>h2,.client-booking-hero h1,.client-booking-intro h2,.client-appointments-heading h1{font-family:'Lora',Georgia,serif}
+.sidebar-signout{display:flex;align-items:center;gap:8px;margin:13px 0 0 -48px;padding:10px 11px;border:1px solid #ffffff20;border-radius:9px;background:#ffffff0a;color:#e8ddea;font-size:9px;font-weight:700;text-align:left;transition:background .18s,border-color .18s}
+.sidebar-signout:hover{border-color:#ffffff3b;background:#ffffff16;color:#fff}
+.more-menu>button{display:flex;align-items:center;gap:9px;padding:11px;border:0;border-top:1px solid #f0eaf2;background:#fff;color:#8f657b;text-align:left;font-size:10px;font-weight:700}
+.schedule-topline h1{margin:7px 0 5px;color:#2c2034;font:500 clamp(29px,3vw,38px)/1.12 'Lora',Georgia,serif;letter-spacing:-.8px}
+.schedule-topline p{margin:0;color:#8a8090;font-size:11px;line-height:1.7}
+.schedule-add{min-height:42px;display:inline-flex;align-items:center;gap:8px;padding:0 15px;border:1px solid #63358a;border-radius:10px;background:linear-gradient(110deg,#71419a,#54217f);color:#fff;font-size:10px;font-weight:700;box-shadow:0 7px 16px #55218d22}
+.schedule-stats>div>span{display:flex;align-items:center;gap:7px;color:#8b7d91;font-size:8px}
+.schedule-stats>div>span svg{color:#8a68a0}
+.schedule-team-filter{display:flex;align-items:center;gap:7px;color:#928798;font-size:9px}
+.schedule-team-filter select,.schedule-filters select{min-height:32px;padding:0 8px;border:1px solid #eee7f0;border-radius:8px;background:#fff;color:#6e5d76;font-size:9px}
+.schedule-filters{justify-content:space-between;color:#8d8293;font-size:8px}
+.schedule-filters>div:first-child{display:flex;align-items:center;gap:6px}
+.schedule-filters>label{display:flex;align-items:center;gap:7px}
+.schedule-legend span{display:flex;align-items:center;gap:5px}
+.schedule-legend i{width:7px;height:7px;border-radius:50%;background:#c79ab2}
+.schedule-legend i.confirmed{background:#9875ad}.schedule-legend i.completed{background:#9c8aa2}.schedule-legend i.cancelled{background:#d4c8d4}
+.schedule-month-cell{min-height:110px;padding:7px;border-right:1px solid #f0ebf2;border-bottom:1px solid #f0ebf2;background:#fff}
+.schedule-month-cell.outside{background:#fbfafb;color:#b9b0bd}
+.schedule-month-cell.is-today{background:#fbf6fc}
+.schedule-month-date{width:26px;height:26px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:#685b70;font-size:9px}
+.schedule-month-cell.is-today .schedule-month-date{background:#6b4383;color:#fff}
+.schedule-month-event{width:100%;display:block;overflow:hidden;margin-top:4px;padding:5px 6px;border:0;border-radius:5px;background:#f1eaf5;color:#66477a;text-align:left;text-overflow:ellipsis;white-space:nowrap;font-size:7px}
+.schedule-month-event.pending{background:#f8edf2;color:#9a6680}.schedule-month-event.completed{background:#f0edf1;color:#75697a}.schedule-month-event.cancelled{background:#f5f1f3;color:#9a8b97}
+.schedule-empty{display:grid;justify-items:center;gap:9px;padding:38px 20px;border:1px dashed #e6dce9;border-radius:14px;background:#fff;color:#958a99;text-align:center}
+.schedule-empty svg{color:#9874a8}.schedule-empty b{color:#4c3c54;font:500 17px 'Lora',Georgia,serif}.schedule-empty span{font-size:9px}
+.schedule-empty button{margin-top:5px;padding:9px 13px;border:1px solid #e7ddec;border-radius:9px;background:#f8f3fa;color:#65417b;font-size:9px;font-weight:700}
+.schedule-board{grid-template-columns:66px repeat(7,minmax(132px,1fr))}
+.schedule-day-head{position:sticky;top:0;z-index:1;display:grid;justify-items:center;gap:4px;padding:10px 5px;border-right:1px solid #f0ebf2;border-bottom:1px solid #eee8f0;background:#fbf9fc}
+.schedule-day-head small{color:#9b91a0;font-size:7px;font-weight:800;letter-spacing:1px}
+.schedule-day-head b{color:#43354b;font:500 18px 'Lora',Georgia,serif}
+.schedule-day-head span{color:#a198a5;font-size:7px}
+.schedule-day-head.is-today{background:#f5edf8}
+.schedule-slot{min-height:75px}
+.schedule-event{display:grid;gap:4px;margin:2px;padding:7px;border:1px solid #e8ddec;border-radius:7px;background:#f7f1f9;color:#614675}
+.schedule-event.pending{border-color:#f0dfe8;background:#fcf3f7;color:#96627c}
+.schedule-event.completed{border-color:#e9e3eb;background:#f5f2f6;color:#76697b}
+.schedule-event.cancelled{border-color:#eee8ed;background:#f7f4f6;color:#9b8d99}
+.schedule-event>b{font-size:8px}.schedule-event>span,.schedule-event>small{font-size:7px;color:inherit;opacity:.8}.schedule-event>em{font-size:7px;font-style:normal;text-transform:capitalize}
+@media(max-width:560px){
+ .sidebar-signout{margin-left:0}
+ .schedule-topline{align-items:flex-start;flex-direction:column}
+ .schedule-add{width:100%;justify-content:center}
+ .schedule-filters{align-items:flex-start;flex-direction:column}
+ .schedule-toolbar{gap:12px}
+ .schedule-date-controls{width:100%;justify-content:space-between}
+ .schedule-date-controls strong{min-width:0}
+ .schedule-toolbar-actions{align-items:flex-start;flex-direction:column}
+ .schedule-view-switch{width:100%}
+ .schedule-view-switch button{flex:1}
 }
