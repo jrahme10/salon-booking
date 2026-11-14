@@ -338,7 +338,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
         if (!user) return json({ error: "Authentication required." }, 401, origin);
         const businessId = String(user.business_id);
         const businessRows = await sql`select id::text, name, slug, category, city, address, phone, email, website, description, currency, timezone,
-          marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences as "calendarSyncPreferences"
+          marketplace_visible as "marketplaceVisible", brand_theme as "brandTheme", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences as "calendarSyncPreferences"
           from private.businesses where id = ${businessId}::uuid limit 1` as unknown as Record<string, unknown>[];
         if (!businessRows.length) return json({ error: "Salon was not found." }, 404, origin);
         const services = await sql`select id::text, business_id::text as "businessId", name, category,
@@ -560,11 +560,11 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
             address=${address},phone=nullif(${value("phone")},''),email=nullif(${value("email")},''),
             website=nullif(${value("website")},''),description=nullif(${value("description")},''),
             currency=${currency},timezone=${value("timezone","Asia/Beirut")},
-            marketplace_visible=${body.marketplaceVisible===true},working_hours=${workingHours}::jsonb,
+            marketplace_visible=${body.marketplaceVisible===true},brand_theme=${JSON.stringify(body.brandTheme??{primary:"#68477B",accent:"#9675A8",background:"#F7F4F8",surface:"#FFFFFF"})}::jsonb,working_hours=${workingHours}::jsonb,
             booking_rules=${bookingRules}::jsonb,calendar_preferences=${JSON.stringify(body.calendarSyncPreferences??{blockExternalBusyTime:true,syncConfirmedAppointments:true,syncPendingAppointments:false,removeCancelledAppointments:true})}::jsonb,updated_at=now()
             where id=${businessId}::uuid
             returning id::text,name,slug,category,city,address,phone,email,website,description,currency,timezone,
-              marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences as "calendarSyncPreferences"`;
+              marketplace_visible as "marketplaceVisible",brand_theme as "brandTheme",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences as "calendarSyncPreferences"`;
           return json({business:rows[0] as unknown as Record<string,unknown>},200,origin);
         }
         if(resource==="appointments"&&id==="status"&&request.method==="PATCH"){
