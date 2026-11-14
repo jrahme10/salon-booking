@@ -1641,7 +1641,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--salon-primary);box-sh
 /* Minimal three-colour salon identity: charcoal, ivory, terracotta */
 :root{
  --salon-primary:#B8755D;
- --salon-primary-dark:#965A46;
+ --salon-primary-dark:#B8755D;
  --salon-accent:#B8755D;
  --salon-background:#F5F0E8;
  --salon-surface:#F5F0E8;
@@ -1662,19 +1662,19 @@ html,body,.workspace-shell,.layout,.main,.content,.settings-page,.client-booking
 .mobile-nav,.more-menu,.client-booking-header,.client-booking-section,.client-booking-success,
 .auth-panel,.calendar-preference,.business-hours-row{background:#F5F0E8;border-color:#292B2A30;color:#292B2A}
 .primary,button.primary,.tiny.confirm-action,.filters button.chosen,.schedule-view-switch button.active,.schedule-add,
-.client-booking .primary,.client-booking-success button,.auth-form button[type=submit){
+.client-booking .primary,.client-booking-success button,.auth-form button[type=submit]{
  background:#B8755D;border-color:#B8755D;color:#F5F0E8;box-shadow:none
 }
-.primary:hover,button.primary:hover,.schedule-add:hover{background:#965A46;border-color:#965A46}
+.primary:hover,button.primary:hover,.schedule-add:hover{background:#B8755D;border-color:#B8755D}
 .secondary,.tiny,.mode-switch,.brand-reset,.mobile-nav a.active,.mobile-nav button.selected,
 .settings-nav a:hover,.settings-nav a.active,.settings-policy,.settings-success,
 .metric-icon,.icon-tile,.settings-section-title>span{
- background:#B8755D18;border-color:#B8755D55;color:#965A46
+ background:#B8755D18;border-color:#B8755D55;color:#B8755D
 }
 h1,h2,h3,h4,p,small,label,.heading h1,.settings-section-title h2,.business-hours-row>b,
 .owner-kpi b,.metric>b,.owner-panel-heading h2{color:#292B2A}
 a:not(.nav-group a),.section-heading small,.eyebrow,.settings-section-title>span svg,
-.settings-hero-copy>small,.auth-panel-top>span:first-child,.auth-heading>small{color:#965A46}
+.settings-hero-copy>small,.auth-panel-top>span:first-child,.auth-heading>small{color:#B8755D}
 input:not([type=checkbox]):not([type=radio]):not([type=color]),select,textarea,
 .auth-form input,.business-hours-row>input[type=time]{background:#F5F0E8;border-color:#292B2A40;color:#292B2A}
 input:focus,select:focus,textarea:focus,.auth-form input:focus{border-color:#B8755D;box-shadow:0 0 0 3px #B8755D25;outline:none}
@@ -1682,7 +1682,7 @@ input:focus,select:focus,textarea:focus,.auth-form input:focus{border-color:#B87
 .settings-hero,.client-booking-hero{background:#B8755D18;border-color:#292B2A30}
 .booking-step-circle.active,.booking-step-circle.completed{background:#B8755D;border-color:#B8755D;color:#F5F0E8}
 .booking-choice-grid>button.selected,.client-service-options button.selected{border-color:#B8755D;background:#B8755D18;box-shadow:0 0 0 2px #B8755D20}
-.status.confirmed,.status.completed{background:#B8755D18;border-color:#B8755D55;color:#965A46}
+.status.confirmed,.status.completed{background:#B8755D18;border-color:#B8755D55;color:#B8755D}
 .auth-screen{background:#F5F0E8}
 .auth-story{background:#292B2A}
 .auth-story .auth-brand-mark,.auth-overline,.auth-story-copy h1 em{color:#B8755D}
