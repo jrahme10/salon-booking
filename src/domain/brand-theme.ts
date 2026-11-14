@@ -1,3 +1,4 @@
+import type {CSSProperties} from "react";
 export interface BrandTheme {
   primary:string;
   accent:string;
@@ -17,7 +18,7 @@ export function normalizeBrandTheme(value?:Partial<BrandTheme>|null):BrandTheme{
  const valid=(color:unknown,fallback:string)=>typeof color==="string"&&/^#[0-9a-f]{6}$/i.test(color)?color:fallback;
  return {primary:valid(value?.primary,DEFAULT_BRAND_THEME.primary),accent:valid(value?.accent,DEFAULT_BRAND_THEME.accent),background:valid(value?.background,DEFAULT_BRAND_THEME.background),surface:valid(value?.surface,DEFAULT_BRAND_THEME.surface)};
 }
-export function brandThemeStyle(value?:Partial<BrandTheme>|null):React.CSSProperties{
+export function brandThemeStyle(value?:Partial<BrandTheme>|null):CSSProperties{
  const theme=normalizeBrandTheme(value);
- return {"--brand-primary":theme.primary,"--brand-accent":theme.accent,"--brand-background":theme.background,"--brand-surface":theme.surface} as React.CSSProperties;
+ return {"--brand-primary":theme.primary,"--brand-accent":theme.accent,"--brand-background":theme.background,"--brand-surface":theme.surface} as CSSProperties;
 }
