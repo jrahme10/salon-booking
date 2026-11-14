@@ -338,7 +338,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
         if (!user) return json({ error: "Authentication required." }, 401, origin);
         const businessId = String(user.business_id);
         const businessRows = await sql`select id::text, name, slug, category, city, address, phone, email, website, description, currency, timezone,
-          marketplace_visible as "marketplaceVisible", brand_theme as "brandTheme", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences as "calendarSyncPreferences"
+          marketplace_visible as "marketplaceVisible", brand_theme as "brandTheme", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences - 'brandTheme' as "calendarSyncPreferences", calendar_preferences->'brandTheme' as "brandTheme"
           from private.businesses where id = ${businessId}::uuid limit 1` as unknown as Record<string, unknown>[];
         if (!businessRows.length) return json({ error: "Salon was not found." }, 404, origin);
         const services = await sql`select id::text, business_id::text as "businessId", name, category,
@@ -443,6 +443,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
           if(!name||name.length>160)return json({error:"Enter a valid team member name."},400,origin);
           const serviceIds=Array.isArray(body.serviceIds)?body.serviceIds.filter((x):x is string=>typeof x==="string"):[];
           const workingHours=JSON.stringify(body.workingHours??{});
+          const calendarPreferences={...(body.calendarSyncPreferences??{blockExternalBusyTime:true,syncConfirmedAppointments:true,syncPendingAppointments:false,removeCancelledAppointments:true}),brandTheme:body.brandTheme??{primary:"#68477B",accent:"#9675A8",background:"#F7F4F8",surface:"#FFFFFF"}};
           const timeOff=Array.isArray(body.timeOff)?body.timeOff.filter((x):x is string=>typeof x==="string"):[];
           const commissionType=value("commissionType","percentage"),commissionValue=numeric("commissionValue",0);
           if(!["percentage","fixed"].includes(commissionType)||!Number.isFinite(commissionValue)||commissionValue<0||(commissionType==="percentage"&&commissionValue>100))
@@ -561,7 +562,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
             website=nullif(${value("website")},''),description=nullif(${value("description")},''),
             currency=${currency},timezone=${value("timezone","Asia/Beirut")},
             marketplace_visible=${body.marketplaceVisible===true},brand_theme=${JSON.stringify(body.brandTheme??{primary:"#68477B",accent:"#9675A8",background:"#F7F4F8",surface:"#FFFFFF"})}::jsonb,working_hours=${workingHours}::jsonb,
-            booking_rules=${bookingRules}::jsonb,calendar_preferences=${JSON.stringify(body.calendarSyncPreferences??{blockExternalBusyTime:true,syncConfirmedAppointments:true,syncPendingAppointments:false,removeCancelledAppointments:true})}::jsonb,updated_at=now()
+            booking_rules=${bookingRules}::jsonb,calendar_preferences=${JSON.stringify(calendarPreferences)}::jsonb,updated_at=now()
             where id=${businessId}::uuid
             returning id::text,name,slug,category,city,address,phone,email,website,description,currency,timezone,
               marketplace_visible as "marketplaceVisible",brand_theme as "brandTheme",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences as "calendarSyncPreferences"`;
