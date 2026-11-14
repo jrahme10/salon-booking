@@ -1633,3 +1633,215 @@ h1,h2,h3,.heading h1,.owner-welcome h1,.owner-welcome h2,.market-hero h1,.market
   .business-settings .calendar-preference>span b{font-size:12px}
   .business-settings .calendar-preference>span small{font-size:10px}
 }
+
+
+/* =========================================================
+   COMPLETE BRAND THEME — every provider workspace section
+   Palette tokens are inherited by all nested page components.
+   ========================================================= */
+.theme-shell{
+  --brand-text:color-mix(in srgb,var(--brand-primary) 24%,#21172a);
+  --brand-muted:color-mix(in srgb,var(--brand-primary) 38%,#817889);
+  --brand-border:color-mix(in srgb,var(--brand-primary) 16%,#eee8f0);
+  --brand-tint:color-mix(in srgb,var(--brand-accent) 12%,var(--brand-surface));
+  --salon-ink:var(--brand-text);
+  --salon-muted:var(--brand-muted);
+  --salon-soft:color-mix(in srgb,var(--brand-accent) 32%,#a69baa);
+  --salon-plum:var(--brand-primary);
+  --salon-violet:var(--brand-accent);
+  --salon-lilac:var(--brand-tint);
+  --salon-cream:var(--brand-background);
+  --salon-paper:var(--brand-surface);
+  --salon-line:var(--brand-border);
+  background:var(--brand-background);
+  color:var(--brand-text);
+}
+.theme-shell .layout,
+.theme-shell .main,
+.theme-shell .content,
+.theme-shell .settings-page{background:var(--brand-background);color:var(--brand-text)}
+.theme-shell .main>header,
+.theme-shell .settings-nav,
+.theme-shell .settings-hero,
+.theme-shell .settings-bottom,
+.theme-shell .settings-content>.settings-section,
+.theme-shell .panel,
+.theme-shell .table-wrap,
+.theme-shell .dialog,
+.theme-shell .modal-card,
+.theme-shell [class*="-card"],
+.theme-shell [class$="-card"],
+.theme-shell .owner-kpi,
+.theme-shell .metric,
+.theme-shell .calendar-grid,
+.theme-shell .calendar-day,
+.theme-shell .finance-list,
+.theme-shell .customer-history,
+.theme-shell .customer-directory,
+.theme-shell .business-hours-list{
+  background-color:var(--brand-surface);
+  border-color:var(--brand-border);
+}
+.theme-shell .main>header,
+.theme-shell .settings-nav,
+.theme-shell .settings-hero,
+.theme-shell .settings-bottom,
+.theme-shell .panel,
+.theme-shell .table-wrap,
+.theme-shell .dialog,
+.theme-shell .modal-card,
+.theme-shell [class*="-card"],
+.theme-shell [class$="-card"],
+.theme-shell .owner-kpi,
+.theme-shell .metric{
+  box-shadow:0 8px 26px color-mix(in srgb,var(--brand-primary) 8%,transparent);
+}
+.theme-shell h1,.theme-shell h2,.theme-shell h3,.theme-shell h4,
+.theme-shell .heading h1,.theme-shell .section-heading h1,
+.theme-shell .panel h2,.theme-shell .panel h3,
+.theme-shell .owner-kpi b,.theme-shell .metric>b,
+.theme-shell .settings-section-title h2,
+.theme-shell .settings-grid label,
+.theme-shell .business-hours-row>b,
+.theme-shell .finance-list-head,
+.theme-shell .customer-section-heading{
+  color:var(--brand-text);
+}
+.theme-shell p,.theme-shell small,.theme-shell .field-hint,
+.theme-shell .empty,.theme-shell .finance-empty,
+.theme-shell .customer-empty,.theme-shell .heading p,
+.theme-shell .settings-section-title p,
+.theme-shell .settings-policy,
+.theme-shell .settings-nav-note,
+.theme-shell .settings-save-hint{
+  color:var(--brand-muted);
+}
+.theme-shell .primary,.theme-shell button.primary,
+.theme-shell .tiny.confirm-action,
+.theme-shell .filters button.chosen,
+.theme-shell .schedule-view-switch button.active,
+.theme-shell .owner-primary-action{
+  background:var(--brand-primary);
+  border-color:var(--brand-primary);
+  color:#fff;
+}
+.theme-shell .secondary,.theme-shell button.secondary,
+.theme-shell .tiny,.theme-shell .owner-period-switch,
+.theme-shell .customer-period{
+  border-color:var(--brand-border);
+  background:var(--brand-tint);
+  color:var(--brand-primary);
+}
+.theme-shell .secondary:hover,.theme-shell .tiny:hover,
+.theme-shell .owner-period-switch button.active,
+.theme-shell .customer-period button.active{
+  background:color-mix(in srgb,var(--brand-accent) 22%,var(--brand-surface));
+  border-color:var(--brand-accent);
+  color:var(--brand-primary);
+}
+.theme-shell .settings-nav a{color:var(--brand-muted)}
+.theme-shell .settings-nav a svg,
+.theme-shell .settings-section-title>span,
+.theme-shell .settings-section-title>span svg,
+.theme-shell .section-heading small,
+.theme-shell .eyebrow,
+.theme-shell .heading>div>small{color:var(--brand-accent)}
+.theme-shell .settings-nav a:hover,
+.theme-shell .settings-nav a.active{
+  background:var(--brand-tint);
+  border-color:var(--brand-border);
+  color:var(--brand-primary);
+}
+.theme-shell .settings-section-title>span,
+.theme-shell .metric>span,
+.theme-shell .owner-kpi-icon,
+.theme-shell .metric-icon,
+.theme-shell .icon-tile,
+.theme-shell .business>i{
+  background:var(--brand-tint);
+  border-color:var(--brand-border);
+  color:var(--brand-primary);
+}
+.theme-shell input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+.theme-shell select,.theme-shell textarea{
+  border-color:var(--brand-border);
+  background:var(--brand-surface);
+  color:var(--brand-text);
+}
+.theme-shell input::placeholder,.theme-shell textarea::placeholder{color:var(--brand-muted)}
+.theme-shell input:focus,.theme-shell select:focus,.theme-shell textarea:focus{
+  border-color:var(--brand-accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--brand-accent) 20%,transparent);
+}
+.theme-shell .table-wrap th,
+.theme-shell .business-hours-row:nth-child(even),
+.theme-shell .table-wrap tr:hover td,
+.theme-shell .calendar-day:hover{
+  background:var(--brand-tint);
+}
+.theme-shell .business-hours-row,
+.theme-shell .business-hours-row:nth-child(even),
+.theme-shell .calendar-preference{
+  border-color:var(--brand-border);
+}
+.theme-shell .calendar-preference{background:var(--brand-surface)}
+.theme-shell .calendar-preference input[type="checkbox"]:checked,
+.theme-shell .switch-control input[type="checkbox"]:checked{
+  background:var(--brand-primary);border-color:var(--brand-primary);
+}
+.theme-shell .status.confirmed,.theme-shell .status.completed{
+  border-color:color-mix(in srgb,var(--brand-accent) 42%,#fff);
+  background:color-mix(in srgb,var(--brand-accent) 15%,var(--brand-surface));
+  color:var(--brand-primary);
+}
+.theme-shell .status.pending{
+  border-color:color-mix(in srgb,var(--brand-accent) 30%,#fff);
+}
+.theme-shell .filters button,.theme-shell .schedule-view-switch button,
+.theme-shell .calendar-toolbar button,.theme-shell .pagination button{
+  border-color:var(--brand-border);
+}
+.theme-shell .filters button:hover,.theme-shell .schedule-view-switch button:hover,
+.theme-shell .calendar-toolbar button:hover,.theme-shell .pagination button:hover{
+  background:var(--brand-tint);color:var(--brand-primary);
+}
+.theme-shell .settings-policy{
+  background:var(--brand-tint);
+  border-color:var(--brand-border);
+  color:var(--brand-primary);
+}
+.theme-shell .settings-success{
+  background:color-mix(in srgb,var(--brand-accent) 13%,var(--brand-surface));
+  border-color:var(--brand-border);
+  color:var(--brand-primary);
+}
+.theme-shell .owner-welcome,
+.theme-shell .owner-dashboard-hero,
+.theme-shell .performance-hero,
+.theme-shell .finance-hero{
+  background:linear-gradient(115deg,var(--brand-primary),color-mix(in srgb,var(--brand-primary) 72%,var(--brand-accent)));
+}
+.theme-shell .owner-welcome small,.theme-shell .owner-welcome p,
+.theme-shell .owner-welcome h1,.theme-shell .owner-welcome h2,
+.theme-shell .owner-welcome-foot{color:#fff}
+.theme-shell .mobile-nav,.theme-shell .more-menu{
+  background:var(--brand-surface);border-color:var(--brand-border);
+}
+.theme-shell .mobile-nav a.active,.theme-shell .mobile-nav button.selected{
+  background:var(--brand-tint);color:var(--brand-primary);
+}
+.theme-shell .more-menu a:hover{background:var(--brand-tint);color:var(--brand-primary)}
+.theme-shell .mode-switch{background:var(--brand-surface);border-color:var(--brand-border);color:var(--brand-primary)}
+.theme-shell .settings-bottom{background:color-mix(in srgb,var(--brand-surface) 94%,transparent)}
+.theme-shell .brand-reset{border-color:var(--brand-border);background:var(--brand-tint);color:var(--brand-primary)}
+.theme-shell .brand-reset:hover{border-color:var(--brand-accent);background:color-mix(in srgb,var(--brand-accent) 18%,var(--brand-surface))}
+.theme-shell .settings-hero{background:linear-gradient(115deg,var(--brand-surface),var(--brand-tint))}
+.theme-shell .settings-hero-copy>small{color:var(--brand-accent)}
+.theme-shell .settings-save-hint svg{color:var(--brand-primary)}
+.theme-shell .calendar-preference input[type="checkbox"]:focus-visible,
+.theme-shell .switch-control input[type="checkbox"]:focus-visible{
+  outline-color:color-mix(in srgb,var(--brand-primary) 35%,transparent);
+}
+@media(max-width:820px){
+  .theme-shell .mobile-nav{background:var(--brand-surface)}
+}
