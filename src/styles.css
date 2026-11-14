@@ -2504,3 +2504,22 @@ a:not(.nav-group a),.client-booking-header a,.client-booking-success>span{
   --palette-rgb-16:rgba(41,43,42,.1);
   --palette-rgb-17:rgba(48,41,35,.045);
 }
+
+
+/* Salon logo upload and shared brand marks */
+.settings-logo-row{display:flex;align-items:center;gap:18px;margin:4px 0 24px;padding:18px;border:1px solid var(--salon-line);border-radius:14px;background:var(--salon-cream)}
+.settings-logo-preview{width:92px;height:92px;flex:0 0 92px;display:grid;place-items:center;overflow:hidden;border:1px dashed var(--salon-primary-border,var(--palette-b8755d55));border-radius:16px;background:var(--salon-paper);color:var(--salon-primary)}
+.settings-logo-preview img{width:100%;height:100%;object-fit:contain}
+.settings-logo-copy{min-width:0}.settings-logo-copy>b{font-size:13px;color:var(--salon-ink)}.settings-logo-copy>p{margin:5px 0 11px;color:var(--salon-muted);font-size:11px;line-height:1.6}
+.settings-logo-actions{display:flex;align-items:center;gap:12px;margin-bottom:7px}
+.settings-upload-button{position:relative;display:inline-flex;align-items:center;gap:7px;min-height:35px;padding:0 12px;cursor:pointer}
+.settings-upload-button input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.settings-remove-logo{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--salon-muted);font-size:11px}
+.settings-remove-logo:hover{color:var(--salon-primary)}
+.business>i{overflow:hidden}.business>i img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.owner-business-logo{display:block;width:58px;height:58px;margin-bottom:17px;object-fit:contain;border:1px solid var(--salon-line);border-radius:14px;background:var(--salon-paper);padding:5px}
+.client-business-logo{display:block;width:88px;height:88px;margin:0 auto 20px;object-fit:contain;border-radius:18px;background:var(--brand-surface,var(--salon-paper));padding:7px}
+.client-header-logo{display:block;width:42px;height:42px;object-fit:contain;border-radius:9px}
+.market-profile-logo{display:block;width:76px;height:76px;margin:0 0 16px;object-fit:contain;border:1px solid var(--salon-line);border-radius:15px;background:var(--salon-paper);padding:6px}
+.nav-group a svg,.settings-section-title>span svg,.settings-nav a svg,.settings-policy svg,.settings-save-hint svg{color:var(--salon-primary)}
+@media(max-width:600px){.settings-logo-row{align-items:flex-start;padding:13px;gap:13px}.settings-logo-preview{width:72px;height:72px;flex-basis:72px}.owner-business-logo{width:48px;height:48px}}
