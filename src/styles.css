@@ -2526,3 +2526,57 @@ a:not(.nav-group a),.client-booking-header a,.client-booking-success>span{
 
 /* Keep every application icon on the shared terracotta accent, never purple */
 .workspace-shell svg,.client-booking svg,.marketplace svg,.market-profile svg{color:var(--salon-primary)}
+
+
+/* Checkbox controls use a compact switch pattern throughout the app */
+input[type="checkbox"]{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  position:relative;
+  display:inline-block!important;
+  flex:0 0 38px;
+  width:38px!important;
+  min-width:38px!important;
+  max-width:38px;
+  height:22px!important;
+  min-height:22px!important;
+  padding:0!important;
+  margin:0;
+  border:1px solid var(--salon-border)!important;
+  border-radius:999px!important;
+  background:var(--palette-d8d2c8)!important;
+  box-shadow:none!important;
+  vertical-align:middle;
+  cursor:pointer;
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+input[type="checkbox"]::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:16px;
+  height:16px;
+  margin:0!important;
+  border:0!important;
+  border-radius:50%;
+  background:var(--palette-fff)!important;
+  box-shadow:0 1px 3px rgb(41 43 42 / 24%);
+  transform:none!important;
+  transition:transform .18s ease;
+}
+input[type="checkbox"]:checked{
+  border-color:var(--salon-primary)!important;
+  background:var(--salon-primary)!important;
+  box-shadow:none!important;
+}
+input[type="checkbox"]:checked::after{
+  transform:translateX(16px)!important;
+  border:0!important;
+}
+input[type="checkbox"]:hover{border-color:var(--salon-primary)!important}
+input[type="checkbox"]:focus-visible{
+  outline:0;
+  box-shadow:0 0 0 3px var(--salon-primary-ring)!important;
+}
+input[type="checkbox"]:disabled{opacity:.45;cursor:not-allowed}
