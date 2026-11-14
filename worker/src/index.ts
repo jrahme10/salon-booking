@@ -85,7 +85,7 @@ function makeSlug(value: string): string {
 
 async function readBody(request: Request): Promise<Record<string, unknown> | null> {
   const length = Number(request.headers.get("Content-Length") ?? 0);
-  if (length > 16_384) return null;
+  if (length > 450_000) return null;
   try {
     const value: unknown = await request.json();
     return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
@@ -338,7 +338,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
         if (!user) return json({ error: "Authentication required." }, 401, origin);
         const businessId = String(user.business_id);
         const businessRows = await sql`select id::text, name, slug, category, city, address, phone, email, website, description, currency, timezone,
-          marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences - 'brandTheme' as "calendarSyncPreferences", calendar_preferences->'brandTheme' as "brandTheme"
+          marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences - 'brandTheme' - 'logoDataUrl' as "calendarSyncPreferences", calendar_preferences->'brandTheme' as "brandTheme", calendar_preferences->'logoDataUrl' as "logoDataUrl"
           from private.businesses where id = ${businessId}::uuid limit 1` as unknown as Record<string, unknown>[];
         if (!businessRows.length) return json({ error: "Salon was not found." }, 404, origin);
         const services = await sql`select id::text, business_id::text as "businessId", name, category,
@@ -556,7 +556,10 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
             return json({error:"Complete the salon name, valid public URL, city, address and currency."},400,origin);
           const workingHours=JSON.stringify(body.workingHours??{});
           const bookingRules=JSON.stringify(body.bookingRules??{});
-          const calendarPreferences={...(body.calendarSyncPreferences??{blockExternalBusyTime:true,syncConfirmedAppointments:true,syncPendingAppointments:false,removeCancelledAppointments:true}),brandTheme:body.brandTheme??{primary:"#68477B",accent:"#9675A8",background:"#F7F4F8",surface:"#FFFFFF"}};
+          const logoDataUrl=body.logoDataUrl===undefined?undefined:body.logoDataUrl;
+          if(logoDataUrl!==undefined&&logoDataUrl!==null&&logoDataUrl!==""&&(typeof logoDataUrl!=="string"||logoDataUrl.length>380_000||!/^data:image\/(webp|png|jpeg);base64,[a-z0-9+/]+=*$/i.test(logoDataUrl)))
+            return json({error:"Choose a valid optimized salon logo image (maximum 280 KB)."},400,origin);
+          const calendarPreferences={...(body.calendarSyncPreferences??{blockExternalBusyTime:true,syncConfirmedAppointments:true,syncPendingAppointments:false,removeCancelledAppointments:true}),brandTheme:body.brandTheme??{primary:"#68477B",accent:"#9675A8",background:"#F7F4F8",surface:"#FFFFFF"},...(logoDataUrl===undefined?{}:{logoDataUrl:logoDataUrl||null})};
           const rows=await sql`update private.businesses set name=${name},slug=${slug},category=${value("category","Beauty")},city=${city},
             address=${address},phone=nullif(${value("phone")},''),email=nullif(${value("email")},''),
             website=nullif(${value("website")},''),description=nullif(${value("description")},''),
@@ -565,7 +568,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
             booking_rules=${bookingRules}::jsonb,calendar_preferences=${JSON.stringify(calendarPreferences)}::jsonb,updated_at=now()
             where id=${businessId}::uuid
             returning id::text,name,slug,category,city,address,phone,email,website,description,currency,timezone,
-              marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences - 'brandTheme' as "calendarSyncPreferences",calendar_preferences->'brandTheme' as "brandTheme"`;
+              marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences - 'brandTheme' - 'logoDataUrl' as "calendarSyncPreferences",calendar_preferences->'brandTheme' as "brandTheme",calendar_preferences->'logoDataUrl' as "logoDataUrl"`;
           return json({business:rows[0] as unknown as Record<string,unknown>},200,origin);
         }
         if(resource==="appointments"&&id==="status"&&request.method==="PATCH"){
