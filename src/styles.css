@@ -1688,3 +1688,144 @@ input:focus,select:focus,textarea:focus,.auth-form input:focus{border-color:#B87
 .auth-story .auth-brand-mark,.auth-overline,.auth-story-copy h1 em{color:#B8755D}
 .auth-secure i{background:#B8755D}
 @media(max-width:820px){.mobile-nav{background:#F5F0E8}}
+
+
+/* Global accent token — change this one value to recolour the interface */
+:root{
+  --salon-primary:#B8755D;
+  --salon-primary-dark:var(--salon-primary);
+  --salon-accent:var(--salon-primary);
+  --salon-primary-rgb:184 117 93;
+  --salon-primary-soft:rgb(var(--salon-primary-rgb) / 10%);
+  --salon-primary-border:rgb(var(--salon-primary-rgb) / 28%);
+  --salon-primary-ring:rgb(var(--salon-primary-rgb) / 22%);
+  --brand-primary:var(--salon-primary);
+  --brand-accent:var(--salon-accent);
+  accent-color:var(--salon-primary);
+}
+
+/* Consistent checkbox and radio controls */
+input[type="checkbox"],input[type="radio"]{
+  appearance:none;
+  -webkit-appearance:none;
+  position:relative;
+  width:18px;
+  height:18px;
+  min-width:18px;
+  min-height:18px;
+  margin:0;
+  display:inline-grid;
+  place-content:center;
+  vertical-align:middle;
+  border:1.5px solid rgb(41 43 42 / 38%);
+  border-radius:5px;
+  background:var(--salon-background,#F5F0E8);
+  accent-color:var(--salon-primary);
+  cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+input[type="radio"]{border-radius:50%}
+input[type="checkbox"]:checked,input[type="radio"]:checked{
+  border-color:var(--salon-primary);
+  background:var(--salon-primary);
+  box-shadow:0 2px 5px var(--salon-primary-ring);
+}
+input[type="checkbox"]:checked:after{
+  content:"";
+  width:8px;
+  height:4px;
+  margin-top:-2px;
+  border-left:2px solid #F5F0E8;
+  border-bottom:2px solid #F5F0E8;
+  transform:rotate(-45deg);
+}
+input[type="radio"]:checked:after{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#F5F0E8;
+}
+input[type="checkbox"]:hover,input[type="radio"]:hover{
+  border-color:var(--salon-primary);
+}
+input[type="checkbox"]:focus-visible,input[type="radio"]:focus-visible{
+  outline:0;
+  box-shadow:0 0 0 3px var(--salon-primary-ring);
+}
+input[type="checkbox"]:disabled,input[type="radio"]:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+/* Remove legacy purple accents and route interactive states through the shared token */
+.auth-story{
+  background:linear-gradient(145deg,#292B2A 0%,#383A38 100%);
+}
+.auth-story-copy h1 em,.auth-story .auth-brand-mark,.auth-overline,
+.auth-panel-top>span:first-child,.auth-heading>small,.auth-legal-cards .auth-legal-icon,
+.auth-legal-arrow,.auth-legal-links{color:var(--salon-primary)}
+.auth-secure i,.auth-overline i,.auth-story-copy .auth-overline i{
+  background:var(--salon-primary);
+}
+.auth-tabs button.active,.auth-password-toggle{
+  color:var(--salon-primary);
+}
+.auth-tabs button.active{box-shadow:inset 0 -2px var(--salon-primary)}
+.auth-password-toggle:hover{border-color:var(--salon-primary);background:var(--salon-primary-soft);color:var(--salon-primary)}
+.auth-form input:focus,.settings-grid input:focus,.settings-grid select:focus,.settings-grid textarea:focus{
+  border-color:var(--salon-primary);
+  box-shadow:0 0 0 3px var(--salon-primary-ring);
+}
+.settings-nav a:hover,.settings-nav a.active,.mobile-nav a.active,.mobile-nav button.selected,
+.more-menu a:hover,.owner-period-switch button.active,.customer-period button.active,
+.schedule-view-switch button.active,.filters button.chosen{
+  color:var(--salon-primary);
+  border-color:var(--salon-primary-border);
+  background:var(--salon-primary-soft);
+}
+.primary,.auth-submit,.schedule-add,.client-booking .primary,.client-booking-success button,
+button.primary,.filters button.chosen,.schedule-view-switch button.active{
+  background:var(--salon-primary);
+  border-color:var(--salon-primary);
+}
+.primary:hover:not(:disabled),.auth-submit:hover:not(:disabled),.schedule-add:hover{
+  background:var(--salon-primary);
+  border-color:var(--salon-primary);
+  filter:brightness(.96);
+}
+.secondary,.tiny,.mode-switch,.brand-reset{
+  border-color:var(--salon-primary-border);
+}
+.secondary:hover,.tiny:hover,.brand-reset:hover{
+  border-color:var(--salon-primary);
+  background:var(--salon-primary-soft);
+}
+.settings-policy,.settings-success,.metric-icon,.icon-tile,.settings-section-title>span,
+.owner-kpi-icon,.metric>span{
+  background:var(--salon-primary-soft);
+  border-color:var(--salon-primary-border);
+}
+.settings-section-title>span,.settings-section-title>span svg,.settings-hero-copy>small,
+.section-heading small,.eyebrow,.heading>div>small,.customer-history-title,
+a:not(.nav-group a),.client-booking-header a,.client-booking-success>span{
+  color:var(--salon-primary);
+}
+.booking-step-circle.active,.booking-step-circle.completed,
+.booking-choice-grid>button.selected,.client-service-options button.selected{
+  border-color:var(--salon-primary);
+}
+.booking-step-circle.active,.booking-step-circle.completed{
+  background:var(--salon-primary);
+}
+.booking-choice-grid>button.selected,.client-service-options button.selected{
+  background:var(--salon-primary-soft);
+  box-shadow:0 0 0 2px var(--salon-primary-ring);
+}
+.status.confirmed,.status.completed{
+  background:var(--salon-primary-soft);
+  border-color:var(--salon-primary-border);
+  color:var(--salon-primary);
+}
+.loading:before{border-top-color:var(--salon-primary)}
+.loading{color:var(--salon-primary)}
