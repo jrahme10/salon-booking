@@ -1636,3 +1636,55 @@ input:focus,select:focus,textarea:focus{border-color:var(--salon-primary);box-sh
 .auth-secure i{background:var(--salon-primary)}
 .auth-form input:focus{border-color:var(--salon-primary);box-shadow:0 0 0 3px #356B6822}
 .auth-form button[type=submit]{background:var(--salon-primary);border-color:var(--salon-primary)}
+
+
+/* Minimal three-colour salon identity: charcoal, ivory, terracotta */
+:root{
+ --salon-primary:#B8755D;
+ --salon-primary-dark:#965A46;
+ --salon-accent:#B8755D;
+ --salon-background:#F5F0E8;
+ --salon-surface:#F5F0E8;
+ --salon-text:#292B2A;
+ --salon-muted:#292B2A;
+ --salon-border:#292B2A30;
+ --brand-primary:var(--salon-primary);
+ --brand-accent:var(--salon-accent);
+ --brand-background:var(--salon-background);
+ --brand-surface:var(--salon-surface);
+}
+html,body,.workspace-shell,.layout,.main,.content,.settings-page,.client-booking{background:#F5F0E8;color:#292B2A}
+.sidebar,.auth-story{background:#292B2A;color:#F5F0E8}
+.sidebar .business>i,.sidebar-foot:before{background:#B8755D;color:#F5F0E8}
+.sidebar .nav-group a.active{background:#B8755D;color:#F5F0E8;box-shadow:inset 3px 0 #F5F0E8}
+.sidebar .nav-group a:hover{background:#B8755D30;color:#F5F0E8}
+.main>header,.panel,.table-wrap,.dialog,.modal-card,.settings-nav,.settings-content>.settings-section,.settings-bottom,
+.mobile-nav,.more-menu,.client-booking-header,.client-booking-section,.client-booking-success,
+.auth-panel,.calendar-preference,.business-hours-row{background:#F5F0E8;border-color:#292B2A30;color:#292B2A}
+.primary,button.primary,.tiny.confirm-action,.filters button.chosen,.schedule-view-switch button.active,.schedule-add,
+.client-booking .primary,.client-booking-success button,.auth-form button[type=submit){
+ background:#B8755D;border-color:#B8755D;color:#F5F0E8;box-shadow:none
+}
+.primary:hover,button.primary:hover,.schedule-add:hover{background:#965A46;border-color:#965A46}
+.secondary,.tiny,.mode-switch,.brand-reset,.mobile-nav a.active,.mobile-nav button.selected,
+.settings-nav a:hover,.settings-nav a.active,.settings-policy,.settings-success,
+.metric-icon,.icon-tile,.settings-section-title>span{
+ background:#B8755D18;border-color:#B8755D55;color:#965A46
+}
+h1,h2,h3,h4,p,small,label,.heading h1,.settings-section-title h2,.business-hours-row>b,
+.owner-kpi b,.metric>b,.owner-panel-heading h2{color:#292B2A}
+a:not(.nav-group a),.section-heading small,.eyebrow,.settings-section-title>span svg,
+.settings-hero-copy>small,.auth-panel-top>span:first-child,.auth-heading>small{color:#965A46}
+input:not([type=checkbox]):not([type=radio]):not([type=color]),select,textarea,
+.auth-form input,.business-hours-row>input[type=time]{background:#F5F0E8;border-color:#292B2A40;color:#292B2A}
+input:focus,select:focus,textarea:focus,.auth-form input:focus{border-color:#B8755D;box-shadow:0 0 0 3px #B8755D25;outline:none}
+.table-wrap th,.business-hours-row:nth-child(even),.table-wrap tr:hover td{background:#292B2A0A}
+.settings-hero,.client-booking-hero{background:#B8755D18;border-color:#292B2A30}
+.booking-step-circle.active,.booking-step-circle.completed{background:#B8755D;border-color:#B8755D;color:#F5F0E8}
+.booking-choice-grid>button.selected,.client-service-options button.selected{border-color:#B8755D;background:#B8755D18;box-shadow:0 0 0 2px #B8755D20}
+.status.confirmed,.status.completed{background:#B8755D18;border-color:#B8755D55;color:#965A46}
+.auth-screen{background:#F5F0E8}
+.auth-story{background:#292B2A}
+.auth-story .auth-brand-mark,.auth-overline,.auth-story-copy h1 em{color:#B8755D}
+.auth-secure i{background:#B8755D}
+@media(max-width:820px){.mobile-nav{background:#F5F0E8}}
