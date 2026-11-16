@@ -1,53 +1,110 @@
 import {useMemo,useState} from "react";
-import {Activity,ArrowDownRight,ArrowUpRight,CalendarCheck,CalendarDays,ChartNoAxesCombined,Clock3,Coins,TrendingUp,Wallet,Scissors,Users, Sparkles} from "lucide-react";
+import {Link} from "react-router-dom";
+import {ArrowDownRight,ArrowRight,ArrowUpRight,Minus,Plus} from "lucide-react";
 import type {Appointment,Business,CommissionEntry,Customer,Employee,Expense,Payment,PayrollPayment,Service} from "../types";
 import {buildBusinessDashboardReport,type DashboardPeriod} from "../domain/business-dashboard";
 import {buildEmployeePerformanceReport} from "../domain/employee-performance";
 import {buildServicePerformanceReport} from "../domain/service-performance";
-type Props={business:Business;appointments:Appointment[];payments:Payment[];expenses:Expense[];payroll:PayrollPayment[];employees:Employee[];services:Service[];commissions:CommissionEntry[];customers:Customer[];onNew:()=>void};
+import {getAuthSession} from "../services/auth";
+
+type Props={business:Business;appointments:Appointment[];payments:Payment[];expenses:Expense[];payroll:PayrollPayment[];employees:Employee[];services:Service[];commissions:CommissionEntry[];customers:Customer[];pendingRequests?:number;onNew:()=>void};
 const money=(value:number,currency:Business["currency"])=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2}).format(value);
 const monthLabel=(key:string)=>new Date(Number(key.slice(0,4)),Number(key.slice(5,7))-1,1).toLocaleDateString("en-US",{month:"short"});
-export function BusinessDashboard({business,appointments,payments,expenses,payroll,employees,services,commissions,customers,onNew}:Props){
+const timeOf=(value:string)=>new Date(value).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+const initialsOf=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]?.toUpperCase()).join("");
+const greeting=(hour:number)=>hour<12?"Good morning":hour<18?"Good afternoon":"Good evening";
+
+export function BusinessDashboard({business,appointments,payments,expenses,payroll,employees,services,commissions,customers,pendingRequests=0,onNew}:Props){
  const [period,setPeriod]=useState<DashboardPeriod>("30");
  const report=useMemo(()=>buildBusinessDashboardReport({appointments,payments,expenses,payroll,period}),[appointments,payments,expenses,payroll,period]);
  const team=useMemo(()=>buildEmployeePerformanceReport({employees:employees.filter(row=>row.active),appointments,services,payments,commissions,payroll,period}),[employees,appointments,services,payments,commissions,payroll,period]);
  const serviceRows=useMemo(()=>buildServicePerformanceReport({services,appointments,payments,period}),[services,appointments,payments,period]);
  const maxServiceCollected=Math.max(1,...serviceRows.map(row=>row.collected));
+ const maxTeamValue=Math.max(1,...team.rows.map(row=>row.serviceValue));
  const maxTrend=Math.max(1,...report.trend.flatMap(row=>[row.revenue,row.expenses]));
  const today=new Date();
  const todayAppointments=appointments.filter(row=>{const date=new Date(row.startsAt);return date.getFullYear()===today.getFullYear()&&date.getMonth()===today.getMonth()&&date.getDate()===today.getDate();}).sort((a,b)=>a.startsAt.localeCompare(b.startsAt));
- const topTeam=team.rows.slice(0,3);
  const pendingToday=todayAppointments.filter(row=>row.status==="pending").length;
- const nextAppointment=todayAppointments.find(row=>new Date(row.startsAt)>=new Date());
+ const topTeam=team.rows.slice(0,3);
  const revenueChange=report.revenueChange;
- return <div className="owner-dashboard">
-  <section className="owner-welcome owner-welcome-summary">
-   <div className="owner-summary-copy">{business.logoDataUrl&&<img className="owner-business-logo" src={business.logoDataUrl} alt={business.name+" logo"}/>}<span className="owner-eyebrow">TODAY · {today.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</span><h1>Your salon today</h1><p>{todayAppointments.length ? todayAppointments.length+" appointment"+(todayAppointments.length===1?"":"s")+" on the schedule"+(pendingToday?", including "+pendingToday+" awaiting confirmation":"")+"." : "No appointments are scheduled today. It’s a good time to review your calendar or add a new booking."}</p><button className="owner-primary-action" onClick={onNew}>＋ New appointment</button></div>
-   <div className="owner-summary-stats">
-    <div><small>Today's bookings</small><b>{todayAppointments.length}</b><span>{todayAppointments.filter(row=>row.status==="completed").length} completed</span></div>
-    <div><small>Awaiting confirmation</small><b>{pendingToday}</b><span>Needs your attention</span></div>
-    <div><small>Active team</small><b>{employees.filter(row=>row.active).length}</b><span>Team members</span></div>
+ const firstName=(getAuthSession()?.user.displayName??"").split(/\s+/)[0];
+ const name=(id:string,list:{id:string;name:string}[],fallback:string)=>list.find(row=>row.id===id)?.name??fallback;
+
+ return <div className="wd">
+  <header className="wd-top">
+   <div>
+    <span className="wd-kicker">{today.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} · {business.name}</span>
+    <h1>{greeting(today.getHours())}{firstName?`, ${firstName}`:""}.</h1>
+    <p>{todayAppointments.length
+     ?`${todayAppointments.length} appointment${todayAppointments.length===1?"":"s"} on the schedule today${pendingToday?`, ${pendingToday} awaiting confirmation`:""}.`
+     :"No appointments are scheduled today. A good moment to review your calendar or add a booking."}</p>
    </div>
-   {nextAppointment?<div className="owner-next-appointment"><Clock3 size={14}/><span>Next appointment</span><b>{new Date(nextAppointment.startsAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</b></div>:null}
+   <div className="wd-tools">
+    <div className="wd-switch" role="group" aria-label="Dashboard reporting period"><button type="button" className={period==="30"?"on":""} onClick={()=>setPeriod("30")}>30 days</button><button type="button" className={period==="90"?"on":""} onClick={()=>setPeriod("90")}>90 days</button></div>
+    <button type="button" className="wd-new" onClick={onNew}><Plus size={16}/> New appointment</button>
+   </div>
+  </header>
+
+  <section className="wd-kpis" aria-label="Key figures">
+   <article className="wd-card wd-hero">
+    <small>Revenue collected</small>
+    <b className="wd-num">{money(report.current.revenue,business.currency)}</b>
+    <span className={"wd-delta"+(revenueChange===null||revenueChange===0?" flat":revenueChange<0?" down":"")}>
+     {revenueChange===null?<>No previous baseline</>:<>{revenueChange>0?<ArrowUpRight size={13}/>:revenueChange<0?<ArrowDownRight size={13}/>:<Minus size={13}/>}{Math.abs(revenueChange).toFixed(1)}% vs previous {period} days</>}
+    </span>
+   </article>
+   <article className="wd-card"><small>Appointments</small><b className="wd-num">{report.current.appointments}</b><span className="wd-sub">{report.current.completed} completed · {report.current.pending} pending</span></article>
+   <article className="wd-card"><small>Completion rate</small><b className="wd-num">{report.current.completionRate}%</b><div className="wd-bar" role="img" aria-label={`${report.current.completionRate}% completed`}><i style={{width:report.current.completionRate+"%"}}/></div><span className="wd-sub" style={{marginTop:8}}>{report.current.cancelled} cancelled in this period</span></article>
+   <article className="wd-card"><small>Net cash flow</small><b className="wd-num">{money(report.current.net,business.currency)}</b><span className="wd-sub">After recorded expenses and payroll</span></article>
   </section>
-  <div className="owner-dashboard-toolbar"><div><small>THE BIG PICTURE</small><h2>Business performance</h2><p>Revenue is based on recorded payments, not appointment estimates.</p></div><div className="owner-period-switch" role="group" aria-label="Dashboard reporting period"><button className={period==="30"?"active":""} onClick={()=>setPeriod("30")}>30 days</button><button className={period==="90"?"active":""} onClick={()=>setPeriod("90")}>90 days</button></div></div>
-  <section className="owner-kpis">
-   <article className="owner-kpi owner-kpi-revenue"><span className="owner-kpi-icon"><Wallet size={18}/></span><small>Revenue collected</small><b>{money(report.current.revenue,business.currency)}</b><em className={revenueChange!==null&&revenueChange>=0?"positive":"negative"}>{revenueChange===null?"No previous-period baseline":<>{revenueChange>=0?<ArrowUpRight size={13}/>:<ArrowDownRight size={13}/>} {Math.abs(revenueChange).toFixed(1)}% vs previous {period} days</>}</em></article>
-   <article className="owner-kpi"><span className="owner-kpi-icon"><TrendingUp size={18}/></span><small>Net cash flow</small><b>{money(report.current.net,business.currency)}</b><em>After recorded expenses and payroll</em></article>
-   <article className="owner-kpi"><span className="owner-kpi-icon"><CalendarCheck size={18}/></span><small>Appointments</small><b>{report.current.appointments}</b><em>{report.current.completed} completed · {report.current.pending} pending</em></article>
-   <article className="owner-kpi"><span className="owner-kpi-icon"><Activity size={18}/></span><small>Completion rate</small><b>{report.current.completionRate}%</b><em>{report.current.cancelled} cancelled in this period</em></article>
+
+  <section className="wd-row">
+   <article className="wd-panel" style={{flex:"3 1 480px"}}>
+    <div className="wd-head"><div><h2>Six-month cash trend</h2><p className="wd-lede">Money received compared with expenses and payroll paid.</p></div><div className="wd-legend"><span><i/>Revenue</span><span><i className="cost"/>Expenses + payroll</span></div></div>
+    <div className="wd-chart">{report.trend.map(row=><div className="wd-col" key={row.key}><i style={{height:Math.max(2,row.revenue/maxTrend*100)+"%"}} title={"Revenue "+money(row.revenue,business.currency)}/><i className="cost" style={{height:Math.max(2,row.expenses/maxTrend*100)+"%"}} title={"Expenses "+money(row.expenses,business.currency)}/></div>)}</div>
+    <div className="wd-months">{report.trend.map(row=><span key={row.key}>{monthLabel(row.key)}</span>)}</div>
+    <div className="wd-foot"><span>Selected period net <b>{money(report.current.net,business.currency)}</b></span><span>Previous period <b>{money(report.previous.net,business.currency)}</b></span></div>
+   </article>
+   <article className="wd-panel" style={{flex:"2 1 340px"}}>
+    <div className="wd-head" style={{marginBottom:20}}><div><h2>Today</h2><p className="wd-lede">{todayAppointments.length} {todayAppointments.length===1?"appointment":"appointments"}</p></div></div>
+    {todayAppointments.length
+     ?<ol className="wd-today">{todayAppointments.slice(0,5).map(row=><li key={row.id}>
+       <span className="wd-time">{timeOf(row.startsAt)}</span>
+       <span className={"wd-slot "+row.status}><b>{name(row.serviceId,services,"Service")}</b><span>{name(row.customerId,customers,"Client")} · {name(row.employeeId,employees,"Team")}</span></span>
+       <span className={"status "+row.status}>{row.status}</span>
+      </li>)}</ol>
+     :<div className="wd-empty"><b>Your day is still open</b>New bookings will appear here with their time, service and team member.</div>}
+   </article>
   </section>
-  <section className="owner-dashboard-grid">
-   <article className="panel owner-revenue-panel"><div className="owner-panel-heading"><div><small>REVENUE & COSTS</small><h2>Six-month cash trend</h2><p>Monthly money received compared with expenses and payroll paid.</p></div><span><ChartNoAxesCombined size={19}/></span></div><div className="owner-chart">{report.trend.map(row=><div className="owner-chart-column" key={row.key}><div className="owner-chart-bars"><i className="revenue" style={{height:Math.max(2,row.revenue/maxTrend*100)+"%"}} title={"Revenue "+money(row.revenue,business.currency)}/><i className="cost" style={{height:Math.max(2,row.expenses/maxTrend*100)+"%"}} title={"Expenses "+money(row.expenses,business.currency)}/></div><small>{monthLabel(row.key)}</small></div>)}</div><div className="owner-chart-legend"><span><i className="revenue"/>Revenue</span><span><i className="cost"/>Expenses + payroll</span></div><div className="owner-trend-foot"><span>Selected period net</span><b>{money(report.current.net,business.currency)}</b><span>Previous period</span><b>{money(report.previous.net,business.currency)}</b></div></article>
-   <article className="panel owner-booking-panel"><div className="owner-panel-heading"><div><small>BOOKING HEALTH</small><h2>Appointment pulse</h2><p>Activity within the selected period.</p></div><span><CalendarDays size={19}/></span></div><div className="owner-booking-total"><b>{report.current.appointments}</b><span>total appointments</span></div><div className="owner-status-list"><div><i className="done"/>Completed<b>{report.current.completed}</b></div><div><i className="waiting"/>Pending<b>{report.current.pending}</b></div><div><i className="cancelled"/>Cancelled<b>{report.current.cancelled}</b></div></div><div className="owner-booking-note"><Clock3 size={15}/>{todayAppointments.length} appointments scheduled today</div></article>
+
+  <section className="wd-row">
+   <article className="wd-panel wd-review" style={{flex:"1 1 300px"}}>
+    <div className="wd-head" style={{marginBottom:0}}><h2>To review</h2>{pendingRequests>0&&<span className="wd-review-count">{pendingRequests} waiting</span>}</div>
+    <p>{pendingRequests>0?`${pendingRequests} client request${pendingRequests===1?"":"s"} to reschedule or cancel ${pendingRequests===1?"is":"are"} waiting for your decision.`:"No client requests are waiting. Reschedule and cancellation requests will appear here."}</p>
+    <Link className="wd-link" to="/provider/bookings">Open bookings <ArrowRight size={15}/></Link>
+   </article>
+   <article className="wd-panel" style={{flex:"1 1 340px"}}>
+    <div className="wd-head" style={{marginBottom:18}}><div><h2>Top team members</h2><p className="wd-lede">By estimated service value.</p></div></div>
+    {topTeam.length
+     ?<div className="wd-list">{topTeam.map(row=><div className="wd-person" key={row.employee.id}>
+       <span className="wd-avatar">{row.employee.initials||initialsOf(row.employee.name)}</span>
+       <div><div className="wd-line"><b>{row.employee.name}</b><b>{money(row.serviceValue,business.currency)}</b></div><div className="wd-bar"><i style={{width:(row.serviceValue/maxTeamValue*100)+"%"}}/></div><div className="wd-line"><small>{row.completed} completed · {row.customers} clients</small><small>{money(row.collected,business.currency)} collected</small></div></div>
+      </div>)}</div>
+     :<div className="wd-empty"><b>Your team story starts here</b>Add active team members and complete appointments to see who is making the biggest impact.</div>}
+   </article>
+   <article className="wd-panel" style={{flex:"1 1 340px"}}>
+    <div className="wd-head" style={{marginBottom:18}}><div><h2>Top services</h2><p className="wd-lede">Payments recorded for each service.</p></div></div>
+    {serviceRows.length
+     ?<div className="wd-list">{serviceRows.slice(0,5).map(row=><div key={row.service.id}><div className="wd-line"><b>{row.service.name}</b><b>{money(row.collected,business.currency)}</b></div><div className="wd-bar"><i style={{width:(row.collected/maxServiceCollected*100)+"%"}}/></div><div className="wd-line"><small>{row.bookings} bookings · {row.completed} completed</small><small>{row.completionRate}% completion</small></div></div>)}</div>
+     :<div className="wd-empty"><b>Your best services will show here</b>Add services to start tracking bookings and collections.</div>}
+   </article>
+   <article className="wd-panel wd-insight" style={{flex:"1 1 260px"}}>
+    <small>A LITTLE INSIGHT</small>
+    <h2>{report.current.revenue>report.previous.revenue?"Revenue is ahead of the previous period.":report.current.revenue<report.previous.revenue?"Revenue is below the previous period.":"Revenue is holding steady."}</h2>
+    <p>{revenueChange===null?"There is no previous-period revenue baseline yet.":`Recorded collections changed by ${Math.abs(revenueChange).toFixed(1)}% compared with the previous ${period} days.`} Keep an eye on booking completion and collections together.</p>
+   </article>
   </section>
-  <section className="panel owner-team-panel"><div className="owner-panel-heading"><div><small>THE PEOPLE BEHIND THE BUSINESS</small><h2>Team performance</h2><p>Ranked by estimated service value, with actual recorded collections alongside it.</p></div><span><Coins size={19}/></span></div>{topTeam.length?<div className="owner-team-list">{topTeam.map((row,index)=><article key={row.employee.id}><span className="owner-team-rank">{String(index+1).padStart(2,"0")}</span><span className="team-avatar">{row.employee.initials||row.employee.name.slice(0,1)}</span><div className="owner-team-person"><b>{row.employee.name}</b><small>{row.completed} completed · {row.customers} clients served</small></div><div className="owner-team-values"><b>{money(row.serviceValue,business.currency)}</b><small>Estimated service value</small></div><div className="owner-team-values collected"><b>{money(row.collected,business.currency)}</b><small>Collected</small></div></article>)}</div>:<div className="owner-performance-empty"><span className="owner-performance-empty-icon"><Users size={21}/></span><b>Your team story starts here</b><p>Add active team members and complete appointments to see who is making the biggest impact.</p><small>Team rankings will appear here automatically</small></div>}<div className="owner-team-foot"><span>{team.completed} completed appointments · {money(team.collected,business.currency)} collected by the team</span><span>{team.rows.length} active members</span></div></section>
-  <section className="panel owner-service-panel">
-   <div className="owner-panel-heading"><div><small>WHAT CLIENTS BOOK</small><h2>Service performance</h2><p>Ranked by actual payments collected. Booking activity uses appointment dates.</p></div><span><Scissors size={19}/></span></div>
-   {serviceRows.length?<div className="owner-service-list">{serviceRows.slice(0,5).map((row,index)=><article key={row.service.id}><div className="owner-service-rank">{String(index+1).padStart(2,"0")}</div><div className="owner-service-main"><div className="owner-service-title"><b>{row.service.name}</b><small>{row.service.durationMinutes} min · {money(row.service.price,business.currency)} list price</small></div><div className="owner-service-bar"><i style={{width:(row.collected/maxServiceCollected*100)+"%"}}/></div><small className="owner-service-meta">{row.bookings} bookings · {row.completed} completed · {row.cancelled} cancelled</small></div><div className="owner-service-result"><b>{money(row.collected,business.currency)}</b><small>Collected</small><em>{row.completionRate}% completion</em></div></article>)}</div>:<div className="owner-performance-empty service-empty"><span className="owner-performance-empty-icon"><Sparkles size={21}/></span><b>Your best-performing services will show here</b><p>Add services to your salon menu to start tracking bookings, completed appointments and actual collections.</p><small>Service insights update as appointments and payments are recorded</small></div>}
-   <div className="owner-service-foot">Service value estimates are based on current prices. Collections are actual payment records linked to each service’s appointments.</div>
-  </section>
-  <section className="owner-bottom-grid"><article className="panel owner-today-panel"><div className="owner-panel-heading"><div><small>YOUR DAY</small><h2>Today’s schedule</h2></div><span>{todayAppointments.length} bookings</span></div>{todayAppointments.length?todayAppointments.slice(0,4).map(row=>{const customer=customers.find(item=>item.id===row.customerId);const service=services.find(item=>item.id===row.serviceId);const employee=employees.find(item=>item.id===row.employeeId);return <div className="owner-today-row" key={row.id}><b>{new Date(row.startsAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</b><span className="team-avatar">{(customer?.name??"?").slice(0,1).toUpperCase()}</span><div><strong>{customer?.name??"Client"}</strong><small>{service?.name??"Service"} · {employee?.name??"Team"}</small></div><span className={"status "+row.status}>{row.status}</span></div>;}):<div className="owner-today-empty"><span><CalendarCheck size={21}/></span><b>Your day is still open</b><p>No appointments are scheduled for today. New bookings will appear here with their time, service and team member.</p><small>Enjoy the breathing room or add a booking to get started</small></div>}</article><article className="owner-insight-card"><div className="owner-insight-heading"><span><TrendingUp size={19}/></span><small>A LITTLE INSIGHT</small></div><h2>{report.current.revenue>report.previous.revenue?"Revenue is ahead of the previous period.":report.current.revenue<report.previous.revenue?"Revenue is below the previous period.":"Revenue is holding steady."}</h2><p>{revenueChange===null?"There is no previous-period revenue baseline yet.":`Recorded collections changed by ${Math.abs(revenueChange).toFixed(1)}% compared with the previous ${period} days.`} Keep an eye on booking completion and collections together.</p></article></section>
-  <p className="owner-dashboard-note">Financial figures use payment, expense and payroll ledgers by transaction date. Revenue comparisons use equal-length periods. Service value is an estimate based on current service prices; it is not historical invoiced revenue. Data shown is local demo data until secure shared storage is connected.</p>
+
+  <p className="wd-note">Financial figures use payment, expense and payroll ledgers by transaction date, and revenue comparisons use equal-length periods. Service value is an estimate based on current service prices; it is not historical invoiced revenue.</p>
  </div>;
 }

@@ -1,0 +1,588 @@
+/* Signed-in workspace theme: plum + gold (design v1).
+   The legacy sheet stacks several themes whose final layer is terracotta/ivory/charcoal, expressed through
+   --palette-* tokens. Re-declaring those tokens on .workspace-shell recolours every workspace page at once,
+   while the rules below add the new shell, typography and the overview dashboard. */
+.workspace-shell{
+  --ws-primary:#5B21B6;--ws-primary-2:#7C3AED;--ws-deep:#1A0E2B;--ws-mid:#2E1A47;--ws-end:#4B1F8F;
+  --ws-ink:#2A1B3D;--ws-muted:#6B5B7E;--ws-bg:#F6F2FA;--ws-line:#EDE6F3;--ws-tint:#F3ECFC;--ws-gold:#E3C27A;--ws-gold-deep:#8A6A1F;
+
+  /* legacy tokens remapped */
+  --palette-b8755d:#5B21B6;--palette-b8755d18:#5B21B61A;--palette-b8755d20:#5B21B620;--palette-b8755d25:#5B21B625;
+  --palette-b8755d30:#5B21B633;--palette-b8755d55:#5B21B655;
+  --palette-f5f0e8:#FFFFFF;
+  --palette-292b2a:#2A1B3D;--palette-292b2a0a:#2A1B3D0D;--palette-292b2a30:#EDE6F3;--palette-292b2a40:#DCCFEA;
+  --salon-primary:#5B21B6;--salon-primary-dark:#4B1F8F;--salon-accent:#7C3AED;--salon-primary-rgb:91 33 182;
+  --salon-background:#F6F2FA;--salon-surface:#FFFFFF;--salon-text:#2A1B3D;--salon-muted:#6B5B7E;--salon-border:#EDE6F3;
+  --brand-primary:#5B21B6;--brand-accent:#7C3AED;--brand-background:#F6F2FA;--brand-surface:#FFFFFF;
+  accent-color:#5B21B6;
+  font-family:'Manrope',Inter,system-ui,sans-serif;
+}
+.workspace-shell,.workspace-shell .layout,.workspace-shell .main,.workspace-shell .content{background:var(--ws-bg);color:var(--ws-ink)}
+
+/* legacy pages are drawn at a small scale; lift them as one unit (the overview undoes this for itself) */
+.workspace-shell .main{zoom:1.15}
+
+/* ---------- sidebar ---------- */
+.workspace-shell .sidebar{
+  background:radial-gradient(ellipse at 80% 0%,rgba(168,120,255,.28),transparent 55%),linear-gradient(185deg,var(--ws-deep) 0%,var(--ws-mid) 60%,#3D1F6E 100%);
+  color:#C9BBE0;border-right:0;
+}
+.workspace-shell .sidebar .brand>span{border:1px solid rgba(232,210,239,.45);background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.04));color:#F0CCE9;font-family:'Lora',Georgia,serif}
+.workspace-shell .sidebar .brand b{color:#fff;font-size:27px}
+.workspace-shell .sidebar .brand small{color:#BFA9E3;font-size:9px;letter-spacing:2.2px}
+.workspace-shell .sidebar .business{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);border-radius:18px;padding:14px}
+.workspace-shell .sidebar .business b{color:#fff;font-size:13px}
+.workspace-shell .sidebar .business small{color:#D3C5EA;font-size:11px}
+.workspace-shell .sidebar .business>i,.workspace-shell .sidebar-foot:before{background:linear-gradient(135deg,#F3DDA0,#D3A94F);color:var(--ws-ink);font-family:'Lora',Georgia,serif;font-weight:600}
+.workspace-shell .sidebar .nav-group>small{color:#9E8CC4;font-size:10px;letter-spacing:2px}
+.workspace-shell .sidebar .nav-group a{min-height:44px;border-radius:13px;border:1px solid transparent;color:#D7CAEC;font-size:14px;font-weight:600}
+.workspace-shell .sidebar .nav-group a svg{color:#B7A4DA}
+.workspace-shell .sidebar .nav-group a:hover{background:rgba(255,255,255,.08);color:#fff}
+.workspace-shell .sidebar .nav-group a.active{background:linear-gradient(135deg,rgba(168,120,255,.4),rgba(91,33,182,.45));border-color:rgba(255,255,255,.16);color:#fff;box-shadow:none}
+.workspace-shell .sidebar .nav-group a.active svg{color:#F3DDA0}
+.workspace-shell .sidebar-foot b{color:#fff;font-size:13px}
+.workspace-shell .sidebar-foot small{color:#D3C5EA;font-size:11px}
+.workspace-shell .sidebar-signout{border-color:rgba(255,255,255,.2);color:#E8DFF5}
+
+/* ---------- header, headings, controls ---------- */
+.workspace-shell .main>header{background:rgba(246,242,250,.9);border-bottom:1px solid var(--ws-line);backdrop-filter:blur(8px)}
+.workspace-shell .main>header>span b{color:var(--ws-ink)}
+.workspace-shell .main>header>div small{color:var(--ws-gold-deep)}
+.workspace-shell .main>header>div i{background:linear-gradient(135deg,#C9B5F0,#F0CCE9);border-color:transparent;color:var(--ws-ink);font-weight:800}
+.workspace-shell .heading h1,.workspace-shell .section-heading h1{font-family:'Lora',Georgia,serif;font-weight:500;color:var(--ws-ink)}
+.workspace-shell .heading>div>small,.workspace-shell .section-heading small,.workspace-shell .eyebrow{color:var(--ws-gold-deep)}
+.workspace-shell a:not(.nav-group a){color:var(--ws-primary)}
+.workspace-shell .primary,.workspace-shell button.primary{background:linear-gradient(135deg,var(--ws-primary),var(--ws-primary-2));border-color:transparent;color:#fff;border-radius:999px;box-shadow:0 10px 24px rgba(91,33,182,.28)}
+.workspace-shell .primary:hover,.workspace-shell button.primary:hover{background:linear-gradient(135deg,var(--ws-primary),var(--ws-primary-2));border-color:transparent;box-shadow:0 14px 30px rgba(91,33,182,.34)}
+.workspace-shell .secondary,.workspace-shell .tiny{background:#fff;border:1.5px solid var(--ws-line);color:var(--ws-ink);border-radius:999px}
+.workspace-shell .secondary:hover{background:var(--ws-tint);border-color:#CBB6EE}
+.workspace-shell .panel,.workspace-shell .table-wrap{background:#fff;border:1px solid var(--ws-line);border-radius:22px;box-shadow:0 10px 30px rgba(46,26,71,.06)}
+.workspace-shell .table-wrap th{background:var(--ws-tint)}
+.workspace-shell .mode-switch{background:#fff;border-color:var(--ws-line);color:var(--ws-primary)}
+.workspace-shell .status.confirmed,.workspace-shell .status.completed{background:#E3F6EA;border-color:transparent;color:#1D6B3C}
+.workspace-shell .status.pending{background:#FFF1CF;border-color:transparent;color:#7A5A00}
+.workspace-shell .status.cancelled{background:#FDECEC;border-color:transparent;color:#8A1F1F}
+
+/* ---------- overview dashboard (.wd) ---------- */
+.workspace-shell .wd{zoom:.87;display:grid;gap:22px;font-family:'Manrope',Inter,system-ui,sans-serif;color:var(--ws-ink)}
+.wd *{box-sizing:border-box}
+.wd h1,.wd h2,.wd h3,.wd p{margin:0}
+.wd small{font-size:inherit}
+.wd-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px}
+.wd-kicker{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--ws-gold-deep);text-transform:uppercase}
+.wd-top h1{margin:10px 0 8px;font:500 clamp(32px,4vw,44px)/1.1 'Lora',Georgia,serif;color:var(--ws-ink)}
+.wd-top p{font-size:16px;line-height:1.6;color:var(--ws-muted);max-width:620px}
+.wd-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.wd-switch{display:flex;padding:4px;border-radius:999px;background:#fff;border:1px solid var(--ws-line)}
+.wd-switch button{padding:9px 18px;border:0;border-radius:999px;background:transparent;color:var(--ws-muted);font:700 13px 'Manrope',sans-serif;cursor:pointer}
+.wd-switch button.on{background:var(--ws-ink);color:#fff}
+.wd-new{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border:0;border-radius:999px;background:linear-gradient(135deg,var(--ws-primary),var(--ws-primary-2));color:#fff;font:800 14px 'Manrope',sans-serif;cursor:pointer;box-shadow:0 12px 28px rgba(91,33,182,.3);transition:transform .2s ease}
+.wd-new:hover{transform:translateY(-2px)}
+
+.wd-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.wd-card{position:relative;padding:26px;border-radius:24px;background:#fff;border:1px solid var(--ws-line);transition:transform .25s ease,box-shadow .25s ease}
+.wd-card:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(46,26,71,.12)}
+.wd-card small{display:block;font-size:12px;font-weight:700;letter-spacing:1.6px;color:var(--ws-muted);text-transform:uppercase}
+.wd-card b.wd-num{display:block;margin:14px 0 8px;font:500 clamp(34px,3.4vw,44px)/1 'Lora',Georgia,serif;color:var(--ws-ink)}
+.wd-card span.wd-sub{display:block;font-size:13px;color:var(--ws-muted);line-height:1.5}
+.wd-hero{overflow:hidden;color:#fff;border:0;background:linear-gradient(150deg,var(--ws-mid),var(--ws-end));box-shadow:0 20px 40px rgba(46,26,71,.25)}
+.wd-hero:before{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(227,194,122,.35),transparent 70%)}
+.wd-hero small{color:#D9C9F5;position:relative}
+.wd-hero b.wd-num{color:#fff;position:relative}
+.wd-delta{position:relative;display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.14);font-size:13px;font-weight:700;color:#BDF5D4}
+.wd-delta.down{color:#FFC9C9}
+.wd-delta.flat{color:#E1D6F0}
+.wd-bar{height:8px;margin-top:6px;border-radius:99px;background:var(--ws-line);overflow:hidden}
+.wd-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ws-primary-2),#D3A94F)}
+
+.wd-row{display:flex;flex-wrap:wrap;gap:22px;align-items:stretch}
+.wd-panel{min-width:0;padding:30px;border-radius:26px;background:#fff;border:1px solid var(--ws-line)}
+.wd-panel h2{font:500 26px/1.2 'Lora',Georgia,serif;color:var(--ws-ink)}
+.wd-panel .wd-lede{margin:4px 0 0;font-size:14px;color:var(--ws-muted);line-height:1.6}
+.wd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.wd-legend{display:flex;gap:18px;font-size:13px;font-weight:700;color:var(--ws-muted)}
+.wd-legend span{display:flex;align-items:center;gap:7px}
+.wd-legend i{width:10px;height:10px;border-radius:3px;background:linear-gradient(180deg,var(--ws-primary-2),var(--ws-end))}
+.wd-legend i.cost{background:var(--ws-gold)}
+.wd-chart{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;height:230px;padding-bottom:4px;border-bottom:1px solid var(--ws-line)}
+.wd-col{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:6px}
+.wd-col i{display:block;width:36%;max-width:34px;border-radius:9px 9px 3px 3px;background:linear-gradient(180deg,var(--ws-primary-2),var(--ws-end))}
+.wd-col i.cost{background:var(--ws-gold)}
+.wd-months{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--ws-muted);text-transform:uppercase}
+.wd-months span{flex:1 1 0;text-align:center}
+.wd-foot{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:18px;font-size:13px;color:var(--ws-muted)}
+.wd-foot b{color:var(--ws-ink)}
+
+.wd-today{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.wd-today li{display:flex;gap:14px;align-items:center}
+.wd-time{flex:0 0 58px;font-weight:800;font-size:14px}
+.wd-slot{flex:1;min-width:0;padding:13px 16px;border-radius:16px;background:#FAF7FC;border-left:4px solid var(--ws-primary-2)}
+.wd-slot.pending{border-left-color:#D3A94F}
+.wd-slot b{display:block;font-size:14.5px}
+.wd-slot span{font-size:13px;color:var(--ws-muted)}
+.wd-empty{padding:26px;border-radius:18px;border:1.5px dashed var(--ws-line);text-align:center;color:var(--ws-muted);font-size:14px;line-height:1.6}
+.wd-empty b{display:block;margin-bottom:4px;color:var(--ws-ink);font-size:15px}
+
+.wd-review{background:linear-gradient(160deg,#FFF9EC,#fff);border-color:#F0E3BD}
+.wd-review-count{display:inline-flex;padding:5px 12px;border-radius:999px;background:var(--ws-ink);color:#fff;font-size:12px;font-weight:700}
+.wd-review p{margin:14px 0 20px;font-size:15px;color:var(--ws-muted);line-height:1.6}
+.wd-link{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;background:var(--ws-ink);color:#fff!important;font-weight:800;font-size:14px;text-decoration:none}
+
+.wd-list{display:grid;gap:16px}
+.wd-person{display:flex;align-items:center;gap:14px}
+.wd-avatar{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:var(--ws-ink);background:linear-gradient(135deg,#C9B5F0,#F0CCE9)}
+.wd-person>div{flex:1;min-width:0}
+.wd-line{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.wd-line small{margin-top:2px;font-size:12px;font-weight:500;color:var(--ws-muted)}
+.wd-insight{color:#fff;border:0;background:linear-gradient(160deg,var(--ws-deep),#3A2063);box-shadow:0 24px 50px rgba(46,26,71,.3)}
+.wd-insight small{color:var(--ws-gold);font-size:11px;font-weight:700;letter-spacing:2px}
+.wd-insight h2{margin:14px 0 10px;color:#fff;font:500 26px/1.25 'Lora',Georgia,serif}
+.wd-insight p{font-size:14px;line-height:1.7;color:#E1D6F0}
+.wd-note{font-size:12.5px;line-height:1.7;color:var(--ws-muted)}
+
+@media (max-width:820px){
+  .workspace-shell .main{zoom:1}
+  .workspace-shell .wd{zoom:1}
+}
+
+/* legacy rule colours every workspace svg with the old primary; keep icons readable inside the new components */
+.workspace-shell .wd svg{color:currentColor}
+.workspace-shell .wd-hero svg,.workspace-shell .wd-new svg,.workspace-shell .wd-link svg{color:currentColor}
+/* floating "preview client side" toggle lives outside .workspace-shell */
+.mode-switch{background:#fff!important;border:1px solid #EDE6F3!important;color:#5B21B6!important;box-shadow:0 10px 28px rgba(46,26,71,.14)!important;border-radius:999px!important;font-weight:700}
+.workspace-shell .primary svg,.workspace-shell button.primary svg{color:#fff}
+
+/* Restore the pre-flatten palette inside the workspace: each flattened token's own name is its original colour. */
+.workspace-shell{
+  --palette-eee7ff:#EEE7FF;
+  --palette-f8f7fb:#F8F7FB;
+  --palette-ebe7f1:#EBE7F1;
+  --palette-c4b5fd:#C4B5FD;
+  --palette-c4b5fd20:#C4B5FD20;
+  --palette-e2d9ed:#E2D9ED;
+  --palette-eeeaf4:#EEEAF4;
+  --palette-f8f7fa:#F8F7FA;
+  --palette-e7e3ed:#E7E3ED;
+  --palette-e7e0ee:#E7E0EE;
+  --palette-f8f5fb:#F8F5FB;
+  --palette-eee7fa:#EEE7FA;
+  --palette-eee8f4:#EEE8F4;
+  --palette-faf8fc:#FAF8FC;
+  --palette-fcfaff:#FCFAFF;
+  --palette-e8def3:#E8DEF3;
+  --palette-f5effb:#F5EFFB;
+  --palette-eee6f5:#EEE6F5;
+  --palette-eee8f0:#EEE8F0;
+  --palette-f8f6f9:#F8F6F9;
+  --palette-eee4f3:#EEE4F3;
+  --palette-faf8fb:#FAF8FB;
+  --palette-e6dced:#E6DCED;
+  --palette-f9f5fb:#F9F5FB;
+  --palette-cbbbd2:#CBBBD2;
+  --palette-c4b5cb:#C4B5CB;
+  --palette-c9bdcf:#C9BDCF;
+  --palette-bcaec5:#BCAEC5;
+  --palette-eee9f0:#EEE9F0;
+  --palette-e8ddec:#E8DDEC;
+  --palette-f2eaf5:#F2EAF5;
+  --palette-e8e0eb:#E8E0EB;
+  --palette-faf7fc:#FAF7FC;
+  --palette-e7ddeb:#E7DDEB;
+  --palette-f4edf8:#F4EDF8;
+  --palette-e7ddec:#E7DDEC;
+  --palette-e0d5e6:#E0D5E6;
+  --palette-ead8ed:#EAD8ED;
+  --palette-f1e8f5:#F1E8F5;
+  --palette-f1e9f5:#F1E9F5;
+  --palette-f0eaf2:#F0EAF2;
+  --palette-eadfea:#EADFEA;
+  --palette-d8cbdc:#D8CBDC;
+  --palette-f0e8f4:#F0E8F4;
+  --palette-ebe5ed:#EBE5ED;
+  --palette-f3edf7:#F3EDF7;
+  --palette-fbf9fc:#FBF9FC;
+  --palette-f1edf2:#F1EDF2;
+  --palette-f2edf5:#F2EDF5;
+  --palette-eee9f5:#EEE9F5;
+  --palette-eeeaf1:#EEEAF1;
+  --palette-f3eff2:#F3EFF2;
+  --palette-f0ebf1:#F0EBF1;
+  --palette-eee5f0:#EEE5F0;
+  --palette-eee7f0:#EEE7F0;
+  --palette-e9e2eb:#E9E2EB;
+  --palette-f0ebf2:#F0EBF2;
+  --palette-faf7fb:#FAF7FB;
+  --palette-f5f1f6:#F5F1F6;
+  --palette-faf5fc:#FAF5FC;
+  --palette-f0e9f5:#F0E9F5;
+  --palette-f2ebf5:#F2EBF5;
+  --palette-f5eff7:#F5EFF7;
+  --palette-f1eaf5:#F1EAF5;
+  --palette-f0eaf5:#F0EAF5;
+  --palette-e9e1ed:#E9E1ED;
+  --palette-f7f3f8:#F7F3F8;
+  --palette-e8dce9:#E8DCE9;
+  --palette-e0d2e3:#E0D2E3;
+  --palette-f1ebf3:#F1EBF3;
+  --palette-f1e8f4:#F1E8F4;
+  --palette-eee8ed:#EEE8ED;
+  --palette-e8d8e8:#E8D8E8;
+  --palette-f4edf3:#F4EDF3;
+  --palette-e8dfe9:#E8DFE9;
+  --palette-eee7ed:#EEE7ED;
+  --palette-e7d9e8:#E7D9E8;
+  --palette-f4edf5:#F4EDF5;
+  --palette-faf7fa:#FAF7FA;
+  --palette-eee7ef:#EEE7EF;
+  --palette-e8d8e9:#E8D8E9;
+  --palette-f1e9f1:#F1E9F1;
+  --palette-e8dfea:#E8DFEA;
+  --palette-f8f2fa:#F8F2FA;
+  --palette-eee6ef:#EEE6EF;
+  --palette-eadfeb:#EADFEB;
+  --palette-faf6fb:#FAF6FB;
+  --palette-e6dce9:#E6DCE9;
+  --palette-e8d6e5:#E8D6E5;
+  --palette-e8dfe8:#E8DFE8;
+  --palette-e8d9e755:#E8D9E755;
+  --palette-eee6ee:#EEE6EE;
+  --palette-f3edf5:#F3EDF5;
+  --palette-eee6ed:#EEE6ED;
+  --palette-e8d9e8:#E8D9E8;
+  --palette-dcd9e8:#DCD9E8;
+  --palette-f5eff5:#F5EFF5;
+  --palette-f7f3f7:#F7F3F7;
+  --palette-f1ebf1:#F1EBF1;
+  --palette-e5dbe8:#E5DBE8;
+  --palette-d6c8dd:#D6C8DD;
+  --palette-e7dfe9:#E7DFE9;
+  --palette-f7f2f8:#F7F2F8;
+  --palette-f4edf6:#F4EDF6;
+  --palette-f6f0f7:#F6F0F7;
+  --palette-e8ddea:#E8DDEA;
+  --palette-d4c8d4:#D4C8D4;
+  --palette-fbf6fc:#FBF6FC;
+  --palette-f0edf1:#F0EDF1;
+  --palette-f8f3fa:#F8F3FA;
+  --palette-f5edf8:#F5EDF8;
+  --palette-f7f1f9:#F7F1F9;
+  --palette-e9e3eb:#E9E3EB;
+  --palette-f5f2f6:#F5F2F6;
+  --palette-e4d5eb:#E4D5EB;
+  --palette-d9c9e1:#D9C9E1;
+  --palette-ead9ef:#EAD9EF;
+  --palette-ebe5ef:#EBE5EF;
+  --palette-fbf8fc:#FBF8FC;
+  --palette-f0ebf3:#F0EBF3;
+  --palette-eee6f1:#EEE6F1;
+  --palette-f8f4fa:#F8F4FA;
+  --palette-f2edf3:#F2EDF3;
+  --palette-e9deef:#E9DEEF;
+  --palette-f6eff9:#F6EFF9;
+  --palette-eee5f3:#EEE5F3;
+  --palette-eee7f1:#EEE7F1;
+  --palette-f1ecf4:#F1ECF4;
+  --palette-e9e0ef:#E9E0EF;
+  --palette-e4d9e9:#E4D9E9;
+  --palette-f6f0f9:#F6F0F9;
+  --palette-fcfafc:#FCFAFC;
+  --palette-e7dbea:#E7DBEA;
+  --palette-ece4f0:#ECE4F0;
+  --palette-f9f5fa:#F9F5FA;
+  --palette-f7f2f9:#F7F2F9;
+  --palette-e9dfed:#E9DFED;
+  --palette-e8deed:#E8DEED;
+  --palette-eee3f3:#EEE3F3;
+  --palette-f0dff5:#F0DFF5;
+  --palette-e3d2e9:#E3D2E9;
+  --palette-e5d9e9:#E5D9E9;
+  --palette-e9e0ed:#E9E0ED;
+  --palette-eadcf1:#EADCF1;
+  --palette-fcf9fd:#FCF9FD;
+  --palette-f5eef8:#F5EEF8;
+  --palette-eae3ed:#EAE3ED;
+  --palette-eee5f1:#EEE5F1;
+  --palette-e9e2ec:#E9E2EC;
+  --palette-f1ecf3:#F1ECF3;
+  --palette-fbf7fc:#FBF7FC;
+  --palette-e9e1ec:#E9E1EC;
+  --palette-e7dced:#E7DCED;
+  --palette-f8f1fa:#F8F1FA;
+  --palette-fdfbfd:#FDFBFD;
+  --palette-d6c5de:#D6C5DE;
+  --palette-eee4f4:#EEE4F4;
+  --palette-fdfcfd:#FDFCFD;
+  --palette-eae3ec:#EAE3EC;
+  --palette-f7f4f7:#F7F4F7;
+  --palette-eae2ed:#EAE2ED;
+}
+
+/* Same restore for tokens the legacy sheet defined indirectly via var(--salon-*). */
+.workspace-shell{
+  --palette-211333:#211333;
+  --palette-382052:#382052;
+  --palette-5b21b6:#5B21B6;
+  --palette-140a2430:#140A2430;
+  --palette-cbbbe1:#CBBBE1;
+  --palette-6d28d9:#6D28D9;
+  --palette-8b5cf6:#8B5CF6;
+  --palette-8b5cf61a:#8B5CF61A;
+  --palette-191421:#191421;
+  --palette-777181:#777181;
+  --palette-81798c:#81798C;
+  --palette-26143c12:#26143C12;
+  --palette-373044:#373044;
+  --palette-211b2c:#211B2C;
+  --palette-8b5cf61c:#8B5CF61C;
+  --palette-cbb8e9:#CBB8E9;
+  --palette-4c1d95:#4C1D95;
+  --palette-8b5cf64a:#8B5CF64A;
+  --palette-6d28d92b:#6D28D92B;
+  --palette-6d28d936:#6D28D936;
+  --palette-55218d:#55218D;
+  --palette-30243c:#30243C;
+  --palette-3d23500d:#3D23500D;
+  --palette-9b7ac5:#9B7AC5;
+  --palette-21172a:#21172A;
+  --palette-817889:#817889;
+  --palette-7442a5:#7442A5;
+  --palette-9c77bd66:#9C77BD66;
+  --palette-8e6aa4:#8E6AA4;
+  --palette-a99ab2:#A99AB2;
+  --palette-a995b6:#A995B6;
+  --palette-75479a55:#75479A55;
+  --palette-382a40:#382A40;
+  --palette-77677e:#77677E;
+  --palette-633d7c:#633D7C;
+  --palette-9876a8:#9876A8;
+  --palette-261b2e:#261B2E;
+  --palette-63358a:#63358A;
+  --palette-71419a:#71419A;
+  --palette-54217f:#54217F;
+  --palette-55218d22:#55218D22;
+  --palette-55218d35:#55218D35;
+  --palette-65546f:#65546F;
+  --palette-cbb5d8:#CBB5D8;
+  --palette-c7add5:#C7ADD5;
+  --palette-67427c:#67427C;
+  --palette-24142d18:#24142D18;
+  --palette-a77bbd55:#A77BBD55;
+  --palette-2b1b36:#2B1B36;
+  --palette-56336b:#56336B;
+  --palette-70457f:#70457F;
+  --palette-38204820:#38204820;
+  --palette-5c2b78:#5C2B78;
+  --palette-70428a:#70428A;
+  --palette-2c2034:#2C2034;
+  --palette-302438:#302438;
+  --palette-b99acb:#B99ACB;
+  --palette-9c75b5:#9C75B5;
+  --palette-70428d:#70428D;
+  --palette-80549c:#80549C;
+  --palette-34243d:#34243D;
+  --palette-827889:#827889;
+  --palette-a98abc:#A98ABC;
+  --palette-8b719e:#8B719E;
+  --palette-68437e:#68437E;
+  --palette-413348:#413348;
+  --palette-4f3a5a:#4F3A5A;
+  --palette-b995c9:#B995C9;
+  --palette-6c4b7e:#6C4B7E;
+  --palette-34283b:#34283B;
+  --palette-5d5263:#5D5263;
+  --palette-33273a:#33273A;
+  --palette-70517f:#70517F;
+  --palette-69478a:#69478A;
+  --palette-695b70:#695B70;
+  --palette-684783:#684783;
+  --palette-a17caa:#A17CAA;
+  --palette-44344c:#44344C;
+  --palette-21152db8:#21152DB8;
+  --palette-9873a6:#9873A6;
+  --palette-302139:#302139;
+  --palette-806b8c:#806B8C;
+  --palette-514458:#514458;
+  --palette-35283e:#35283E;
+  --palette-a783ba:#A783BA;
+  --palette-796982:#796982;
+  --palette-5d3975:#5D3975;
+  --palette-382b40:#382B40;
+  --palette-76677d:#76677D;
+  --palette-45364c:#45364C;
+  --palette-28163210:#28163210;
+  --palette-a57bb7:#A57BB7;
+  --palette-55465d:#55465D;
+  --palette-9875a8:#9875A8;
+  --palette-62417a:#62417A;
+  --palette-754c8b:#754C8B;
+  --palette-3e3046:#3E3046;
+  --palette-74647c:#74647C;
+  --palette-6d3e88:#6D3E88;
+  --palette-685a70:#685A70;
+  --palette-725580:#725580;
+  --palette-5f3578:#5F3578;
+  --palette-43344b:#43344B;
+  --palette-513666:#513666;
+  --palette-6c4784:#6C4784;
+  --palette-765b84:#765B84;
+  --palette-44354b:#44354B;
+  --palette-67437d:#67437D;
+  --palette-a27bb5:#A27BB5;
+  --palette-9871aa:#9871AA;
+  --palette-76697d:#76697D;
+  --palette-493651:#493651;
+  --palette-9872a9:#9872A9;
+  --palette-6b477f:#6B477F;
+  --palette-493a50:#493A50;
+  --palette-4b3b52:#4B3B52;
+  --palette-887d90:#887D90;
+  --palette-4b3c53:#4B3C53;
+  --palette-5d3b72:#5D3B72;
+  --palette-33233b:#33233B;
+  --palette-30203a:#30203A;
+  --palette-827585:#827585;
+  --palette-34203a0c:#34203A0C;
+  --palette-684579:#684579;
+  --palette-84618f:#84618F;
+  --palette-3d2d44:#3D2D44;
+  --palette-67407d:#67407D;
+  --palette-33243b:#33243B;
+  --palette-887b8e:#887B8E;
+  --palette-9a789f:#9A789F;
+  --palette-30213a:#30213A;
+  --palette-9b8ba0:#9B8BA0;
+  --palette-684184:#684184;
+  --palette-3c2b45:#3C2B45;
+  --palette-4c3a54:#4C3A54;
+  --palette-a985ba:#A985BA;
+  --palette-a985ba18:#A985BA18;
+  --palette-70458a:#70458A;
+  --palette-765c83:#765C83;
+  --palette-754a8c:#754A8C;
+  --palette-5a2f74:#5A2F74;
+  --palette-4c3657:#4C3657;
+  --palette-887b8f:#887B8F;
+  --palette-493451:#493451;
+  --palette-6a477e:#6A477E;
+  --palette-33253a:#33253A;
+  --palette-b58aa8:#B58AA8;
+  --palette-786a7e:#786A7E;
+  --palette-907e94:#907E94;
+  --palette-9b78a3:#9B78A3;
+  --palette-2d1e35:#2D1E35;
+  --palette-9b6f91:#9B6F91;
+  --palette-87798b:#87798B;
+  --palette-35203c0c:#35203C0C;
+  --palette-a08ca5:#A08CA5;
+  --palette-403345:#403345;
+  --palette-5d3477:#5D3477;
+  --palette-c9a9c5:#C9A9C5;
+  --palette-5c3a6020:#5C3A6020;
+  --palette-a27e9f:#A27E9F;
+  --palette-4b3152:#4B3152;
+  --palette-96869a:#96869A;
+  --palette-34233c:#34233C;
+  --palette-927c99:#927C99;
+  --palette-98899d:#98899D;
+  --palette-755080:#755080;
+  --palette-8b718f:#8B718F;
+  --palette-392941:#392941;
+  --palette-92769b:#92769B;
+  --palette-8d7d91:#8D7D91;
+  --palette-5b3b6c:#5B3B6C;
+  --palette-69447f:#69447F;
+  --palette-2d1d38:#2D1D38;
+  --palette-674779:#674779;
+  --palette-514158:#514158;
+  --palette-47364f:#47364F;
+  --palette-67447d:#67447D;
+  --palette-3d2e45:#3D2E45;
+  --palette-66576d:#66576D;
+  --palette-795493:#795493;
+  --palette-8d7b93:#8D7B93;
+  --palette-654778:#654778;
+  --palette-653d7b:#653D7B;
+  --palette-21152d55:#21152D55;
+  --palette-60476d:#60476D;
+  --palette-8b7d91:#8B7D91;
+  --palette-8a68a0:#8A68A0;
+  --palette-6e5d76:#6E5D76;
+  --palette-9875ad:#9875AD;
+  --palette-9c8aa2:#9C8AA2;
+  --palette-685b70:#685B70;
+  --palette-6b4383:#6B4383;
+  --palette-66477a:#66477A;
+  --palette-75697a:#75697A;
+  --palette-9874a8:#9874A8;
+  --palette-4c3c54:#4C3C54;
+  --palette-65417b:#65417B;
+  --palette-43354b:#43354B;
+  --palette-614675:#614675;
+  --palette-76697b:#76697B;
+  --palette-75617f:#75617F;
+  --palette-9a75ae:#9A75AE;
+  --palette-d5bfdc:#D5BFDC;
+  --palette-92799f:#92799F;
+  --palette-30243a:#30243A;
+  --palette-79558c:#79558C;
+  --palette-69477e:#69477E;
+  --palette-3d3047:#3D3047;
+  --palette-5d4770:#5D4770;
+  --palette-76578a:#76578A;
+  --palette-887b90:#887B90;
+  --palette-67477a:#67477A;
+  --palette-c3a6d1:#C3A6D1;
+  --palette-79518f:#79518F;
+  --palette-65457a:#65457A;
+  --palette-80638e:#80638E;
+  --palette-79568e:#79568E;
+  --palette-493853:#493853;
+  --palette-a18da9:#A18DA9;
+  --palette-654777:#654777;
+  --palette-674a78:#674A78;
+  --palette-403347:#403347;
+  --palette-35233f:#35233F;
+  --palette-493052:#493052;
+  --palette-62436e:#62436E;
+  --palette-9a75ae08:#9A75AE08;
+  --palette-9a75ae06:#9A75AE06;
+  --palette-68477b:#68477B;
+  --palette-4a31551f:#4A31551F;
+  --palette-382a43:#382A43;
+  --palette-382b42:#382B42;
+  --palette-8b6b9b:#8B6B9B;
+  --palette-614574:#614574;
+  --palette-9a7aa9:#9A7AA9;
+  --palette-77578a:#77578A;
+  --palette-766a7c:#766A7C;
+  --palette-b99ac8:#B99AC8;
+  --palette-9a75ae18:#9A75AE18;
+  --palette-725184:#725184;
+  --palette-67477b:#67477B;
+  --palette-76558a:#76558A;
+  --palette-93869a:#93869A;
+  --palette-80628e:#80628E;
+  --palette-805493:#805493;
+  --palette-514258:#514258;
+  --palette-654878:#654878;
+  --palette-806c89:#806C89;
+  --palette-9675a8:#9675A8;
+  --palette-65576c:#65576C;
+  --palette-75479a:#75479A;
+  --palette-9b7ba8:#9B7BA8;
+  --palette-8b7c91:#8B7C91;
+  --palette-8b6a9b:#8B6A9B;
+  --palette-a092a7:#A092A7;
+  --palette-776b7d:#776B7D;
+  --palette-a18baa:#A18BAA;
+  --palette-5e3d70:#5E3D70;
+  --palette-76518b:#76518B;
+  --palette-493d50:#493D50;
+  --palette-b99ac7:#B99AC7;
+  --palette-8f65a51a:#8F65A51A;
+  --palette-887a90:#887A90;
+  --palette-796584:#796584;
+  --palette-cdb9d5:#CDB9D5;
+  --palette-584b60:#584B60;
+}
+.workspace-shell .schedule-add svg,.workspace-shell .filters button.chosen svg{color:#fff}
