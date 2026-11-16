@@ -2,7 +2,8 @@
    The legacy sheet stacks several themes whose final layer is terracotta/ivory/charcoal, expressed through
    --palette-* tokens. Re-declaring those tokens on .workspace-shell recolours every workspace page at once,
    while the rules below add the new shell, typography and the overview dashboard. */
-.workspace-shell{
+/* Global theme tokens: the whole app (login, marketplace, workspace) shares this plum + gold palette. */
+:root{
   --ws-primary:#5B21B6;--ws-primary-2:#7C3AED;--ws-deep:#1A0E2B;--ws-mid:#2E1A47;--ws-end:#4B1F8F;
   --ws-ink:#2A1B3D;--ws-muted:#6B5B7E;--ws-bg:#F6F2FA;--ws-line:#EDE6F3;--ws-tint:#F3ECFC;--ws-gold:#E3C27A;--ws-gold-deep:#8A6A1F;
 
@@ -15,8 +16,8 @@
   --salon-background:#F6F2FA;--salon-surface:#FFFFFF;--salon-text:#2A1B3D;--salon-muted:#6B5B7E;--salon-border:#EDE6F3;
   --brand-primary:#5B21B6;--brand-accent:#7C3AED;--brand-background:#F6F2FA;--brand-surface:#FFFFFF;
   accent-color:#5B21B6;
-  font-family:'Manrope',Inter,system-ui,sans-serif;
 }
+html,body{background:#F6F2FA;color:#2A1B3D;font-family:'Manrope',Inter,system-ui,sans-serif}
 .workspace-shell,.workspace-shell .layout,.workspace-shell .main,.workspace-shell .content{background:var(--ws-bg);color:var(--ws-ink)}
 
 /* legacy pages are drawn at a small scale; lift them as one unit (the overview undoes this for itself) */
@@ -153,7 +154,7 @@
 .workspace-shell .primary svg,.workspace-shell button.primary svg{color:#fff}
 
 /* Restore the pre-flatten palette inside the workspace: each flattened token's own name is its original colour. */
-.workspace-shell{
+:root{
   --palette-eee7ff:#EEE7FF;
   --palette-f8f7fb:#F8F7FB;
   --palette-ebe7f1:#EBE7F1;
@@ -318,7 +319,7 @@
 }
 
 /* Same restore for tokens the legacy sheet defined indirectly via var(--salon-*). */
-.workspace-shell{
+:root{
   --palette-211333:#211333;
   --palette-382052:#382052;
   --palette-5b21b6:#5B21B6;
@@ -635,3 +636,80 @@
 .workspace-shell .settings-toggle{gap:20px}
 .workspace-shell .settings-toggle>div b{font-size:13px;color:var(--ws-ink)}
 .workspace-shell .settings-toggle>div small{font-size:11.5px;color:var(--ws-muted)}
+
+/* ======================================================================
+   Remaining screens brought onto the plum + gold system
+   ====================================================================== */
+
+/* loading splash (used before sign-in check and on public pages) */
+.loading{
+  gap:16px;color:#2A1B3D;text-align:center;
+  background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(168,120,255,.22),transparent 65%),radial-gradient(ellipse 50% 40% at 50% 100%,rgba(227,194,122,.16),transparent 65%),#F6F2FA;
+  font:600 38px/1 'Lora',Georgia,serif;letter-spacing:.3px;
+}
+.loading:before{width:56px;height:56px;border:3px solid #E5DAEF;border-top-color:#5B21B6;border-right-color:#D3A94F}
+.loading span{font:600 14px 'Manrope',sans-serif;letter-spacing:.2px;color:#6B5B7E}
+.loading .primary{margin-top:8px;border-radius:999px;background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff;border:0;box-shadow:0 12px 28px rgba(91,33,182,.3)}
+
+/* buttons used as list rows had no border reset */
+.workspace-shell button.customer-rank-row,.workspace-shell button.customer-risk-row{border:0;border-top:1px solid var(--ws-line);color:inherit;font:inherit;cursor:pointer}
+.workspace-shell button.customer-rank-row:hover,.workspace-shell button.customer-risk-row:hover{background:var(--ws-tint)}
+
+/* team performance (analytics) */
+.workspace-shell .performance-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.workspace-shell .performance-toolbar>div{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--ws-gold-deep)}
+.workspace-shell .performance-live-dot{width:9px;height:9px;border-radius:50%;background:#7C3AED;box-shadow:0 0 0 4px rgba(124,58,237,.18)}
+.workspace-shell .performance-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.workspace-shell .performance-bar{height:8px;border-radius:99px;background:var(--ws-line);overflow:hidden}
+.workspace-shell .performance-bar span,.workspace-shell .performance-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ws-primary-2),#D3A94F)}
+.workspace-shell .performance-rank{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--ws-line)}
+.workspace-shell .performance-rank-number{color:var(--ws-muted);font:500 20px 'Lora',Georgia,serif}
+.workspace-shell .performance-rank-main{display:grid;gap:8px;flex:1;min-width:0}
+.workspace-shell .performance-rank-main>div:first-child{display:flex;flex-direction:column;gap:2px}
+.workspace-shell .performance-rank-main b{font-size:14px;color:var(--ws-ink)}
+.workspace-shell .performance-rank small,.workspace-shell .performance-person small{color:var(--ws-muted)}
+.workspace-shell .performance-rank>strong{display:flex;flex-direction:column;align-items:flex-end;font-size:16px;color:var(--ws-ink)}
+.workspace-shell .performance-rank>strong small{font-size:11px;font-weight:600}
+.workspace-shell .performance-person{display:flex;align-items:center;gap:12px}
+.workspace-shell .performance-person>div{display:flex;flex-direction:column;gap:2px}
+.workspace-shell .performance-rate{color:var(--ws-primary);font-weight:800}
+.workspace-shell .performance-footnote{margin-top:6px;font-size:13px;line-height:1.7;color:var(--ws-muted)}
+
+/* calendar connections (settings) */
+.workspace-shell .calendar-provider-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.workspace-shell .calendar-provider-card{display:flex;align-items:center;gap:16px;padding:18px 20px;border:1px solid var(--ws-line);border-radius:20px;background:#fff;transition:border-color .2s,box-shadow .2s}
+.workspace-shell .calendar-provider-card:hover{border-color:#CBB6EE;box-shadow:0 14px 30px rgba(46,26,71,.08)}
+.workspace-shell .calendar-provider-brand{flex:0 0 52px;width:52px;height:52px;display:grid;place-items:center;border-radius:15px;border:1px solid var(--ws-line);background:#fff;box-shadow:0 6px 14px rgba(46,26,71,.08)}
+.workspace-shell .google-calendar-mark{font:800 20px 'Manrope',sans-serif;color:#1A73E8;border-top:5px solid #1A73E8}
+.workspace-shell .apple-calendar-mark{align-content:center;gap:0;padding:0;overflow:hidden}
+.workspace-shell .apple-calendar-mark small{display:block;width:100%;padding:3px 0;background:#E5484D;color:#fff;font-size:8px;font-weight:800;letter-spacing:1px;text-align:center}
+.workspace-shell .apple-calendar-mark b{display:grid;place-items:center;font:700 20px 'Manrope',sans-serif;color:var(--ws-ink)}
+.workspace-shell .apple-calendar-mark b:after{content:"16"}
+.workspace-shell .calendar-provider-copy{flex:1;min-width:0;display:grid;gap:3px}
+.workspace-shell .calendar-provider-copy>b{font-size:15px;color:var(--ws-ink)}
+.workspace-shell .calendar-provider-copy>small{font-size:12.5px;line-height:1.5;color:var(--ws-muted)}
+.workspace-shell .calendar-connection-status{display:inline-flex;align-items:center;gap:8px;margin-top:4px;font-size:12px;font-weight:700;color:var(--ws-muted)}
+.workspace-shell .calendar-connection-status i{width:8px;height:8px;border-radius:50%;background:#B9AACB}
+.workspace-shell .calendar-connection-status i[style*="533234"]{background:#1D9A5B!important;box-shadow:0 0 0 3px rgba(29,154,91,.18)}
+.workspace-shell .calendar-connection-status i[style*="d49a36"]{background:#D3A94F!important;box-shadow:0 0 0 3px rgba(211,169,79,.25)}
+.workspace-shell .calendar-apple-guide{display:grid;gap:16px;margin-top:16px;padding:24px;border:1px solid #D9C8F5;border-radius:22px;background:linear-gradient(160deg,var(--ws-tint),#fff)}
+.workspace-shell .calendar-apple-guide-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.workspace-shell .calendar-apple-guide-heading small{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ws-gold-deep)}
+.workspace-shell .calendar-apple-guide-heading h3{margin:6px 0 0;font:500 22px/1.25 'Lora',Georgia,serif;color:var(--ws-ink)}
+.workspace-shell .calendar-apple-guide-first{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 18px;border-radius:16px;background:#FFF9EC;border:1px solid #F0E3BD}
+.workspace-shell .calendar-apple-guide-first p{margin:0;font-size:14px;line-height:1.6;color:var(--ws-ink)}
+.workspace-shell .calendar-apple-guide ol{list-style:none;counter-reset:step;display:grid;gap:12px;margin:0;padding:0}
+.workspace-shell .calendar-apple-guide li{counter-increment:step;display:grid;grid-template-columns:34px 1fr;gap:2px 14px;align-items:start}
+.workspace-shell .calendar-apple-guide li:before{content:counter(step);grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--ws-ink);color:#fff;font-weight:800;font-size:14px}
+.workspace-shell .calendar-apple-guide li b{font-size:14px;color:var(--ws-ink)}
+.workspace-shell .calendar-apple-guide li span{font-size:13px;line-height:1.6;color:var(--ws-muted)}
+.workspace-shell .calendar-apple-guide-note{margin:0;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid var(--ws-line);font-size:13px;line-height:1.7;color:var(--ws-muted)}
+.workspace-shell .calendar-apple-guide-note b{color:var(--ws-ink)}
+
+/* Light warm (cream/sand) tokens become light lilac so no old surfaces survive. */
+:root{
+  --palette-e8d6e5:#E6D2E8;
+  --palette-f5f0e8:#EEECF5;
+}
+.workspace-shell .calendar-apple-guide-heading>span{display:none}
+.workspace-shell .settings-logo-row{background:var(--ws-tint);border-color:#D9C8F5}

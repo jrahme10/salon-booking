@@ -175,3 +175,17 @@
   .pb-hero{padding-bottom:150px}
 }
 @media (prefers-reduced-motion:reduce){.pb *{transition:none!important}}
+
+/* embedded inside another page (marketplace profile): booking card only */
+.pb.pb-embedded{min-height:0;background:transparent;display:block}
+.pb-embedded .pb-main{margin-top:0;padding-bottom:0}
+.pb-embedded .pb-wrap{padding:0;width:100%}
+.pb-embedded .pb-card{box-shadow:0 20px 50px rgba(46,26,71,.1)}
+
+/* keep type sizes stable when the booking card is embedded in pages with their own paragraph rules */
+.pb .pb-sub{font-size:16px;line-height:1.6;color:var(--pb-muted)}
+.pb .pb-fine{font-size:13px;line-height:1.6;color:var(--pb-muted)}
+.pb .pb-summary p{font-size:14px;color:#E1D6F0}
+.pb .pb-summary .pb-summary-note{font-size:12.5px}
+.pb .pb-glass p{font-size:14px}
+.pb .pb-empty{font-size:15px}

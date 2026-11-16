@@ -15,7 +15,7 @@ const initialsOf=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map
 
 export interface ClientBookingRequest {name:string;phone:string;email:string;serviceId:string;employeeId:string;startsAt:string}
 
-export function ClientBooking({business,services,employees,appointments,onSubmit,publicPage=false}:{business:Business;services:Service[];employees:Employee[];appointments:Appointment[];onSubmit:(request:ClientBookingRequest)=>Promise<void>;publicPage?:boolean}){
+export function ClientBooking({business,services,employees,appointments,onSubmit,publicPage=false,embedded=false}:{business:Business;services:Service[];employees:Employee[];appointments:Appointment[];onSubmit:(request:ClientBookingRequest)=>Promise<void>;publicPage?:boolean;embedded?:boolean}){
  const activeServices=services.filter(s=>s.active);
  const categories=Array.from(new Set(activeServices.map(s=>s.category).filter(Boolean)));
  const stepMinutes=business.bookingRules?.slotIntervalMinutes??30;
@@ -83,8 +83,8 @@ export function ClientBooking({business,services,employees,appointments,onSubmit
 
  if(business.bookingRules?.allowOnlineBooking===false)return <div className="pb" {...themed}><div className="pb-notice"><div className="pb-notice-icon"><Clock3 size={30}/></div><small className="pb-kicker">Online booking paused</small><h1>We would love to hear from you.</h1><p>{business.name} is not accepting online booking requests right now. Please contact the salon directly to arrange your visit.</p>{business.phone&&<a className="pb-btn pb-btn-gold" href={"tel:"+business.phone}>Call {business.phone}</a>}</div></div>;
 
- return <div className="pb" {...themed}>
-  <header className="pb-hero">
+ return <div className={"pb"+(embedded?" pb-embedded":"")} {...themed}>
+  {!embedded&&<header className="pb-hero">
    <div className="pb-ring pb-ring-a" aria-hidden="true"/><div className="pb-ring pb-ring-b" aria-hidden="true"/>
    <div className="pb-wrap">
     <nav className="pb-nav" aria-label="Salon">
@@ -114,9 +114,9 @@ export function ClientBooking({business,services,employees,appointments,onSubmit
      </div>}
     </div>
    </div>
-  </header>
+  </header>}
 
-  <main id="book" className="pb-wrap pb-main">
+  <main id={embedded?undefined:"book"} className="pb-wrap pb-main">
    <section className="pb-card">
     <ol className="pb-steps" aria-label="Booking progress">{steps.map((label,index)=><li key={label}><button type="button" className={"pb-step"+(step===index+1?" active":"")+(step>index+1?" done":"")} disabled={index+1>=step} onClick={()=>goTo(index+1)} aria-current={step===index+1?"step":undefined}><i>{step>index+1?<Check size={14}/>:index+1}</i>{label}</button></li>)}</ol>
     <div className="pb-layout">
@@ -169,6 +169,6 @@ export function ClientBooking({business,services,employees,appointments,onSubmit
     </div>
    </section>
   </main>
-  <footer className="pb-footer"><b>salon.</b>Made for good days and great appointments.{business.phone&&<> · {business.phone}</>}{business.email&&<> · {business.email}</>}</footer>
+  {!embedded&&<footer className="pb-footer"><b>salon.</b>Made for good days and great appointments.{business.phone&&<> · {business.phone}</>}{business.email&&<> · {business.email}</>}</footer>}
  </div>;
 }
