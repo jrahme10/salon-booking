@@ -5,7 +5,7 @@ export interface AuthSession {
   business:{id:string;name:string;slug:string};
   role:"owner"|"admin"|"employee";
 }
-const API_URL=(import.meta.env.VITE_API_URL as string|undefined)?.replace(/\/$/,"")||"https://salon-booking.jrahme10.workers.dev";
+export const API_URL=(import.meta.env.VITE_API_URL as string|undefined)?.replace(/\/$/,"")||"https://salon-booking.jrahme10.workers.dev";
 const TOKEN_KEY="salon-reservation-session";
 let current:AuthSession|null=null;
 export function getAuthSession(){return current;}
