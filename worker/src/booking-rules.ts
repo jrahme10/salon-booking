@@ -56,7 +56,7 @@ export function validatePublicBooking(input: {
   if (startsAt.getTime() > now.getTime() + MAX_BOOKING_HORIZON_DAYS * 86_400_000) return "Choose a date within the next six months.";
   if (!service.active) return "This service is not currently available.";
   if (!employee.active) return "This team member is not currently available.";
-  if (employee.serviceIds && !employee.serviceIds.includes(service.id)) return "This team member does not provide the selected service.";
+  if (employee.serviceIds?.length && !employee.serviceIds.includes(service.id)) return "This team member does not provide the selected service.";
   if (!Number.isInteger(service.durationMinutes) || service.durationMinutes <= 0) return "The service duration is invalid.";
 
   const start = localParts(startsAt, business.timezone);

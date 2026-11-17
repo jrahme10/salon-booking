@@ -20,7 +20,23 @@ export class DemoRepository implements SalonRepository {
       const defaults=seed();
       const savedEmployees=Array.isArray(parsed.employees)?parsed.employees.map(employee=>{const fallback=defaults.employees.find(row=>row.id===employee.id);return {...fallback,...employee,serviceIds:employee.serviceIds??fallback?.serviceIds??[],workingHours:employee.workingHours??fallback?.workingHours??DEFAULT_WORKING_HOURS,timeOff:employee.timeOff??[]};}):defaults.employees;
       this.state={business:{...defaults.business,...parsed.business,workingHours:parsed.business?.workingHours??defaults.business.workingHours,bookingRules:{allowOnlineBooking:parsed.business?.bookingRules?.allowOnlineBooking??defaults.business.bookingRules?.allowOnlineBooking??true,minimumNoticeHours:parsed.business?.bookingRules?.minimumNoticeHours??defaults.business.bookingRules?.minimumNoticeHours??2,cancellationNoticeHours:parsed.business?.bookingRules?.cancellationNoticeHours??defaults.business.bookingRules?.cancellationNoticeHours??24,slotIntervalMinutes:parsed.business?.bookingRules?.slotIntervalMinutes??defaults.business.bookingRules?.slotIntervalMinutes??30}},appointments:Array.isArray(parsed.appointments)?parsed.appointments:defaults.appointments,services:Array.isArray(parsed.services)?parsed.services:defaults.services,employees:savedEmployees,customers:Array.isArray(parsed.customers)?parsed.customers:defaults.customers,customerConsentEvents:Array.isArray(parsed.customerConsentEvents)?parsed.customerConsentEvents:[],customerReminders:Array.isArray(parsed.customerReminders)?parsed.customerReminders:[],clientRequests:Array.isArray(parsed.clientRequests)?parsed.clientRequests:defaults.clientRequests,payments:Array.isArray(parsed.payments)?parsed.payments:defaults.payments,expenses:Array.isArray(parsed.expenses)?parsed.expenses:defaults.expenses,commissionEntries:Array.isArray(parsed.commissionEntries)?parsed.commissionEntries:[],payrollPayments:Array.isArray(parsed.payrollPayments)?parsed.payrollPayments:[]};
-    } catch { this.state=seed(); }
+      this.backfillCompletedPayments();
+    } catch { this.state=seed(); this.backfillCompletedPayments(); }
+  }
+  private backfillCompletedPayments(){
+    const paid=new Set(this.state.payments.map(row=>row.appointmentId));
+    const extra:Payment[]=[];
+    const appointments=this.state.appointments.map(appointment=>{
+      if(appointment.status!=="completed"||paid.has(appointment.id))return appointment;
+      const service=this.state.services.find(row=>row.id===appointment.serviceId);
+      const remaining=Math.max(0,(service?.price??0)-appointment.paidAmount);
+      if(!service||remaining<=0)return appointment;
+      extra.push({id:"pay-"+appointment.id,businessId:appointment.businessId,appointmentId:appointment.id,amount:Number(remaining.toFixed(2)),method:"cash",paidAt:new Date().toISOString(),note:"Recorded on completion"});
+      return {...appointment,paidAmount:appointment.paidAmount+remaining};
+    });
+    if(!extra.length)return;
+    this.state={...this.state,appointments,payments:[...this.state.payments,...extra]};
+    this.persist();
   }
   private persist(){
     try { if(typeof localStorage!=="undefined") localStorage.setItem(STORAGE_KEY,JSON.stringify(this.state)); }
@@ -78,6 +94,8 @@ export class DemoRepository implements SalonRepository {
     const allowed:Record<Appointment["status"],Appointment["status"][]>={pending:["confirmed","cancelled"],confirmed:["completed","cancelled"],completed:[],cancelled:[]};
     if(!allowed[current.status].includes(status)) throw new Error("This appointment status cannot be changed in that way.");
     let commissionEntries=this.state.commissionEntries;
+    let payments=this.state.payments;
+    let paidAmount=current.paidAmount;
     if(status==="completed"){
       const employee=this.state.employees.find(row=>row.id===current.employeeId);
       const service=this.state.services.find(row=>row.id===current.serviceId);
@@ -87,8 +105,13 @@ export class DemoRepository implements SalonRepository {
         const amount=calculateCommission(service.price,type,value);
         commissionEntries=[...commissionEntries,{id:"com-"+id,businessId:current.businessId,appointmentId:id,employeeId:employee.id,serviceName:service.name,baseAmount:service.price,commissionType:type,commissionValue:value,amount:Number(amount.toFixed(2)),earnedAt:new Date().toISOString()}];
       }
+      const remaining=Math.max(0,(service?.price??0)-current.paidAmount);
+      if(service&&remaining>0){
+        payments=[...payments,{id:"pay-"+id,businessId:current.businessId,appointmentId:id,amount:Number(remaining.toFixed(2)),method:"cash",paidAt:new Date().toISOString(),note:"Recorded on completion"}];
+        paidAmount=current.paidAmount+remaining;
+      }
     }
-    this.commit({...this.state,commissionEntries,appointments:this.state.appointments.map(row=>row.id===id?{...row,status}:row)});
+    this.commit({...this.state,commissionEntries,payments,appointments:this.state.appointments.map(row=>row.id===id?{...row,status,paidAmount}:row)});
   }
 
   async getPayments(){return copy(this.state.payments);}

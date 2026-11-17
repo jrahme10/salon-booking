@@ -24,7 +24,7 @@ export function validateBooking(input:{service:Service;employee:Employee;startsA
   if(!service.active) return "This service is not currently available.";
   if(!employee.active) return "This team member is not currently available.";
   if(service.businessId!==employee.businessId) return "The selected service and team member do not belong to the same business.";
-  if(employee.serviceIds&&!employee.serviceIds.includes(service.id)) return "This team member does not provide the selected service.";
+  if(employee.serviceIds?.length&&!employee.serviceIds.includes(service.id)) return "This team member does not provide the selected service.";
   if(!Number.isInteger(service.durationMinutes)||service.durationMinutes<=0) return "The service duration is invalid.";
   const dateKey=localDateKey(startsAt);
   if(employee.timeOff?.includes(dateKey)) return "This team member is unavailable on the selected date.";
@@ -63,6 +63,19 @@ export function getAvailableSlots(input:{date:string;service:Service;employee:Em
     if(!validateBooking({service,employee,startsAt:candidate,appointments,services,now:input.now})) slots.push(label);
   }
   return slots;
+}
+
+export function findNextOpenSlot(input:{fromDate:string;service:Service;employee:Employee;appointments:Appointment[];services:Service[];stepMinutes?:number;now?:Date;days?:number}):{date:string;time:string}|null {
+  const [year,month,day]=input.fromDate.split("-").map(Number);
+  if(!year||!month||!day) return null;
+  const limit=input.days??21;
+  for(let offset=0;offset<limit;offset++){
+    const cursor=new Date(year,month-1,day+offset,12,0,0,0);
+    const date=localDateKey(cursor);
+    const slots=getAvailableSlots({...input,date});
+    if(slots.length) return {date,time:slots[0]};
+  }
+  return null;
 }
 
 

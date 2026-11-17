@@ -64,7 +64,15 @@ class ApiRepository implements SalonRepository {
   async createPayrollPayment(payment:PayrollPayment){await this.write("/provider/payroll","POST",payment);}
   async createPayment(payment:Payment){await this.write("/provider/payments","POST",payment);}
   async createExpense(expense:Expense){await this.write("/provider/expenses","POST",expense);}
-  async updateAppointmentStatus(id:string,status:Appointment["status"]){await this.write("/provider/appointments/"+id+"/status","PATCH",{status});}
+  async updateAppointmentStatus(id:string,status:Appointment["status"]){
+    await apiRequest("/provider/appointments/"+id+"/status",{method:"PATCH",body:JSON.stringify({status})});
+    // Completing can create commission rows, so clear the cache. Other status changes can patch locally.
+    if(status==="completed"||!this.snapshot){this.invalidate();return;}
+    try{
+      const snap=await this.snapshot;
+      if(Array.isArray(snap.appointments))snap.appointments=snap.appointments.map((row:Appointment)=>row.id===id?{...row,status}:row);
+    }catch{this.invalidate();}
+  }
   async updateAppointment(appointment:Appointment){await this.write("/provider/appointments/"+appointment.id,"PATCH",appointment);}
   async getClientAppointmentRequests(){return (await this.load()).clientRequests as ClientAppointmentRequest[];}
   async createClientAppointmentRequest(request:ClientAppointmentRequest){await this.write("/provider/client-requests","POST",request);}

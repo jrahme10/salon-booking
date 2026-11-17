@@ -59,21 +59,24 @@ export function CalendarConnections(){
   finally{setBusy("");}
  };
  const statusText=(item?:Connection)=>!item?"Not connected":item.status==="connected"?"Connected":item.status==="attention_required"?"Needs attention":item.status==="pending"?"Connecting…":"Disconnected";
+ const appleNow=new Date();
+ const appleMonth=appleNow.toLocaleString("en-US",{month:"short"}).toUpperCase();
+ const appleDay=String(appleNow.getDate());
  return <>
   <div className="calendar-provider-grid calendar-provider-grid-bridge">
    <article className="calendar-provider-card">
-    <div className="calendar-provider-brand google-calendar-mark">31</div>
+    <div className="calendar-provider-brand google-calendar-mark" aria-hidden="true">31</div>
     <div className="calendar-provider-copy"><b>Google Calendar</b><small>Connect your Google account to Salon Reservation</small><span className="calendar-connection-status"><i style={{background:googleConnection?.status==="connected"?"#533234":googleConnection?.status==="attention_required"?"#d49a36":undefined}}/>{statusText(googleConnection)}{googleConnection?.accountLabel?" · "+googleConnection.accountLabel:""}</span></div>
     {googleConnection?<button type="button" className="secondary" disabled={busy===googleConnection.id} onClick={()=>void disconnect(googleConnection.id)}>{busy===googleConnection.id?"…":"Disconnect"}</button>:<button type="button" className="secondary" disabled={loading||!!busy} onClick={()=>void connectGoogle()}>{busy==="google"?"Connecting…":"Connect"}</button>}
    </article>
    <article className="calendar-provider-card">
-    <div className="calendar-provider-brand apple-calendar-mark"><small>CALENDAR</small><b></b></div>
+    <div className="calendar-provider-brand apple-calendar-mark" aria-hidden="true"><small>{appleMonth}</small><b>{appleDay}</b></div>
     <div className="calendar-provider-copy"><b>Apple Calendar</b><small>Display the same Google account in the iPhone Calendar app</small><span className="calendar-connection-status"><i style={{background:googleConnection?.status==="connected"?"#533234":undefined}}/>{googleConnection?.status==="connected"?"Ready for iPhone setup":"Requires Google Calendar"}</span></div>
     <button type="button" className="secondary" onClick={()=>setAppleGuideOpen(value=>!value)}>{appleGuideOpen?"Close guide":"Setup guide"}</button>
    </article>
   </div>
   {appleGuideOpen&&<section className="calendar-apple-guide" aria-label="Set up Apple Calendar">
-   <div className="calendar-apple-guide-heading"><div><small>APPLE CALENDAR SETUP</small><h3>Use your Google calendar on iPhone</h3></div><span></span></div>
+   <div className="calendar-apple-guide-heading"><div><small>APPLE CALENDAR SETUP</small><h3>Use your Google calendar on iPhone</h3></div></div>
    {!googleConnection&&<div className="calendar-apple-guide-first"><p>First connect Google Calendar to Salon Reservation. You will use that same Google account on your iPhone.</p><button type="button" className="primary" disabled={loading||!!busy} onClick={()=>void connectGoogle()}>{busy==="google"?"Connecting…":"Connect Google Calendar"}</button></div>}
    <ol>
     <li><b>Open Settings on your iPhone</b><span>Go to Settings → Apps → Calendar → Calendar Accounts.</span></li>

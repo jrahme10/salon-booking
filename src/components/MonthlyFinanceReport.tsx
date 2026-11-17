@@ -21,7 +21,7 @@ export function MonthlyFinanceReport({business,payments,expenses,payrollPayments
  const difference=report.net-previous.net;
  const changeLabel=previous.net===0?(difference===0?"No change":"No previous net balance"):`${difference>0?"+":""}${(difference/Math.abs(previous.net)*100).toFixed(1)}% vs previous month`;
  return <div className="monthly-report">
-  <div className="monthly-report-toolbar"><div><h2>Monthly performance</h2><p>Income and expenses based on individually recorded transactions.</p></div><label><CalendarDays size={15}/><input type="month" value={month} onChange={e=>setMonth(e.target.value)}/></label></div>
+  <div className="monthly-report-toolbar"><div><h2>Monthly performance</h2><p>Income and expenses based on individually recorded transactions.</p></div><label className="monthly-month-picker"><CalendarDays size={15} aria-hidden="true"/><span>Month</span><input type="month" value={month} onChange={e=>setMonth(e.target.value)} aria-label="Report month"/></label></div>
   <div className="metrics monthly-metrics">
    <div className="metric"><span><Wallet size={18}/></span><small>Income received</small><b>{money(report.income,business.currency)}</b><em>{report.paymentCount} recorded payments</em></div>
    <div className="metric"><span><ArrowDownLeft size={18}/></span><small>Expenses</small><b>{money(report.expenses,business.currency)}</b><em>{report.expenseCount} expense records</em></div>

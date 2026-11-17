@@ -108,6 +108,7 @@
 .pb-day small{display:block;font-size:11px;font-weight:700;letter-spacing:1.3px}
 .pb-day b{display:block;margin-top:2px;font-size:20px;font-weight:800}
 .pb-day.on{border:0;background:linear-gradient(135deg,var(--pb-ink),var(--pb-primary));color:#fff;box-shadow:0 10px 24px rgba(30,16,50,.25)}
+.pb-day.on small,.pb-day.on b{color:#fff}
 .pb-field{display:grid;gap:8px;font-size:13px;font-weight:700;color:var(--pb-muted)}
 .pb .pb-field input{width:100%;min-height:50px;padding:0 16px;border-radius:14px;border:1.5px solid var(--pb-line);background:var(--pb-surface);color:var(--pb-ink);font:500 15px 'Manrope',sans-serif}
 .pb .pb-field input:focus{outline:none;border-color:var(--pb-primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--pb-primary) 18%,transparent)}

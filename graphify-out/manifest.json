@@ -1,0 +1,446 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1794842647.8034904,
+    "seen": 1794844259.3909554,
+    "ast_hash": "7c22d414b9c4f01c87476fb68aa3ebe4",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1794826117.6412363,
+    "seen": 1794844259.3909607,
+    "ast_hash": "f4e5d00e2f89e1b2dd59d502bfd87b5f",
+    "semantic_hash": ""
+  },
+  "src/App.tsx": {
+    "mtime": 1794903873.739947,
+    "seen": 1794903896.4223015,
+    "ast_hash": "9925c45fb7579866c83527ba4d80d984",
+    "semantic_hash": ""
+  },
+  "src/components/AuthPage.tsx": {
+    "mtime": 1794826117.7629747,
+    "seen": 1794844259.3909643,
+    "ast_hash": "c2c7217272f1712d88b973d339ee7f81",
+    "semantic_hash": ""
+  },
+  "src/components/BusinessDashboard.tsx": {
+    "mtime": 1794903528.9653258,
+    "seen": 1794903896.42231,
+    "ast_hash": "3117487fc823b72bdce72bdd252de603",
+    "semantic_hash": ""
+  },
+  "src/components/BusinessSettings.tsx": {
+    "mtime": 1794900222.333564,
+    "seen": 1794902651.3017852,
+    "ast_hash": "0eb3159d8799c65b4f0a47b7b84319fc",
+    "semantic_hash": ""
+  },
+  "src/components/CalendarConnections.tsx": {
+    "mtime": 1794899763.2773552,
+    "seen": 1794902651.3017879,
+    "ast_hash": "d29cc0f0c24db22b3a5da2507d8ccd7a",
+    "semantic_hash": ""
+  },
+  "src/components/ClientAppointments.tsx": {
+    "mtime": 1794837404.3519886,
+    "seen": 1794844259.3909676,
+    "ast_hash": "2891ac416e3c078909b050c24676e1e2",
+    "semantic_hash": ""
+  },
+  "src/components/ClientBooking.tsx": {
+    "mtime": 1794845975.4050212,
+    "seen": 1794846076.8852978,
+    "ast_hash": "cc60737234e43c9aa8a57819727a0e28",
+    "semantic_hash": ""
+  },
+  "src/components/CustomerInsights.tsx": {
+    "mtime": 1794903769.7074037,
+    "seen": 1794903896.422325,
+    "ast_hash": "af16f77ac5b9d497eac889db689a8b45",
+    "semantic_hash": ""
+  },
+  "src/components/EmployeePerformance.tsx": {
+    "mtime": 1794901821.3413587,
+    "seen": 1794902651.3017986,
+    "ast_hash": "82a3fdb127ed0ba384542a53634524f4",
+    "semantic_hash": ""
+  },
+  "src/components/FinanceManager.tsx": {
+    "mtime": 1794903665.116146,
+    "seen": 1794903896.42233,
+    "ast_hash": "fbfc14540b26f461b6c9b2c56ed27b76",
+    "semantic_hash": ""
+  },
+  "src/components/Marketplace.tsx": {
+    "mtime": 1794839136.8466063,
+    "seen": 1794844259.3909717,
+    "ast_hash": "6abaf1db30ee67636482246a7076bd63",
+    "semantic_hash": ""
+  },
+  "src/components/MonthlyFinanceReport.tsx": {
+    "mtime": 1794826117.8069203,
+    "seen": 1794844259.3909724,
+    "ast_hash": "1ea04d8010807c92b8a7e87d76ffb455",
+    "semantic_hash": ""
+  },
+  "src/components/PayrollManager.tsx": {
+    "mtime": 1794826117.8113048,
+    "seen": 1794844259.390973,
+    "ast_hash": "7cc2ee0babec6e6a4c248a2fbbba5042",
+    "semantic_hash": ""
+  },
+  "src/components/PublicApp.tsx": {
+    "mtime": 1794827011.2163005,
+    "seen": 1794844259.390974,
+    "ast_hash": "88ad57abbe8e75240654a253cf6f2e8c",
+    "semantic_hash": ""
+  },
+  "src/components/ServiceManager.tsx": {
+    "mtime": 1794901453.6315856,
+    "seen": 1794902651.3018138,
+    "ast_hash": "611e1a4604625b5a3cc98542af90e62a",
+    "semantic_hash": ""
+  },
+  "src/components/TeamManager.tsx": {
+    "mtime": 1794826117.82117,
+    "seen": 1794844259.3909755,
+    "ast_hash": "746c2913b8f272d4e4aff0c5d0004a73",
+    "semantic_hash": ""
+  },
+  "src/components/shared.tsx": {
+    "mtime": 1794826117.825205,
+    "seen": 1794844259.390976,
+    "ast_hash": "341ff570fdc268f8a5870763a4fa8e5a",
+    "semantic_hash": ""
+  },
+  "src/data/mock.ts": {
+    "mtime": 1794826117.826945,
+    "seen": 1794844259.390977,
+    "ast_hash": "f8d5f15531919c950f16a7fe17d41598",
+    "semantic_hash": ""
+  },
+  "src/domain/brand-theme.ts": {
+    "mtime": 1794826117.841374,
+    "seen": 1794844259.3909779,
+    "ast_hash": "3e93069e54bf6046ccb0dfba5059fce3",
+    "semantic_hash": ""
+  },
+  "src/domain/business-dashboard.test.ts": {
+    "mtime": 1794826117.8428812,
+    "seen": 1794844259.3909788,
+    "ast_hash": "f266a76b853165697ebdf482557121cc",
+    "semantic_hash": ""
+  },
+  "src/domain/business-dashboard.ts": {
+    "mtime": 1794826117.8510554,
+    "seen": 1794844259.3909798,
+    "ast_hash": "8e09882d5ec5f329e5513451376bcfe3",
+    "semantic_hash": ""
+  },
+  "src/domain/commission.test.ts": {
+    "mtime": 1794826117.8510554,
+    "seen": 1794844259.390981,
+    "ast_hash": "a477d003ef1496d76685c3fe2ffca159",
+    "semantic_hash": ""
+  },
+  "src/domain/commission.ts": {
+    "mtime": 1794826117.8585172,
+    "seen": 1794844259.390982,
+    "ast_hash": "655ab1cc2218965a33e1b0ef0cf8128f",
+    "semantic_hash": ""
+  },
+  "src/domain/customer-insights.test.ts": {
+    "mtime": 1794826117.8642576,
+    "seen": 1794844259.3909826,
+    "ast_hash": "fc9093f005872a638a1e163682b4acf2",
+    "semantic_hash": ""
+  },
+  "src/domain/customer-insights.ts": {
+    "mtime": 1794826117.8642576,
+    "seen": 1794844259.3909833,
+    "ast_hash": "91b94e06d5340fb7b5a0788187f44cb9",
+    "semantic_hash": ""
+  },
+  "src/domain/customer-messaging.test.ts": {
+    "mtime": 1794826117.8642576,
+    "seen": 1794844259.3909843,
+    "ast_hash": "3ba8ee5aa0631045d3f5e7d85b0026f5",
+    "semantic_hash": ""
+  },
+  "src/domain/customer-messaging.ts": {
+    "mtime": 1794826117.8744378,
+    "seen": 1794844259.390985,
+    "ast_hash": "c695f91be1c97305bddbdbe8ab003b5a",
+    "semantic_hash": ""
+  },
+  "src/domain/employee-performance.test.ts": {
+    "mtime": 1794826117.8796523,
+    "seen": 1794844259.3909857,
+    "ast_hash": "bb06f79de24533a6d6188214c0dd2700",
+    "semantic_hash": ""
+  },
+  "src/domain/employee-performance.ts": {
+    "mtime": 1794826117.8857365,
+    "seen": 1794844259.3909864,
+    "ast_hash": "4c46588efeb8fadc0926054e02863b54",
+    "semantic_hash": ""
+  },
+  "src/domain/finance.test.ts": {
+    "mtime": 1794826117.8901007,
+    "seen": 1794844259.390987,
+    "ast_hash": "f139b8bf5f46f2f2b5c32cdadb5cb686",
+    "semantic_hash": ""
+  },
+  "src/domain/finance.ts": {
+    "mtime": 1794826117.8952315,
+    "seen": 1794844259.3909879,
+    "ast_hash": "5ac3b5f37efae3d2aa0294d384d69db3",
+    "semantic_hash": ""
+  },
+  "src/domain/monthly-finance.test.ts": {
+    "mtime": 1794826117.899232,
+    "seen": 1794844259.3909886,
+    "ast_hash": "8b23adb08942ad29ba4dbf21cf8169ea",
+    "semantic_hash": ""
+  },
+  "src/domain/monthly-finance.ts": {
+    "mtime": 1794826117.9032319,
+    "seen": 1794844259.3909893,
+    "ast_hash": "819bfeeafd0e37e647908275437a9b93",
+    "semantic_hash": ""
+  },
+  "src/domain/scheduling.test.ts": {
+    "mtime": 1794845974.8643868,
+    "seen": 1794846076.8853252,
+    "ast_hash": "dc5ee635de9358c163e18db874d2e79c",
+    "semantic_hash": ""
+  },
+  "src/domain/scheduling.ts": {
+    "mtime": 1794845974.5571892,
+    "seen": 1794846076.8853264,
+    "ast_hash": "0833db04217cdf219d3c84a399c94c79",
+    "semantic_hash": ""
+  },
+  "src/domain/service-performance.test.ts": {
+    "mtime": 1794826117.905233,
+    "seen": 1794844259.3909917,
+    "ast_hash": "4d6bad12b765d10a601db7be80c2722f",
+    "semantic_hash": ""
+  },
+  "src/domain/service-performance.ts": {
+    "mtime": 1794826117.905233,
+    "seen": 1794844259.3909924,
+    "ast_hash": "6289081cb13a1020b32b991702490dd3",
+    "semantic_hash": ""
+  },
+  "src/main.tsx": {
+    "mtime": 1794839136.9999726,
+    "seen": 1794844259.390993,
+    "ast_hash": "d4961e6fd35fc3e0c31769cdb6c1b582",
+    "semantic_hash": ""
+  },
+  "src/services/auth.ts": {
+    "mtime": 1794827011.6084092,
+    "seen": 1794844259.3909938,
+    "ast_hash": "1d89a63b9ffb2a6ea9e27cf192080062",
+    "semantic_hash": ""
+  },
+  "src/services/demo-repository.ts": {
+    "mtime": 1794899046.5697203,
+    "seen": 1794899083.54566,
+    "ast_hash": "0e8290b2ae35dbdbc3c80f8c4aad42c9",
+    "semantic_hash": ""
+  },
+  "src/services/public-api.ts": {
+    "mtime": 1794827011.1656878,
+    "seen": 1794844259.3909957,
+    "ast_hash": "a5355f778373891cd83b08748e3518a1",
+    "semantic_hash": ""
+  },
+  "src/services/repository.ts": {
+    "mtime": 1794897765.179791,
+    "seen": 1794897830.9872358,
+    "ast_hash": "9c0120898b789f930023c04ee76f8dbc",
+    "semantic_hash": ""
+  },
+  "src/types.ts": {
+    "mtime": 1794826117.751748,
+    "seen": 1794844259.3909974,
+    "ast_hash": "e32c4ce9a76cbc6974d4ce7cb6e30ca2",
+    "semantic_hash": ""
+  },
+  "src/vite-env.d.ts": {
+    "mtime": 1794826117.7559333,
+    "seen": 1794844259.3909984,
+    "ast_hash": "0352474ba2918efe13895edbc3780d94",
+    "semantic_hash": ""
+  },
+  "tsconfig.app.json": {
+    "mtime": 1794826117.645238,
+    "seen": 1794844259.390999,
+    "ast_hash": "656f74043f0ae95c3d660d61c34a7100",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1794826117.6502376,
+    "seen": 1794844259.3909998,
+    "ast_hash": "ea01f90c374874e152a3bb6f75037ea1",
+    "semantic_hash": ""
+  },
+  "vite.config.ts": {
+    "mtime": 1794826117.6552362,
+    "seen": 1794844259.3910007,
+    "ast_hash": "548e99b3577006c0bf445112a86752b1",
+    "semantic_hash": ""
+  },
+  "worker/migrations/0001_calendar_foundation.sql": {
+    "mtime": 1794826117.9700289,
+    "seen": 1794844259.3910017,
+    "ast_hash": "020bc8d92542e3b56985bcc5d8b807f1",
+    "semantic_hash": ""
+  },
+  "worker/migrations/0002_core_platform.sql": {
+    "mtime": 1794826117.9837894,
+    "seen": 1794844259.3910024,
+    "ast_hash": "61660cc5b7ac7303e9189c91dec66810",
+    "semantic_hash": ""
+  },
+  "worker/migrations/0003_customer_payroll.sql": {
+    "mtime": 1794826117.9882512,
+    "seen": 1794844259.3910031,
+    "ast_hash": "56739e44f5d8cd533af4ad8bddb55596",
+    "semantic_hash": ""
+  },
+  "worker/migrations/0004_public_booking_tokens.sql": {
+    "mtime": 1794826926.5725827,
+    "seen": 1794844259.3910038,
+    "ast_hash": "af8ac2d4158dcf3897745e3e97f2bfc0",
+    "semantic_hash": ""
+  },
+  "worker/package.json": {
+    "mtime": 1794826117.9572363,
+    "seen": 1794844259.3910053,
+    "ast_hash": "1662535725d3b234c76e974e66197f11",
+    "semantic_hash": ""
+  },
+  "worker/src/booking-rules.test.ts": {
+    "mtime": 1794826889.0998354,
+    "seen": 1794844259.391006,
+    "ast_hash": "1a343e0b0c779e3967a179843482c392",
+    "semantic_hash": ""
+  },
+  "worker/src/booking-rules.ts": {
+    "mtime": 1794845989.72683,
+    "seen": 1794846076.8853467,
+    "ast_hash": "365613794e1145382b448dd5acd13bd9",
+    "semantic_hash": ""
+  },
+  "worker/src/calendar.ts": {
+    "mtime": 1794826117.9882512,
+    "seen": 1794844259.391008,
+    "ast_hash": "979710e23bf9d9b999ed95e9700c4d12",
+    "semantic_hash": ""
+  },
+  "worker/src/index.ts": {
+    "mtime": 1794899023.2907834,
+    "seen": 1794899083.5456975,
+    "ast_hash": "647074a33cbcd2e0dae3bc99304d8187",
+    "semantic_hash": ""
+  },
+  "worker/src/public.ts": {
+    "mtime": 1794826933.4601488,
+    "seen": 1794844259.3910096,
+    "ast_hash": "6f12b75a231ff45a188f9c08a8aa12eb",
+    "semantic_hash": ""
+  },
+  "worker/tsconfig.json": {
+    "mtime": 1794826117.9662843,
+    "seen": 1794844259.3910105,
+    "ast_hash": "9f370d30e2ff88236e2f5bbba334585f",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1794826117.665739,
+    "seen": 1794844259.3910112,
+    "ast_hash": "7f48b653cd4069ef2816fb07df13a366",
+    "semantic_hash": ""
+  },
+  ".github/workflows/deploy-pages.yml": {
+    "mtime": 1794826117.672034,
+    "seen": 1794844259.3910124,
+    "ast_hash": "3f2c60d5c1714bc00a5e6c53e78589cc",
+    "semantic_hash": ""
+  },
+  ".github/workflows/worker-ci.yml": {
+    "mtime": 1794826117.6761398,
+    "seen": 1794844259.3910131,
+    "ast_hash": "eb811b00f4635a39afb0474bd7feb6c0",
+    "semantic_hash": ""
+  },
+  "CALENDAR_INTEGRATION.md": {
+    "mtime": 1794826117.6146328,
+    "seen": 1794844259.3910139,
+    "ast_hash": "670206780f6d9039cfc24433d156729b",
+    "semantic_hash": ""
+  },
+  "CUSTOMER_CONSENT.md": {
+    "mtime": 1794826117.6239235,
+    "seen": 1794844259.3910146,
+    "ast_hash": "1e63abff87f80cec62413c438a317f2b",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1794826117.6301682,
+    "seen": 1794844259.3910155,
+    "ast_hash": "198321674137436f7a1af197421cfb7b",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1794826117.6361659,
+    "seen": 1794844259.3910162,
+    "ast_hash": "1730ee0dfa6e0ec19c604d6fbf66a375",
+    "semantic_hash": ""
+  },
+  "public/privacy-policy.html": {
+    "mtime": 1794826117.6888535,
+    "seen": 1794844259.3910172,
+    "ast_hash": "9e0e361726fb580724b1fdbbf054e0db",
+    "semantic_hash": ""
+  },
+  "public/terms-and-conditions.html": {
+    "mtime": 1794826117.7101607,
+    "seen": 1794844259.3910177,
+    "ast_hash": "5ac7e8c2a239e83ebd113c325e3e75db",
+    "semantic_hash": ""
+  },
+  "supabase/README.md": {
+    "mtime": 1794826117.9365506,
+    "seen": 1794844259.3910184,
+    "ast_hash": "5e658812bd1d6f2e666bcebed92b7a70",
+    "semantic_hash": ""
+  },
+  "worker/CALENDAR_SETUP.md": {
+    "mtime": 1794826117.9523191,
+    "seen": 1794844259.3910196,
+    "ast_hash": "1def259540a54f37a9174b9441bafabb",
+    "semantic_hash": ""
+  },
+  "worker/README.md": {
+    "mtime": 1794826117.9572363,
+    "seen": 1794844259.3910203,
+    "ast_hash": "e7c6cf33e85b14d02cb5c5e16710dd51",
+    "semantic_hash": ""
+  },
+  "public/salon-icon.svg": {
+    "mtime": 1794826117.6928635,
+    "seen": 1794844259.391021,
+    "ast_hash": "5d0f41b495ae17bdeca54b9bd2c9d7fa",
+    "semantic_hash": ""
+  },
+  "public/salon-logo.svg": {
+    "mtime": 1794826117.705954,
+    "seen": 1794844259.3910217,
+    "ast_hash": "c77b9d3cf4043babb1e90ee5f607a106",
+    "semantic_hash": ""
+  }
+}

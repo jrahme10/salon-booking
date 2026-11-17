@@ -1,4 +1,4 @@
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 import {Link} from "react-router-dom";
 import type {FormEvent} from "react";
 import {ArrowLeft,ArrowRight,Check,CheckCircle2,Clock3,MapPin,Scissors,Sparkles,Star,UserRound} from "lucide-react";
@@ -28,13 +28,24 @@ export function ClientBooking({business,services,employees,appointments,onSubmit
  const [error,setError]=useState(""),[saving,setSaving]=useState(false),[success,setSuccess]=useState(false);
  const service=activeServices.find(s=>s.id===serviceId);
  const categoryServices=activeServices.filter(s=>s.category===category);
- const eligible=employees.filter(e=>e.active&&(!e.serviceIds||e.serviceIds.includes(serviceId)));
+ const eligible=employees.filter(e=>e.active&&(!e.serviceIds?.length||e.serviceIds.includes(serviceId)));
  const slotsOn=(day:string,forService:Service,people:Employee[])=>people.flatMap(employee=>getAvailableSlots({date:day,service:forService,employee,appointments,services,stepMinutes})
   .filter(slot=>isWithinBusinessHours(business,toLocal(day,slot),forService.durationMinutes))
   .map(slot=>({employeeId:employee.id,time:slot})));
  const slotOptions=service?slotsOn(date,service,eligible):[];
  const visibleSlots=slotOptions.filter(slot=>employeeId==="any"||slot.employeeId===employeeId);
  const selected=visibleSlots.find(slot=>slot.employeeId+"|"+slot.time===selectedSlotKey);
+ useEffect(()=>{
+  if(!service||visibleSlots.length)return;
+  const people=employeeId==="any"?eligible:eligible.filter(person=>person.id===employeeId);
+  const start=toLocal(date||dateKey(new Date()),"12:00");
+  for(let offset=1;offset<=21;offset++){
+   const cursor=new Date(start);cursor.setDate(start.getDate()+offset);
+   const day=dateKey(cursor);
+   const options=slotsOn(day,service,people);
+   if(options.length){setDate(day);setSelectedSlotKey("");return;}
+  }
+ },[date,serviceId,employeeId,visibleSlots.length]); // eslint-disable-line react-hooks/exhaustive-deps
  const chosenEmployee=selected?employees.find(e=>e.id===selected.employeeId):employees.find(e=>e.id===employeeId);
  const dateMin=dateKey(new Date());
  const quickDays=Array.from({length:6},(_,index)=>{const d=new Date();d.setDate(d.getDate()+index);return {key:dateKey(d),dow:d.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase(),num:d.getDate()};});
@@ -43,7 +54,7 @@ export function ClientBooking({business,services,employees,appointments,onSubmit
  const nextAvailable=useMemo(()=>{
   const base=activeServices[0];
   if(!base)return null;
-  const people=employees.filter(e=>e.active&&(!e.serviceIds||e.serviceIds.includes(base.id)));
+  const people=employees.filter(e=>e.active&&(!e.serviceIds?.length||e.serviceIds.includes(base.id)));
   for(let offset=0;offset<14;offset++){
    const d=new Date();d.setDate(d.getDate()+offset);
    const day=dateKey(d);

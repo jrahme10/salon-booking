@@ -342,6 +342,13 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
         const user = await authenticate(request, sql);
         if (!user) return json({ error: "Authentication required." }, 401, origin);
         const businessId = String(user.business_id);
+        // Backfill: completed visits with no payment yet should count as collected revenue.
+        await sql`insert into private.payments(business_id,appointment_id,amount,method,paid_at,note)
+          select a.business_id,a.id,s.price,'cash',coalesce(a.updated_at,now()),'Recorded on completion'
+          from private.appointments a
+          join private.services s on s.id=a.service_id
+          where a.business_id=${businessId}::uuid and a.status='completed' and s.price>0
+            and not exists(select 1 from private.payments p where p.appointment_id=a.id)`.catch(()=>{});
         const businessRows = await sql`select id::text, name, slug, category, city, address, phone, email, website, description, currency, timezone,
           marketplace_visible as "marketplaceVisible", working_hours as "workingHours", booking_rules as "bookingRules", calendar_preferences - 'brandTheme' - 'logoDataUrl' as "calendarSyncPreferences", calendar_preferences->'brandTheme' as "brandTheme", calendar_preferences->'logoDataUrl' as "logoDataUrl"
           from private.businesses where id = ${businessId}::uuid limit 1` as unknown as Record<string, unknown>[];
@@ -513,7 +520,36 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
           if(!rows.length)return json({error:"The selected customer, service or team member is unavailable."},400,origin);
           return json({appointment:rows[0] as unknown as Record<string,unknown>},201,origin);
         }
-        if(resource==="appointments"&&id&&request.method==="PATCH"){
+        if(resource==="appointments"&&id&&path[3]==="status"&&request.method==="PATCH"){
+          const next=value("status");
+          if(!["pending","confirmed","completed","cancelled"].includes(next))return json({error:"Choose a valid appointment status."},400,origin);
+          const rows=await sql`update private.appointments set status=${next},updated_at=now()
+            where id=${id}::uuid and business_id=${businessId}::uuid
+              and (status='pending' and ${next} in ('confirmed','cancelled')
+                or status='confirmed' and ${next} in ('completed','cancelled'))
+            returning id::text,status`;
+          if(!rows.length)return json({error:"This appointment status cannot be changed."},409,origin);
+          if(next==="completed"){
+            await sql`insert into private.commission_entries(business_id,appointment_id,employee_id,service_name,base_amount,commission_type,commission_value,amount,earned_at)
+              select a.business_id,a.id,e.id,s.name,s.price,coalesce(e.commission_type,'percentage'),e.commission_value,
+                case when e.commission_type='fixed' then e.commission_value else s.price*e.commission_value/100 end,now()
+              from private.appointments a join private.employees e on e.id=a.employee_id
+              join private.services s on s.id=a.service_id
+              where a.id=${id}::uuid and a.business_id=${businessId}::uuid and e.commission_value>0
+              on conflict(business_id,appointment_id) do nothing`;
+            // Record the unpaid service balance so Overview revenue reflects completed work.
+            await sql`insert into private.payments(business_id,appointment_id,amount,method,paid_at,note)
+              select a.business_id,a.id,
+                s.price-coalesce((select sum(p.amount) from private.payments p where p.appointment_id=a.id),0),
+                'cash',now(),'Recorded on completion'
+              from private.appointments a
+              join private.services s on s.id=a.service_id
+              where a.id=${id}::uuid and a.business_id=${businessId}::uuid
+                and s.price-coalesce((select sum(p.amount) from private.payments p where p.appointment_id=a.id),0)>0`;
+          }
+          return json({appointment:rows[0] as unknown as Record<string,unknown>},200,origin);
+        }
+        if(resource==="appointments"&&id&&!path[3]&&request.method==="PATCH"){
           const startsAt=value("startsAt"),status=value("status");
           if(!Number.isFinite(Date.parse(startsAt))||!["pending","confirmed"].includes(status))
             return json({error:"Only active appointments can be rescheduled."},400,origin);
@@ -528,7 +564,7 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
           if(!rows.length)return json({error:"Appointment could not be updated. Check its details and availability."},409,origin);
           return json({appointment:rows[0] as unknown as Record<string,unknown>},200,origin);
         }
-        if(resource==="appointments"&&id&&request.method==="DELETE"){
+        if(resource==="appointments"&&id&&!path[3]&&request.method==="DELETE"){
           const rows=await sql`update private.appointments set status='cancelled',updated_at=now()
             where id=${id}::uuid and business_id=${businessId}::uuid and status in ('pending','confirmed') returning id::text`;
           if(!rows.length)return json({error:"Appointment was not found or is no longer active."},404,origin);
@@ -575,29 +611,6 @@ const passwordHash = `pbkdf2-sha256${PASSWORD_ITERATIONS}${salt}${await derivePa
             returning id::text,name,slug,category,city,address,phone,email,website,description,currency,timezone,
               marketplace_visible as "marketplaceVisible",working_hours as "workingHours",booking_rules as "bookingRules",calendar_preferences - 'brandTheme' - 'logoDataUrl' as "calendarSyncPreferences",calendar_preferences->'brandTheme' as "brandTheme",calendar_preferences->'logoDataUrl' as "logoDataUrl"`;
           return json({business:rows[0] as unknown as Record<string,unknown>},200,origin);
-        }
-        if(resource==="appointments"&&id==="status"&&request.method==="PATCH"){
-          return json({error:"Use /provider/appointments/{appointmentId}/status."},400,origin);
-        }
-        if(resource==="appointments"&&id&&path[3]==="status"&&request.method==="PATCH"){
-          const next=value("status");
-          if(!["pending","confirmed","completed","cancelled"].includes(next))return json({error:"Choose a valid appointment status."},400,origin);
-          const rows=await sql`update private.appointments set status=${next},updated_at=now()
-            where id=${id}::uuid and business_id=${businessId}::uuid
-              and (status='pending' and ${next} in ('confirmed','cancelled')
-                or status='confirmed' and ${next} in ('completed','cancelled'))
-            returning id::text,status`;
-          if(!rows.length)return json({error:"This appointment status cannot be changed."},409,origin);
-          if(next==="completed"){
-            await sql`insert into private.commission_entries(business_id,appointment_id,employee_id,service_name,base_amount,commission_type,commission_value,amount,earned_at)
-              select a.business_id,a.id,e.id,s.name,s.price,coalesce(e.commission_type,'percentage'),e.commission_value,
-                case when e.commission_type='fixed' then e.commission_value else s.price*e.commission_value/100 end,now()
-              from private.appointments a join private.employees e on e.id=a.employee_id
-              join private.services s on s.id=a.service_id
-              where a.id=${id}::uuid and a.business_id=${businessId}::uuid and e.commission_value>0
-              on conflict(business_id,appointment_id) do nothing`;
-          }
-          return json({appointment:rows[0] as unknown as Record<string,unknown>},200,origin);
         }
         if(resource==="client-requests"&&request.method==="POST"){
           const appointmentId=value("appointmentId"),customerId=value("customerId"),kind=value("kind");

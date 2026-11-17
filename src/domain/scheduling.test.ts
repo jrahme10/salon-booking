@@ -1,6 +1,6 @@
 import {describe,expect,it} from "vitest";
 import type {Appointment,Business,Employee,Service,WeeklySchedule} from "../types";
-import {DEFAULT_WORKING_HOURS,getAvailableSlots,isWithinBusinessHours,validateBooking} from "./scheduling";
+import {DEFAULT_WORKING_HOURS,findNextOpenSlot,getAvailableSlots,isWithinBusinessHours,validateBooking} from "./scheduling";
 
 const businessId="business-1";
 const service:Service={id:"service-1",businessId,name:"Cut",category:"Hair",durationMinutes:60,price:30,active:true};
@@ -22,7 +22,8 @@ describe("validateBooking",()=>{
   it("rejects an inactive service",()=>expect(validate({service:{...service,active:false}})).toContain("service is not currently available"));
   it("rejects an inactive employee",()=>expect(validate({employee:{...employee,active:false}})).toContain("team member is not currently available"));
   it("rejects a service and employee from different businesses",()=>expect(validate({employee:{...employee,businessId:"another-business"}})).toContain("same business"));
-  it("rejects a service the employee is not assigned to",()=>expect(validate({employee:{...employee,serviceIds:[]}})).toContain("does not provide"));
+  it("rejects a service the employee is not assigned to",()=>expect(validate({employee:{...employee,serviceIds:["other-service"]}})).toContain("does not provide"));
+  it("treats an empty service list as unrestricted",()=>expect(validate({employee:{...employee,serviceIds:[]}})).toBeNull());
   it("rejects an employee's date-specific day off",()=>expect(validate({employee:{...employee,timeOff:["2025-01-06"]}})).toContain("unavailable on the selected date"));
   it("rejects a weekday when the employee is not scheduled",()=>{
     const workingHours={...DEFAULT_WORKING_HOURS,mon:{...DEFAULT_WORKING_HOURS.mon,enabled:false}};
@@ -96,6 +97,12 @@ describe("getAvailableSlots",()=>{
     expect(slots({stepMinutes:0})).toEqual([]);
     expect(slots({stepMinutes:15.5})).toEqual([]);
     expect(slots({service:{...service,durationMinutes:0}})).toEqual([]);
+  });
+  it("moves to the next open time when the chosen day has none left",()=>{
+    expect(findNextOpenSlot({fromDate:"2025-01-06",service,employee,appointments:[],services:[service],now:monday(17,30)})).toEqual({date:"2025-01-07",time:"09:00"});
+  });
+  it("keeps the first open time when the chosen day still has one",()=>{
+    expect(findNextOpenSlot({fromDate:"2025-01-06",service,employee,appointments:[],services:[service],now:monday(9,15)})).toEqual({date:"2025-01-06",time:"09:30"});
   });
 });
 
